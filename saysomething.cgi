@@ -14,7 +14,14 @@ print "hi there"
 sys.stdout.flush()
 
 form = cgi.FieldStorage()
-code = form.getfirst('code', 'empty')
+##code = form.getfirst('code', 'empty')
+fileNames = form.getlist("fileNames[]");
+fileContents = form.getlist("fileContents[]");
+for i in xrange(len(fileNames)):
+    f = open(fileNames[i], 'w')
+    f.write(fileContents[i])
+    f.close()
+
 #code = cgi.escape(code)
 
 #print code
@@ -45,11 +52,14 @@ code = form.getfirst('code', 'empty')
 #toReplace = (file.split('android:text="', 1)[1]).split('"\n')[0]
 #newFile = file.replace(toReplace, code)
 #f.close()
-f = open('HelloAndroid/res/layout/main.xml', 'w')
-f.write(code)
-f.close()
 
-p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")
-p.wait()
+##
+#f = open('HelloAndroid/res/layout/main.xml', 'w')
+#f.write(code)
+#f.close()
+
+#p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")
+#p.wait()
+##
 
 print "bye there"

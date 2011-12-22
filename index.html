@@ -23,6 +23,8 @@
   $("#codeForm").submit(function(event) {
     /* stop form from submitting normally */
     event.preventDefault(); 
+    
+    fileContents[currFile] = $("#code").val();
         
     /* get some values from elements on the page: */
     var $form = $( this ),
@@ -30,7 +32,7 @@
         url = $form.attr( 'action' );
 
     /* Send the data using post and put the results in a div */
-    $.post(url, { code: term } ,
+    $.post(url, { 'fileNames[]': fileNames, 'fileContents[]': fileContents } ,
       function( data ) {
           $( "#result" ).empty().append( data );
       }
