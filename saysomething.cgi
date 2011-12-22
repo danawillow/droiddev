@@ -15,7 +15,7 @@ sys.stdout.flush()
 
 form = cgi.FieldStorage()
 code = form.getfirst('code', 'empty')
-code = cgi.escape(code)
+#code = cgi.escape(code)
 
 #print code
 
@@ -40,13 +40,13 @@ code = cgi.escape(code)
 #if p.returncode:  
 #   print "failed with code: %s" % str(p.returncode) 
 
-f = open('HelloAndroid/res/layout/main.xml', 'r')
-file = f.read()
-toReplace = (file.split('android:text="', 1)[1]).split('"\n')[0]
-newFile = file.replace(toReplace, code)
-f.close()
+#f = open('HelloAndroid/res/layout/main.xml', 'r')
+#file = f.read()
+#toReplace = (file.split('android:text="', 1)[1]).split('"\n')[0]
+#newFile = file.replace(toReplace, code)
+#f.close()
 f = open('HelloAndroid/res/layout/main.xml', 'w')
-f.write(newFile)
+f.write(code)
 f.close()
 
 p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")

@@ -4,17 +4,23 @@
   <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body>
+  <div id="nav" style="display:inline">
+  <a href="javascript:changeTab(0);">main.xml</a><br>
+  <a href="javascript:changeTab(1);">HelloAndroid.java</a>
+  </div>
   <form action="saysomething.cgi" id="codeForm" method="post">
-   <textarea name="code"></textarea>
+   <textarea name="code" rows="50" cols="50" id="code"></textarea>
    <input type="submit" value="Submit" />
   </form>
   <!-- the result of the search will be rendered inside this div -->
   <div id="result"></div>
-<!--
+
 <script>
+  var fileNames = ['HelloAndroid/res/layout/main.xml', 'HelloAndroid/src/com/example/helloandroid/HelloAndroid.java'];
+  var fileContents = new Array();
+  
   /* attach a submit handler to the form */
   $("#codeForm").submit(function(event) {
-
     /* stop form from submitting normally */
     event.preventDefault(); 
         
@@ -26,12 +32,32 @@
     /* Send the data using post and put the results in a div */
     $.post(url, { code: term } ,
       function( data ) {
-          //var content = $( data ).find( '#content' );
           $( "#result" ).empty().append( data );
       }
     );
   });
-</script>-->
+    
+  for(i = 0; i < fileNames.length; i++) {
+    (function(i) {
+        $.get(fileNames[i], function(data, status) {
+            importData(data, status, i);
+        }, "text");
+    })(i);
+  }
+  
+  function importData(data, status, i) {
+    fileContents[i] = data;
+    if (i == 0) $("#code").val(data);
+  };
+  
+  var currFile = 0;
+  
+  function changeTab(src) {
+    fileContents[currFile] = $("#code").val();
+    currFile = src;
+    $("#code").val(fileContents[currFile]);
+  }
+</script>
 
 </body>
 </html>
