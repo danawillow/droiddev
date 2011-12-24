@@ -4,19 +4,16 @@
   <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body>
-  <div id="nav" style="display:inline">
-  <a href="javascript:changeTab(0);">main.xml</a><br>
-  <a href="javascript:changeTab(1);">HelloAndroid.java</a>
-  </div>
-  <form action="saysomething.cgi" id="codeForm" method="post">
-   <textarea name="code" rows="50" cols="50" id="code"></textarea>
+  <div id="nav" style="display:inline; float:left"></div>
+  <form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
+   <textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
    <input type="submit" value="Submit" />
   </form>
   <!-- the result of the search will be rendered inside this div -->
   <div id="result"></div>
 
 <script>
-  var fileNames = ['HelloAndroid/res/layout/main.xml', 'HelloAndroid/src/com/example/helloandroid/HelloAndroid.java'];
+  var fileNames = new Array();
   var fileContents = new Array();
   
   /* attach a submit handler to the form */
@@ -38,13 +35,39 @@
       }
     );
   });
+   
+  $.getJSON('listfiles.cgi', function(data) {
+    $.each(data.results, function(key, value) {
+        window.console.log(value);
+      $("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
+    });
     
-  for(i = 0; i < fileNames.length; i++) {
-    (function(i) {
-        $.get(fileNames[i], function(data, status) {
-            importData(data, status, i);
-        }, "text");
-    })(i);
+    startImport();
+  });
+  
+  function makeListFromDir(dir) {
+    html = "<li>" + dir.dir + "</li><ul>";
+    $.each(dir.children, function(key, value) {
+        if (value.children != undefined) {
+            html += makeListFromDir(value, html);
+        }
+        else {
+            html += '<li><a href="javascript:changeTab(' + fileNames.length +')">' + value + '</a></li>';
+            fileNames.push(dir.dir + "/" + value);
+        }
+    });
+    html += "</ul>";
+    return html;
+  }
+  
+  function startImport() {
+        for(i = 0; i < fileNames.length; i++) {
+        (function(i) {
+            $.get(fileNames[i], function(data, status) {
+                importData(data, status, i);
+            }, "text");
+        })(i);
+      }
   }
   
   function importData(data, status, i) {
@@ -59,6 +82,8 @@
     currFile = src;
     $("#code").val(fileContents[currFile]);
   }
+
+
 </script>
 
 </body>
