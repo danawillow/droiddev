@@ -4,7 +4,11 @@
   <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body>
-  <div id="nav" style="display:inline; float:left"></div>
+  <div id="nav" style="display:inline; float:left">
+  <a href="javascript:newFile('HelloAndroid/res/layout')">New XML layout file</a><br>
+  <a href="javascript:newFile('HelloAndroid/res/values')">New XML values file</a><br>
+  <a href="javascript:newFile('HelloAndroid/src/com/example/helloandroid')">New java file</a>
+  </div>
   <form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
    <textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
    <input type="submit" value="Submit" />
@@ -83,7 +87,13 @@
     $("#code").val(fileContents[currFile]);
   }
 
-
+  function newFile(dir, ext) {
+    var fileName = prompt("Name your file (include extension)");
+    html = '<li><a href="javascript:changeTab(' + fileNames.length +')">' + fileName + '</a></li>';
+    fileNames.push(dir + "/" + fileName);
+    fileContents.push("");
+    $("li:contains(" + dir + ")").next().append(html);
+  }
 </script>
 
 </body>
