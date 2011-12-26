@@ -8,6 +8,10 @@
   <a href="javascript:newFile('HelloAndroid/res/layout')">New XML layout file</a><br>
   <a href="javascript:newFile('HelloAndroid/res/values')">New XML values file</a><br>
   <a href="javascript:newFile('HelloAndroid/src/com/example/helloandroid')">New java file</a>
+  <form action="uploadimage.cgi" id="imageUploadForm" method="post" enctype="multipart/form-data" id="fileUploadForm">
+    <label for="file">Upload image: </label><input type="file" name="file" /><br>
+    <input type="submit" />
+  </form>
   </div>
   <form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
    <textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
