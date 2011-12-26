@@ -5,6 +5,7 @@ import os
 import cgi
 import cgitb
 import sys
+import imghdr
 
 cgitb.enable()
 print "Content-Type: text/html"     # HTML is following
@@ -17,10 +18,12 @@ form = cgi.FieldStorage()
 ##code = form.getfirst('code', 'empty')
 fileNames = form.getlist("fileNames[]");
 fileContents = form.getlist("fileContents[]");
+
 for i in xrange(len(fileNames)):
-    f = open(fileNames[i], 'w')
-    f.write(fileContents[i])
-    f.close()
+    if not imghdr.what(fileNames[i]):
+        f = open(fileNames[i], 'w')
+        f.write(fileContents[i])
+        f.close()
 
 #code = cgi.escape(code)
 
