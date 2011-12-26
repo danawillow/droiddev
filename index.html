@@ -69,26 +69,40 @@
   }
   
   function startImport() {
-        for(i = 0; i < fileNames.length; i++) {
-        (function(i) {
-            $.get(fileNames[i], function(data, status) {
-                importData(data, status, i);
-            }, "text");
-        })(i);
-      }
+    for(i = 0; i < fileNames.length; i++) {
+      (function(i) {
+          $.get(fileNames[i], function(data, status) {
+              importData(data, status, i);
+          }, "text");
+      })(i);
+    }
   }
   
   function importData(data, status, i) {
     fileContents[i] = data;
-    if (i == 0) $("#code").val(data);
+    if (i == 0) {
+      if (fileNames[i].match(/(jpg|gif|png)$/)) {
+        $("#code").val("");
+      }
+      else {
+        $("#code").val(data);
+      }
+    }
   };
   
   var currFile = 0;
   
   function changeTab(src) {
-    fileContents[currFile] = $("#code").val();
+    if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
+        fileContents[currFile] = $("#code").val();
+    }
     currFile = src;
-    $("#code").val(fileContents[currFile]);
+    if (fileNames[currFile].match(/(jpg|gif|png)$/)) {
+      $("#code").val("");
+    }
+    else {
+      $("#code").val(fileContents[currFile]);
+    }
   }
 
   function newFile(dir, ext) {
