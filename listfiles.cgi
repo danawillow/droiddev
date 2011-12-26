@@ -32,7 +32,7 @@ def listthings(path):
     for entry in os.listdir(path):
         epath = os.path.join(path, entry)
         if os.path.isfile(epath):
-            if entry[len(entry)-1] != '~':
+            if entry[len(entry)-1] != '~' and entry[0] != '.':
                 children.append(entry)
         elif os.path.isdir(epath):
             children.append(listthings(epath))
