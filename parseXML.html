@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <style type="text/css">
+    .element {
+        border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+<div id="result">
+</div>
+
+<script>
+$.get('HelloAndroid/res/layout/main.xml', function(xml) {
+    window.console.log(xml);
+    $(xml).children().each(function() {
+        parseNode($(this), $("#result"));
+    });
+});
+
+function parseNode(node, par) {
+    var nodeName = $(node)[0].nodeName;
+    var d = $("<div />");
+    $(par).append($(d));
+    if (nodeName == "TextView") $(d).text($(node).attr('android:text'));
+    else if (nodeName == "ImageView") $(d).text($(node).attr('android:src'));
+    $(node).children().each(function() {
+        parseNode($(this), $(d));
+    });
+    $(d).addClass('element');
+    return d;
+}
+
+</script>
+
+</body>
+</html>
