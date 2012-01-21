@@ -3,8 +3,23 @@
 <head>
   <script src="http://code.jquery.com/jquery-latest.js"></script>
   <style type="text/css">
+    #result {
+        width: 360px;
+        height: 640px;
+        border: 1px solid #000;
+        //padding: 2px;
+    }
     .element {
         border: 1px solid #000;
+        //margin: 2px 0 2px 0;
+        //display: table;
+        box-sizing: border-box;
+    }
+    .widthFillParent {
+        width: 100%;
+    }
+    .heightFillParent {
+        height: 100%;
     }
   </style>
 </head>
@@ -15,7 +30,6 @@
 
 <script>
 $.get('HelloAndroid/res/layout/main.xml', function(xml) {
-    window.console.log(xml);
     $(xml).children().each(function() {
         parseNode($(this), $("#result"));
     });
@@ -25,13 +39,123 @@ function parseNode(node, par) {
     var nodeName = $(node)[0].nodeName;
     var d = $("<div />");
     $(par).append($(d));
-    if (nodeName == "TextView") $(d).text($(node).attr('android:text'));
-    else if (nodeName == "ImageView") $(d).text($(node).attr('android:src'));
+    
+    switch(nodeName) {
+        case "TextView":
+            $(d).text($(node).attr('android:text'));
+            $(d).addClass('element');
+            break;
+        case "ImageView":
+            $(d).text($(node).attr('android:src'));
+            $(d).addClass('element');
+            break;
+    }
+    /*
+    var w, h;
+    switch($(node).attr('android:layout_width').toLowerCase()) {
+        case 'fill_parent':
+        case 'match_parent':
+            w = aw;
+            break;
+        case 'wrap_content':
+            w = $(d).width();
+            break;
+        default:
+            w = +$(this).attr('android:layout_width').match(/\d+/[0]);
+    }
+    switch($(node).attr('android:layout_height').toLowerCase()) {
+        case 'fill_parent':
+        case 'match_parent':
+            h = ah;
+            break;
+        case 'wrap_content':
+            h = $(d).height();
+            break;
+        default:
+            h = +$(this).attr('android:layout_height').match(/\d+/[0]);
+    }*/
+    /*
+    if ($(node).attr('android:layout_width').toLowerCase() == 'fill_parent' ||
+        $(node).attr('android:layout_width').toLowerCase() == 'match_parent') {
+        $(d).width(w);
+    }
+    if ($(node).attr('android:layout_height').toLowerCase() == 'fill_parent' ||
+        $(node).attr('android:layout_height').toLowerCase() == 'match_parent') {
+        $(d).width(h);
+    }*/
+    
+    var divs = new Array();
     $(node).children().each(function() {
-        parseNode($(this), $(d));
+        divs.push(parseNode($(this), $(d)));
     });
-    $(d).addClass('element');
-    return d;
+    
+    if (nodeName == 'LinearLayout') {
+       var totalWidthRequested = 0;
+       var totalHeightRequested = 0;
+       var totalWeights = 0;
+       $(d).addClass('widthFillParent');
+       $(d).addClass('heightFillParent');
+       
+       $(node).children().each(function(i) {
+           switch($(this).attr('android:layout_width').toLowerCase()) {
+               case 'fill_parent':
+               case 'match_parent':
+                   totalWidthRequested += $(d).width();
+                   break;
+               case 'wrap_content':
+                   totalWidthRequested += $(divs[i]).width();
+                   break;
+               default:
+                   totalWidthRequested += +$(this).attr('android:layout_width').match(/\d+/[0]);
+           }
+           switch($(this).attr('android:layout_height').toLowerCase()) {
+               case 'fill_parent':
+               case 'match_parent':
+                   totalHeightRequested += $(d).height();
+                   break;
+               case 'wrap_content':
+                   totalHeightRequested += $(divs[i]).height();
+                   break;
+               default:
+                   totalHeightRequested += +$(this).attr('android:layout_height').match(/\d+/[0]);
+           }
+           totalWeights += +$(this).attr('android:layout_weight') || 0;
+       });
+       
+       if (totalWeights == 0) totalWeights++;
+       
+       var totalHeightAvailable = $(d).height();
+       var extraPerWeight = (totalHeightAvailable - totalHeightRequested) / totalWeights;
+       
+       $(node).children().each(function(i) {
+           var h;
+           switch($(this).attr('android:layout_height').toLowerCase()) {
+               case 'fill_parent':
+               case 'match_parent':
+                   h = $(d).height();
+                   break;
+               case 'wrap_content':
+                   h = $(divs[i]).height();
+                   break;
+               default:
+                   h = +$(this).attr('android:layout_height').match(/\d+/[0]);
+           }
+           
+           if (h <= totalHeightAvailable) {
+               d = $(this).attr('android:layout_weight') || 0;
+               $(divs[i]).height(h + extraPerWeight * d);
+               totalHeightAvailable -= $(divs[i]).height();
+           }
+           else if (totalHeightAvailable > 0) {
+               $(divs[i]).height(totalHeightAvailable);
+               totalHeightAvailable = 0;
+           }
+           else
+               $(divs[i]).hide();
+       });
+    }
+    
+    return $(d);
 }
 
 </script>
