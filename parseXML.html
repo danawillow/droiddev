@@ -42,7 +42,7 @@ $.get('HelloAndroid/res/layout/main.xml', function(xml) {
         parentObj.div = $("#result");
         parentObj.width = 360;
         parentObj.height = 640;
-        var l = new LinearLayout($(this), parentObj, 0, $(this).children());
+        var l = new LinearLayout($(this), parentObj, 0);
         l.setWidth(0);
         l.setHeight(0);
     });
@@ -93,7 +93,7 @@ function TextView(xmlNode, parentObj, vertical) {
     }
 }
 
-function LinearLayout(xmlNode, parentObj, vertical, childNodes) {
+function LinearLayout(xmlNode, parentObj, vertical) {
     this.div = $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
@@ -109,10 +109,19 @@ function LinearLayout(xmlNode, parentObj, vertical, childNodes) {
     var childWeights = 0;
     
     var ll = this;
+    var childNodes = $(xmlNode).children();
     var childrenVertical = $(xmlNode).attr('android:orientation') == "vertical" ? 1 : 0;
     
     $(childNodes).each(function() {
-        child = new TextView($(this), ll, childrenVertical);
+        var nodeName = $(this)[0].nodeName;
+        switch(nodeName) {
+            case "TextView":
+                child = new TextView($(this), ll, childrenVertical);
+                break;
+            case "LinearLayout":
+                child = new LinearLayout($(this), ll, childrenVertical);
+                break;
+        }
         if (childrenVertical) {
             childWidths = Math.max(childWidths, child.requestedWidth());
             childHeights += child.requestedHeight();
