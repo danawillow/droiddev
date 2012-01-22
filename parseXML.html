@@ -48,8 +48,62 @@ $.get('HelloAndroid/res/layout/main.xml', function(xml) {
     });
 });
 
+function ImageView(xmlNode, parentObj, vertical) {
+    this.div = $("<div />");
+    $(parentObj.div).append($(this.div));
+    $(this.div).addClass('element');
+    //$(this.div).text($(xmlNode).attr('android:src'));
+    if (vertical) $(this.div).addClass('vertical');
+    
+    var iv = this;
+    $.ajax({
+        url: 'findImage.cgi',
+        data: {'name': $(xmlNode).attr('android:src')},
+        success: function(data) {
+            var img = '<img src="' + data + '" />';
+            $(iv.div).append(img);
+        },
+        async: false
+    });
+    
+    this.requestedWidth = function() {
+        switch($(xmlNode).attr('android:layout_width').toLowerCase()) {
+            case 'fill_parent':
+            case 'match_parent':
+                return parentObj.width;
+            case 'wrap_content':
+                return $(this.div).width();
+            default:
+                return +$(xmlNode).attr('android:layout_width').match(/\d+/[0]);
+        }
+    }
+    
+    this.requestedHeight = function() {
+        switch($(xmlNode).attr('android:layout_height').toLowerCase()) {
+            case 'fill_parent':
+            case 'match_parent':
+                return parentObj.height;
+            case 'wrap_content':
+                return $(this.div).height();
+            default:
+                return +$(xmlNode).attr('android:layout_height').match(/\d+/[0]);
+        }
+    }
+    
+    this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
+    
+    this.setWidth = function(extra) {
+        var w = this.requestedWidth() + extra*this.weight;
+        if (w > 0) $(this.div).width(w);
+        else $(this.div).hide();
+    }
+    
+    this.setHeight = function(extra) {
+        $(this.div).height(this.requestedHeight() + extra*this.weight);
+    }
+}
+
 function TextView(xmlNode, parentObj, vertical) {
-    var nodeName = $(xmlNode)[0].nodeName;
     this.div = $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
@@ -117,6 +171,9 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         switch(nodeName) {
             case "TextView":
                 child = new TextView($(this), ll, childrenVertical);
+                break;
+            case "ImageView":
+                child = new ImageView($(this), ll, childrenVertical);
                 break;
             case "LinearLayout":
                 child = new LinearLayout($(this), ll, childrenVertical);
