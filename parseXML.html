@@ -83,8 +83,9 @@ function TextView(xmlNode, parentObj, vertical) {
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     
     this.setWidth = function(extra) {
-        window.console.log(this.requestedWidth());
-        $(this.div).width(this.requestedWidth() + extra*this.weight);
+        var w = this.requestedWidth() + extra*this.weight;
+        if (w > 0) $(this.div).width(w);
+        else $(this.div).hide();
     }
     
     this.setHeight = function(extra) {
@@ -127,13 +128,13 @@ function LinearLayout(xmlNode, parentObj, vertical, childNodes) {
     var extraHeight = 0;
     var extraWidth = 0;
     if (childWeights > 0) {
-        if (childrenVertical && childHeights < this.height) {
+        if (childrenVertical) {
             extraHeight = (this.height - childHeights) / childWeights;
-            childHeights = this.height;
+            if (childHeights < this.height) childHeights = this.height;
         }
-        else if (childWidths < this.width) {
+        else {
             extraWidth = (this.width - childWidths) / childWeights
-            childWidths = this.width;
+            if (childWidths < this.width) childWidths = this.width;
         }
     }
     
