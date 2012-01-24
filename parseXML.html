@@ -45,15 +45,12 @@ $.get('HelloAndroid/res/layout/main.xml', function(xml) {
     });
 });
 
-function ImageView(xmlNode, parentObj, vertical, avWidth, avHeight) {
+function ImageView(xmlNode, parentObj, vertical) {
     this.div = $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
-    //$(this.div).text($(xmlNode).attr('android:src'));
     $(this.div).css('text-align', 'center');
     if (vertical) $(this.div).addClass('vertical');
-    
-    window.console.log("beep " + avWidth + " " + avHeight);
     
     var iv = this;
     $.ajax({
@@ -66,51 +63,20 @@ function ImageView(xmlNode, parentObj, vertical, avWidth, avHeight) {
         async: false
     });
     
-    this.requestedWidth = function() {
-        switch($(xmlNode).attr('android:layout_width').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.width;
-            case 'wrap_content':
-                return $(this.div).width();
-            default:
-                return +$(xmlNode).attr('android:layout_width').match(/\d+/)[0];
-        }
-    }
-    
-    this.requestedHeight = function() {
-        switch($(xmlNode).attr('android:layout_height').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.height;
-            case 'wrap_content':
-                return $(this.div).height();
-            default:
-                return +$(xmlNode).attr('android:layout_height').match(/\d+/)[0];
-        }
-    }
-    
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     
-    this.setWidth = function(extra, widthAvail) {
-        var w = this.requestedWidth() + extra*this.weight;
-        if (w > widthAvail) w = widthAvail;
-        
-        if (w > 0) $(this.div).width(w);
-        else $(this.div).hide();
-        
-        return w > 0 ? w : 0;
-    }
+    this.xmlNode = xmlNode;
+    this.parentObj = parentObj;
     
-    this.setHeight = function(extra, heightAvail) {
-        var h = this.requestedHeight() + extra*this.weight;
-        if (h > heightAvail) h = heightAvail;
-        
-        if (h > 0) $(this.div).height(h);
-        else $(this.div).hide();
-        
-        return h > 0 ? h : 0;
-    }
+    this.measuredWidth = viewMeasuredWidth;
+    this.measuredHeight = viewMeasuredHeight;
+    
+    this.requestedWidth = viewRequestedWidth;
+    this.requestedHeight = viewRequestedHeight;
+    
+    this.setExtraWidth = viewSetExtraWidth;
+    
+    this.setExtraHeight = viewSetExtraHeight;
 }
 
 function TextView(xmlNode, parentObj, vertical) {
@@ -121,57 +87,18 @@ function TextView(xmlNode, parentObj, vertical) {
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     
-    this.measuredWidth = function() {
-        return $(this.div).width();
-    }
+    this.xmlNode = xmlNode;
+    this.parentObj = parentObj;
     
-    this.measuredHeight = function() {
-        return $(this.div).height();
-    }
+    this.measuredWidth = viewMeasuredWidth;
+    this.measuredHeight = viewMeasuredHeight;
     
-    this.requestedWidth = function() {
-        switch($(xmlNode).attr('android:layout_width').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.width;
-            case 'wrap_content':
-                return $(this.div).width();
-            default:
-                return +$(xmlNode).attr('android:layout_width').match(/\d+/)[0];
-        }
-    }
+    this.requestedWidth = viewRequestedWidth;
+    this.requestedHeight = viewRequestedHeight;
     
-    this.requestedHeight = function() {
-        switch($(xmlNode).attr('android:layout_height').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.height;
-            case 'wrap_content':
-                return $(this.div).height();
-            default:
-                return +$(xmlNode).attr('android:layout_height').match(/\d+/)[0];
-        }
-    }
+    this.setExtraWidth = viewSetExtraWidth;
     
-    this.setExtraWidth = function(width, extra, widthAvail) {
-        var w = width + extra*this.weight;
-        if (w > widthAvail) w = widthAvail;
-        
-        if (w > 0) $(this.div).width(w);
-        else $(this.div).hide();
-        
-        return w > 0 ? w : 0;
-    }
-    
-    this.setExtraHeight = function(height, extra, heightAvail) {
-        var h = height + extra*this.weight;
-        if (h > heightAvail) h = heightAvail;
-        
-        if (h > 0) $(this.div).height(h);
-        else $(this.div).hide();
-        
-        return h > 0 ? h : 0;
-    }
+    this.setExtraHeight = viewSetExtraHeight;
 }
 
 function LinearLayout(xmlNode, parentObj, vertical) {
@@ -204,6 +131,7 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         childObjs.push(child);
     });
     
+    /*
     this.measuredWidth = function() {
         var width = 0;
         $.each(childObjs, function(i, child) {
@@ -225,30 +153,16 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         });
         return height;
     }
+    */
     
-    this.requestedWidth = function() {
-        switch($(xmlNode).attr('android:layout_width').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.width;
-            case 'wrap_content':
-                return $(this.div).width();
-            default:
-                return +$(xmlNode).attr('android:layout_width').match(/\d+/)[0];
-        }
-    }
+    this.xmlNode = xmlNode;
+    this.parentObj = parentObj;
     
-    this.requestedHeight = function() {
-        switch($(xmlNode).attr('android:layout_height').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return parentObj.height;
-            case 'wrap_content':
-                return $(this.div).height();
-            default:
-                return +$(xmlNode).attr('android:layout_height').match(/\d+/)[0];
-        }
-    }
+    this.measuredWidth = viewMeasuredWidth;
+    this.measuredHeight = viewMeasuredHeight;
+    
+    this.requestedWidth = viewRequestedWidth;
+    this.requestedHeight = viewRequestedHeight;
     
     this.setExtraWidth = function(width, extra, widthAvail) {
         var w = width + (!vertical ? extra*this.weight : 0);
@@ -351,6 +265,59 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         
         return h;
     }
+}
+
+
+viewMeasuredWidth = function() {
+    return $(this.div).width();
+}
+
+viewMeasuredHeight = function() {
+    return $(this.div).height();
+}
+
+viewRequestedWidth = function() {
+    switch($(this.xmlNode).attr('android:layout_width').toLowerCase()) {
+        case 'fill_parent':
+        case 'match_parent':
+            return this.parentObj.width;
+        case 'wrap_content':
+            return $(this.div).width();
+        default:
+            return +$(this.xmlNode).attr('android:layout_width').match(/\d+/)[0];
+    }
+}
+
+viewRequestedHeight = function() {
+    switch($(this.xmlNode).attr('android:layout_height').toLowerCase()) {
+        case 'fill_parent':
+        case 'match_parent':
+            return this.parentObj.height;
+        case 'wrap_content':
+            return $(this.div).height();
+        default:
+            return +$(this.xmlNode).attr('android:layout_height').match(/\d+/)[0];
+    }
+}
+
+viewSetExtraWidth = function(width, extra, widthAvail) {
+    var w = width + extra*this.weight;
+    if (w > widthAvail) w = widthAvail;
+    
+    if (w > 0) $(this.div).width(w);
+    else $(this.div).hide();
+    
+    return w > 0 ? w : 0;
+}
+
+viewSetExtraHeight = function(height, extra, heightAvail) {
+    var h = height + extra*this.weight;
+    if (h > heightAvail) h = heightAvail;
+    
+    if (h > 0) $(this.div).height(h);
+    else $(this.div).hide();
+    
+    return h > 0 ? h : 0;
 }
 
 
