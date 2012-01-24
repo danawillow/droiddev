@@ -8,13 +8,9 @@
         height: 640px;
         border: 1px solid #000;
         overflow: hidden;
-        //padding: 2px;
     }
     .element {
-        //border: 1px solid #000;
         background-color: rgba(200, 200, 200, .5);
-        //margin: 2px 0 2px 0;
-        //display: table;
         box-sizing: border-box;
         float:left;
     }
@@ -37,19 +33,14 @@
 <script>
 $.get('HelloAndroid/res/layout/main.xml', function(xml) {
     $(xml).children().each(function() {
-        //parseNode($(this), $("#result"));
         var parentObj = new Object();
         parentObj.div = $("#result");
         parentObj.width = 360;
         parentObj.height = 640;
         var l = new LinearLayout($(this), parentObj, 0, 360, 640);
         
-        //var mw = l.measuredWidth();
-        //var rw = l.requestedWidth();
         l.setExtraWidth(l.requestedWidth(), 0, 360);
         
-        //var mh = l.measuredHeight();
-        //var rh = l.requestedHeight();
         l.setExtraHeight(l.requestedHeight(), 0, 640);
     });
 });
@@ -361,287 +352,7 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         return h;
     }
 }
-        
-        
-/*
-function LinearLayout(xmlNode, parentObj, vertical, aWidth, aHeight) {
-    this.div = $("<div />");
-    $(parentObj.div).append($(this.div));
-    $(this.div).addClass('element');
-    if (vertical) $(this.div).addClass('vertical');
-    
-    this.width = aWidth;
-    this.height = aHeight;
-    
-    var childObjs = new Array();
-    
-    var childWidths= 0;
-    var childHeights = 0;
-    var childWeights = 0;
-    
-    var ll = this;
-    var childNodes = $(xmlNode).children();
-    var childrenVertical = $(xmlNode).attr('android:orientation') == "vertical" ? 1 : 0;
-    
-    var avWidth = this.width;
-    var avHeight = this.height;
-    
-    $(childNodes).each(function() {
-        var nodeName = $(this)[0].nodeName;
-        switch(nodeName) {
-            case "TextView":
-                child = new TextView($(this), ll, childrenVertical);
-                break;
-            case "ImageView":
-                child = new ImageView($(this), ll, childrenVertical, avWidth, avHeight);
-                break;
-            case "LinearLayout":
-                child = new LinearLayout($(this), ll, childrenVertical, avWidth, avHeight);
-                break;
-        }
-        var cw = child.requestedWidth($(xmlNode).attr('android:layout_width').toLowerCase() == "wrap_content");
-        var ch = child.requestedHeight($(xmlNode).attr('android:layout_width').toLowerCase() == "wrap_content");
-        if (childrenVertical) {
-            childWidths = Math.max(childWidths, cw);
-            childHeights += ch;
-            avHeight -= ch;
-        }
-        else {
-            childHeights = Math.max(childHeights, ch);
-            childWidths += cw;
-            avWidth -= cw;
-        }
-        childWeights += child.weight;
-        childObjs.push(child);
-    });
-    
-    
-    var extraHeight = 0;
-    var extraWidth = 0;
-    if (childWeights > 0) {
-        if (childrenVertical) {
-            extraHeight = (this.height - childHeights) / childWeights;
-            if (childHeights < this.height) childHeights = this.height;
-        }
-        else {
-            extraWidth = (this.width - childWidths) / childWeights
-            if (childWidths < this.width) childWidths = this.width;
-        }
-    }
-    
-    var widthAvail = this.width;
-    var heightAvail = this.height;
-    $.each(childObjs, function(i, child) {
-        window.console.log(widthAvail);
-        var cw, ch;
-        if ($(xmlNode).attr('android:layout_width').toLowerCase() == "wrap_content")
-            cw = child.setWidth($(child.div).width(), extraWidth, widthAvail);
-        else
-            cw = child.setWidth(child.requestedWidth(), extraWidth, widthAvail);
-          
-        if ($(xmlNode).attr('android:layout_height').toLowerCase() == "wrap_content")
-            ch = child.setHeight($(child.div).height(), extraHeight, heightAvail);
-        else
-            ch = child.setHeight(child.requestedHeight(), extraHeight, heightAvail);
-        
-        if (childrenVertical) heightAvail -= ch;
-        else widthAvail -= cw;
-    });
-    window.console.log('---');
-    
-    this.requestedWidth = function() {
-        switch($(xmlNode).attr('android:layout_width').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return Math.max(childWidths, aWidth);
-            case 'wrap_content':
-                return childWidths;
-            default:
-                return +$(xmlNode).attr('android:layout_width').match(/\d+/)[0];
-        }
-    }
 
-    this.requestedHeight = function() {
-        switch($(xmlNode).attr('android:layout_height').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                return Math.max(childHeights, aHeight);
-            case 'wrap_content':
-                return childHeights;
-            default:
-                return +$(xmlNode).attr('android:layout_height').match(/\d+/)[0];
-        }
-    }
-    
-    this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
-    
-    this.setWidth = function(extra) {
-        $(this.div).width(this.requestedWidth() + extra*this.weight);
-    }
-    
-    this.setHeight = function(extra) {
-        $(this.div).height(this.requestedHeight() + extra*this.weight);
-    }
-}
-   */ 
-/*
-function parseNode(node, par, horizontal) {
-    var nodeName = $(node)[0].nodeName;
-    var d = $("<div />");
-    $(par).append($(d));
-    
-    $(d).addClass('element');
-    
-    switch(nodeName) {
-        case "TextView":
-            $(d).text($(node).attr('android:text'));
-            $(d).addClass('element');
-            break;
-        case "ImageView":
-            $(d).text($(node).attr('android:src'));
-            $(d).addClass('element');
-            break;
-    }
-    
-    if (!horizontal)
-        $(d).addClass('vertical');
-    
-    var childHorizontal = $(node).attr('android:orientation') == "vertical" ? 0: 1;
-    
-    var divs = new Array();
-    $(node).children().each(function() {
-        divs.push(parseNode($(this), $(d), childHorizontal));
-    });
-    
-    if (nodeName == 'LinearLayout') {
-        var totalSpaceRequested = 0;
-        var totalWeights = 0;
-        $(d).addClass('widthFillParent'); // come back to this later
-        $(d).addClass('heightFillParent');
-        window.console.log($(d).height());
-       
-        if (childHorizontal) {
-            $(node).children().each(function(i) {
-                switch($(this).attr('android:layout_width').toLowerCase()) {
-                    case 'fill_parent':
-                    case 'match_parent':
-                        totalSpaceRequested += $(d).width();
-                        break;
-                    case 'wrap_content':
-                        totalSpaceRequested += $(divs[i]).width();
-                        break;
-                    default:
-                        totalSpaceRequested += +$(this).attr('android:layout_width').match(/\d+/[0]);
-                }
-                totalWeights += +$(this).attr('android:layout_weight') || 0;
-            });
-        }
-        else {
-            $(node).children().each(function(i) {
-                switch($(this).attr('android:layout_height').toLowerCase()) {
-                    case 'fill_parent':
-                    case 'match_parent':
-                        totalSpaceRequested += $(d).height();
-                        break;
-                    case 'wrap_content':
-                        totalSpaceRequested += $(divs[i]).height();
-                        break;
-                    default:
-                        totalSpaceRequested += +$(this).attr('android:layout_height').match(/\d+/[0]);
-                }
-                totalWeights += +$(this).attr('android:layout_weight') || 0;
-            });
-        }
-       
-        if (totalWeights == 0) totalWeights++;
-        
-        var totalSpaceAvailable = childHorizontal ? $(d).width() : $(d).height();
-        var extraPerWeight = (totalSpaceAvailable - totalSpaceRequested) / totalWeights;
-        
-        window.console.log(totalSpaceAvailable + " " + extraPerWeight);
-      
-        $(node).children().each(function(i) {
-            var w;
-            switch($(this).attr('android:layout_width').toLowerCase()) {
-                case 'fill_parent':
-                case 'match_parent':
-                    w = $(d).width();
-                    break;
-                case 'wrap_content':
-                    w = $(divs[i]).width();
-                    break;
-                default:
-                    w = +$(this).attr('android:layout_width').match(/\d+/[0]);
-            }
-            var h;
-            switch($(this).attr('android:layout_height').toLowerCase()) {
-                case 'fill_parent':
-                case 'match_parent':
-                    h = $(d).height();
-                    break;
-                case 'wrap_content':
-                    h = $(divs[i]).height();
-                    break;
-                default:
-                    h = +$(this).attr('android:layout_height').match(/\d+/[0]);
-            }
-
-            if (childHorizontal) {
-                if (w <= totalSpaceAvailable) {
-                    weight = $(this).attr('android:layout_weight') || 0;
-                    $(divs[i]).width(w + extraPerWeight * weight);
-                    totalSpaceAvailable -= $(divs[i]).width();
-                }
-                else if (totalSpaceAvailable > 0) {
-                    $(divs[i]).width(totalSpaceAvailable);
-                    totalSpaceAvailable = 0;
-                }
-                else
-                    $(divs[i]).hide();
-                
-                $(divs[i]).height(Math.min(h, $(d).height())); // might change for scrollables
-            }
-            else {
-                if (h <= totalSpaceAvailable) {
-                    weight = $(this).attr('android:layout_weight') || 0;
-                    $(divs[i]).height(h + extraPerWeight * weight);
-                    totalSpaceAvailable -= $(divs[i]).height();
-                }
-                else if (totalSpaceAvailable > 0) {
-                    $(divs[i]).height(totalSpaceAvailable);
-                    totalSpaceAvailable = 0;
-                }
-                else
-                    $(divs[i]).hide();
-                $(divs[i]).innerWidth(Math.min(w, $(d).width())); // might change for scrollables
-            }
-        });
-        
-        switch($(node).attr('android:layout_width').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                break;
-            case 'wrap_content':
-                $(d).removeClass('widthFillParent');
-                break;
-            default:
-                $(d).width(+$(this).attr('android:layout_width').match(/\d+/[0]));
-        }
-        switch($(node).attr('android:layout_height').toLowerCase()) {
-            case 'fill_parent':
-            case 'match_parent':
-                break;
-            case 'wrap_content':
-                $(d).removeClass('heightFillParent');
-                break;
-            default:
-                $(d).height(+$(this).attr('android:layout_height').match(/\d+/[0]));
-        }
-    }
-    
-    return $(d);
-}
-*/
 
 </script>
 
