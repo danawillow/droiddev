@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  <!--<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>-->
+  <!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
+  <script src="jquery-latest.js"></script>
+  <!--<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>-->
+  <script src="jquery-ui.min.js"></script>
   <style type="text/css">
     #result {
         width: 360px;
@@ -34,6 +36,8 @@
 </div>
 
 <script>
+
+var ids = new Array();
 
 $.get('HelloAndroid/res/layout/main.xml', function(xml) {
     $(xml).children().each(function() {
@@ -87,8 +91,21 @@ function TextView(xmlNode, parentObj, vertical) {
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
     $(this.div).text($(xmlNode).attr('android:text'));
+    
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
+    if ($(xmlNode).attr('android:id')) {
+        ids[$(xmlNode).attr('android:id').replace(/\+/, '')] = this.div;
+    }
+    
+    var layout_width = $(xmlNode).attr('android:layout_width').toLowerCase();
+    if (layout_width != "fill_parent" && layout_width != "match_parent" && layout_width != "wrap_content")
+        $(this.div).width(+$(xmlNode).attr('android:layout_width').match(/\d+/)[0]);
+        
+        
+    var layout_height = $(xmlNode).attr('android:layout_height').toLowerCase();
+    if (layout_height != "fill_parent" && layout_height != "match_parent" && layout_height != "wrap_content")
+        $(this.div).height(+$(xmlNode).attr('android:layout_height').match(/\d+/)[0]);
     
     this.xmlNode = xmlNode;
     this.parentObj = parentObj;
@@ -105,6 +122,8 @@ function TextView(xmlNode, parentObj, vertical) {
     this.position = function() {
         var h = false;
         var v = false;
+        
+        /* Position center relative to parent */
         if ($(xmlNode).attr('android:layout_centerHorizontal') == "true" ||
             $(xmlNode).attr('android:layout_centerInParent') == "true") {
             $(this.div).css('left', parentObj.requestedWidth()/2 - $(this.div).width()/2);
@@ -115,6 +134,114 @@ function TextView(xmlNode, parentObj, vertical) {
             $(this.div).css('top', parentObj.requestedHeight()/2 - $(this.div).height()/2);
             v = true;
         }
+        
+        /* Position relative to other element */
+        if ($(xmlNode).attr('android:layout_toRightOf')) {
+            var other = ids[$(xmlNode).attr('android:layout_toRightOf')];
+            if (other.css('right') == "auto") {
+                $(this.div).css('left', +$(other).css('left').replace(/px/, '') + $(other).width());
+                h = true;
+            }
+            else if (other) {
+                $(this.div).css('left', parentObj.requestedWidth() - +$(other).css('right').replace(/px/, ''));
+                h = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_toLeftOf')) {
+            var other = ids[$(xmlNode).attr('android:layout_toLeftOf')];
+            if (other.css('left') == "auto") {
+                $(this.div).css('right', +$(other).css('right').replace(/px/, '') + $(other).width());
+                h = true;
+            }
+            else if (other) {
+                $(this.div).css('right', parentObj.requestedWidth() - +$(other).css('left').replace(/px/, ''));
+                h = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_above')) {
+            var other = ids[$(xmlNode).attr('android:layout_above')];
+            if (other.css('top') == "auto") {
+                $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, '') + $(other).height());
+                v = true;
+            }
+            else if (other) {
+                $(this.div).css('bottom', parentObj.requestedHeight() - +$(other).css('top').replace(/px/, ''));
+                v = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_below')) {
+            var other = ids[$(xmlNode).attr('android:layout_below')];
+            if (other.css('bottom') == "auto") {
+                $(this.div).css('top', +$(other).css('top').replace(/px/, '') + $(other).height());
+                v = true;
+            }
+            else if (other) {
+                $(this.div).css('top', parentObj.requestedHeight() - +$(other).css('bottom').replace(/px/, ''));
+                v = true;
+            }
+        }
+        
+        /* Align relative to other element */
+        if ($(xmlNode).attr('android:layout_alignRight')) {
+            var other = ids[$(xmlNode).attr('android:layout_alignRight')];
+            if (other.css('right') == "auto") {
+                $(this.div).css('right', parentObj.requestedWidth() - (+$(other).css('left').replace(/px/, '') + $(other).width()));
+                window.console.log(other);
+                window.console.log(+$(other).css('left').replace(/px/, ''));
+                window.console.log($(other).width());
+                h = true;
+            }
+            else if (other) {
+                $(this.div).css('right', +$(other).css('right').replace(/px/, ''));
+                h = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_alignLeft')) {
+            var other = ids[$(xmlNode).attr('android:layout_alignLeft')];
+            if (other.css('left') == "auto") {
+                $(this.div).css('left', parentObj.requestedWidth() - (+$(other).css('right').replace(/px/, '') + $(other).width()));
+                h = true;
+            }
+            else if (other) {
+                $(this.div).css('left', +$(other).css('left').replace(/px/, ''));
+                h = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_alignTop')) {
+            var other = ids[$(xmlNode).attr('android:layout_alignTop')];
+            if (other.css('top') == "auto") {
+                $(this.div).css('top', parentObj.requestedHeight() - (+$(other).css('bottom').replace(/px/, '') + $(other).height()));
+                v = true;
+            }
+            else if (other) {
+                $(this.div).css('top', +$(other).css('top').replace(/px/, ''));
+                v = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_alignBottom')) {
+            var other = ids[$(xmlNode).attr('android:layout_alignBottom')];
+            if (other.css('bottom') == "auto") {
+                $(this.div).css('bottom', parentObj.requestedHeight() - (+$(other).css('top').replace(/px/, '') + $(other).height()));
+                v = true;
+            }
+            else if (other) {
+                $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, ''));
+                v = true;
+            }
+        }
+        if ($(xmlNode).attr('android:layout_alignBaseline')) { // note: wrong.
+            var other = ids[$(xmlNode).attr('android:layout_alignBaseline')];
+            if (other.css('bottom') == "auto") {
+                $(this.div).css('bottom', parentObj.requestedHeight() - (+$(other).css('top').replace(/px/, '') + $(other).height()));
+                v = true;
+            }
+            else if (other) {
+                $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, ''));
+                v = true;
+            }
+        }
+        
+        /* Position relative to parent */
         if ($(xmlNode).attr('android:layout_alignParentLeft') == "true") {
             $(this.div).css('left', '0px');
             h = true;
