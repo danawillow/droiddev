@@ -1,5 +1,5 @@
-function ImageView(xmlNode, parentObj, vertical) {
-    this.div = $("<div />");
+function ImageView(xmlNode, parentObj, vertical, tableElement) {
+    this.div = tableElement? $("<td />") : $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
     $(this.div).css('text-align', 'center');
@@ -31,8 +31,8 @@ function ImageView(xmlNode, parentObj, vertical) {
     this.setExtraHeight = viewSetExtraHeight;
 }
 
-function TextView(xmlNode, parentObj, vertical) {
-    this.div = $("<div />");
+function TextView(xmlNode, parentObj, vertical, tableElement) {
+    this.div = tableElement? $("<td />") : $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
     $(this.div).text($(xmlNode).attr('android:text'));

@@ -60,6 +60,9 @@ $.get('HelloAndroid/res/layout/main.xml', function(xml) {
             case "RelativeLayout":
                 l = new RelativeLayout($(this), parentObj, 0, 360, 640);
                 break;
+            case "TableLayout":
+                l = new TableLayout($(this), parentObj, 0);
+                break;
         }
 
         l.setExtraWidth(l.requestedWidth(), 0, 360);
