@@ -1,118 +1,203 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
+	<!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
+	<script src="jquery-latest.js"></script>
+	
+	<script src="view.js"></script>
+	<script src="containers.js"></script>
+	<script src="widgets.js"></script>
+
+	<style type="text/css">
+	  #preview {
+	      width: 360px;
+	      height: 640px;
+	      border: 1px solid #000;
+	      overflow: hidden;
+	      position:relative;
+	  }
+	  .element {
+	      background-color: rgba(200, 200, 200, .5);
+	      box-sizing: border-box;
+	      float:left;
+	  }
+	  .widthFillParent {
+	      width: 100%;
+	  }
+	  .heightFillParent {
+	      height: 100%;
+	  }
+	  .vertical {
+	      clear:both;
+	  }
+	</style>
 </head>
 <body>
-  <div id="nav" style="display:inline; float:left">
-  <a href="javascript:newFile('HelloAndroid/res/layout')">New XML layout file</a><br>
-  <a href="javascript:newFile('HelloAndroid/res/values')">New XML values file</a><br>
-  <a href="javascript:newFile('HelloAndroid/src/com/example/helloandroid')">New java file</a>
-  <form action="uploadimage.cgi" id="imageUploadForm" method="post" enctype="multipart/form-data" id="fileUploadForm">
-    <label for="file">Upload image: </label><input type="file" name="file" /><br>
-    <input type="submit" />
-  </form>
-  </div>
-  <form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
-   <textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
-   <input type="submit" value="Submit" />
-  </form>
-  <!-- the result of the search will be rendered inside this div -->
-  <div id="result"></div>
+	<div id="nav" style="display:inline; float:left">
+		<a href="javascript:newFile('HelloAndroid/res/layout')">New XML layout file</a><br>
+		<a href="javascript:newFile('HelloAndroid/res/values')">New XML values file</a><br>
+		<a href="javascript:newFile('HelloAndroid/src/com/example/helloandroid')">New java file</a>
+		<form action="uploadimage.cgi" id="imageUploadForm" method="post" enctype="multipart/form-data" id="fileUploadForm">
+			<label for="file">Upload image: </label><input type="file" name="file" /><br>
+			<input type="submit" />
+		</form>
+	</div>
+	<div style="float:left">
+		<form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
+			<textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
+			<br>
+			<input type="radio" name="phone" value="phone" />Phone<br>
+			<input type="radio" name="phone" value="emulator" />Emulator<br>
+			<input type="submit" value="Submit" />
+		</form>
+	</div>
+	<button id="previewButton" type="Button" style="float:left" onclick="javascript:genPreview()">Preview</button>
+	<div id="preview" style="float:left"></div>
+	
+	<!-- the output of the run will be rendered inside this div -->
+	<div id="result" style="clear:both"></div>
 
-<script>
-  var fileNames = new Array();
-  var fileContents = new Array();
-  
-  /* attach a submit handler to the form */
-  $("#codeForm").submit(function(event) {
-    /* stop form from submitting normally */
-    event.preventDefault(); 
-    
-    fileContents[currFile] = $("#code").val();
-        
-    /* get some values from elements on the page: */
-    var $form = $( this ),
-        term = $form.find( 'textarea[name="code"]' ).val(),
-        url = $form.attr( 'action' );
+	<script>
+	var fileNames = new Array();
+	var fileContents = new Array();
+	var mainXMLIndex = -1;
 
-    /* Send the data using post and put the results in a div */
-    $.post(url, { 'fileNames[]': fileNames, 'fileContents[]': fileContents } ,
-      function( data ) {
-          $( "#result" ).empty().append( data );
-      }
-    );
-  });
-   
-  $.getJSON('listfiles.cgi', function(data) {
-    $.each(data.results, function(key, value) {
-        window.console.log(value);
-      $("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
-    });
-    
-    startImport();
-  });
-  
-  function makeListFromDir(dir) {
-    html = "<li>" + dir.dir + "</li><ul>";
-    $.each(dir.children, function(key, value) {
-        if (value.children != undefined) {
-            html += makeListFromDir(value, html);
-        }
-        else {
-            html += '<li><a href="javascript:changeTab(' + fileNames.length +')">' + value + '</a></li>';
-            fileNames.push(dir.dir + "/" + value);
-        }
-    });
-    html += "</ul>";
-    return html;
-  }
-  
-  function startImport() {
-    for(i = 0; i < fileNames.length; i++) {
-      (function(i) {
-          $.get(fileNames[i], function(data, status) {
-              importData(data, status, i);
-          }, "text");
-      })(i);
-    }
-  }
-  
-  function importData(data, status, i) {
-    fileContents[i] = data;
-    if (i == 0) {
-      if (fileNames[i].match(/(jpg|gif|png)$/)) {
-        $("#code").val("");
-      }
-      else {
-        $("#code").val(data);
-      }
-    }
-  };
-  
-  var currFile = 0;
-  
-  function changeTab(src) {
-    if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
-        fileContents[currFile] = $("#code").val();
-    }
-    currFile = src;
-    if (fileNames[currFile].match(/(jpg|gif|png)$/)) {
-      $("#code").val("");
-    }
-    else {
-      $("#code").val(fileContents[currFile]);
-    }
-  }
+	/* attach a submit handler to the form */
+	$("#codeForm").submit(function(event) {
+		/* stop form from submitting normally */
+		event.preventDefault(); 
 
-  function newFile(dir, ext) {
-    var fileName = prompt("Name your file (include extension)");
-    html = '<li><a href="javascript:changeTab(' + fileNames.length +')">' + fileName + '</a></li>';
-    fileNames.push(dir + "/" + fileName);
-    fileContents.push("");
-    $("li:contains(" + dir + ")").next().append(html);
-  }
-</script>
+		$("#result").empty();
 
-</body>
-</html>
+		if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
+			fileContents[currFile] = $("#code").val();
+		}
+
+		/* get some values from elements on the page: */
+		var $form = $( this ),
+		term = $form.find( 'textarea[name="code"]' ).val(),
+		url = $form.attr( 'action' ),
+		phone = $form.find('input[name="phone"]:checked').val();
+		window.console.log(phone);
+
+		/* Send the data using post and put the results in a div */
+		$.post(url, { 'fileNames[]': fileNames, 'fileContents[]': fileContents, 'phone':  phone} ,
+		function( data ) {
+			$( "#result" ).append( data );
+		});
+	});
+
+	$.getJSON('listfiles.cgi', function(data) {
+		$.each(data.results, function(key, value) {
+			window.console.log(value);
+			$("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
+		});
+
+		startImport();
+	});
+	
+	//genPreview();
+	
+	function genPreview() {
+		if (currFile == mainXMLIndex) 
+			fileContents[currFile] = $("#code").val();
+			
+		$("#preview").empty();
+		var ids = new Array();
+
+		//$.get('HelloAndroid/res/layout/main.xml', function(xml) {
+		if (mainXMLIndex != -1) {
+			var xml = $.parseXML(fileContents[mainXMLIndex]);
+		    $(xml).children().each(function() {
+		        var parentObj = new Object();
+		        parentObj.div = $("#preview");
+		        parentObj.width = 360;
+		        parentObj.height = 640;
+
+		        var nodeName = $(this)[0].nodeName;
+		
+		        var l;
+		        switch(nodeName) {
+		            case "LinearLayout":
+		                l = new LinearLayout($(this), parentObj, 0);
+		                break;
+		            case "RelativeLayout":
+		                l = new RelativeLayout($(this), parentObj, 0, 360, 640);
+		                break;
+		            case "TableLayout":
+		                l = new TableLayout($(this), parentObj, 0);
+		                break;
+		        }
+
+		        l.setExtraWidth(l.requestedWidth(), 0, 360);
+		        l.setExtraHeight(l.requestedHeight(), 0, 640);
+		    });
+		}
+		//});
+	}
+
+	function makeListFromDir(dir) {
+		html = "<li>" + dir.dir + "</li><ul>";
+		$.each(dir.children, function(key, value) {
+			if (value.children != undefined) {
+				html += makeListFromDir(value, html);
+			}
+			else {
+				html += '<li><a href="javascript:changeTab(' + fileNames.length +')">' + value + '</a></li>';
+				fileNames.push(dir.dir + "/" + value);
+			}
+		});
+		html += "</ul>";
+		return html;
+	}
+
+	function startImport() {
+		for(i = 0; i < fileNames.length; i++) {
+			if (fileNames[i].indexOf("main.xml") != -1) { // could be problematic if *main.xml
+				mainXMLIndex = i;
+			}
+			(function(i) {
+				//window.console.log(fileNames[i]);
+				$.get(fileNames[i], function(data, status) {
+					//window.console.log(data);
+					importData(data, status, i);
+					}, "text");
+				})(i);
+		}
+	}
+
+	function importData(data, status, i) {
+		fileContents[i] = data;
+		if (i == mainXMLIndex) genPreview();
+		if (i == 0) {
+			if (fileNames[i].match(/(jpg|gif|png)$/))
+			$("#code").val("");
+			else
+			$("#code").val(data);
+		}
+	}
+
+	var currFile = 0;
+
+	function changeTab(src) {
+		if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
+			fileContents[currFile] = $("#code").val();
+		}
+		currFile = src;
+		if (fileNames[currFile].match(/(jpg|gif|png)$/))
+		$("#code").val("");
+		else
+		$("#code").val(fileContents[currFile]);
+	}
+
+	function newFile(dir, ext) {
+		var fileName = prompt("Name your file (include extension)");
+		html = '<li><a href="javascript:changeTab(' + fileNames.length +')">' + fileName + '</a></li>';
+		fileNames.push(dir + "/" + fileName);
+		fileContents.push("");
+		$("li:contains(" + dir + ")").next().append(html);
+	}
+	</script>
+
+	</body>
+	</html>
