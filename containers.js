@@ -37,6 +37,9 @@ function RelativeLayout(xmlNode, parentObj, vertical, width, height) {
             case "LinearLayout":
                 child = new LinearLayout($(this), ll, 0);
                 break;
+			default:
+				child = new Other($(this), ll, 0);
+				break;
         }
         
         // set child dimensions
@@ -72,13 +75,16 @@ function LinearLayout(xmlNode, parentObj, vertical) {
         var child;
         switch(nodeName) {
             case "TextView":
-                child = new TextView($(this), ll, childrenVertical);
+                child = new TextView($(this), ll, ll.childrenVertical);
                 break;
             case "ImageView":
-                child = new ImageView($(this), ll, childrenVertical);
+                child = new ImageView($(this), ll, ll.childrenVertical);
                 break;
             case "LinearLayout":
-                child = new LinearLayout($(this), ll, childrenVertical);
+                child = new LinearLayout($(this), ll, ll.childrenVertical);
+                break;
+			default:
+	            child = new Other($(this), ll, ll.childrenVertical);
                 break;
         }
         ll.childObjs.push(child);
@@ -127,6 +133,9 @@ function TableLayout(xmlNode, parentObj, vertical) {
             case "LinearLayout":
                 child = new LinearLayout($(this), ll, true);
                 break;
+			default:
+				child = new Other($(this), ll, true);
+                break;
         }
         ll.childObjs.push(child);
     });
@@ -151,6 +160,9 @@ function TableRow(xmlNode, parentObj, vertical) {
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     this.vertical = vertical;
     
+    if (!$(xmlNode).attr('android:layout_height'))
+        $(xmlNode).attr('android:layout_height', "WRAP_CONTENT");
+    
     var ll = this;
     var childNodes = $(xmlNode).children();
 
@@ -159,7 +171,7 @@ function TableRow(xmlNode, parentObj, vertical) {
     $(childNodes).each(function() {
         var nodeName = $(this)[0].nodeName;
         var child;
-        $(this).attr('android:layout_width', "MATCH_PARENT");
+        $(this).attr('android:layout_width', "WRAP_CONTENT"); // maybe?
         $(this).attr('android:layout_height', "WRAP_CONTENT");
         switch(nodeName) {
             case "TextView":
@@ -170,6 +182,9 @@ function TableRow(xmlNode, parentObj, vertical) {
                 break;
             case "LinearLayout":
                 child = new LinearLayout($(this), ll, false, true);
+                break;
+			default:
+				child = new Other($(this), ll, true);
                 break;
         }
         ll.childObjs.push(child);

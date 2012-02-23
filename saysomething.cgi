@@ -16,11 +16,12 @@ sys.stdout.flush()
 
 form = cgi.FieldStorage()
 ##code = form.getfirst('code', 'empty')
-fileNames = form.getlist("fileNames[]");
-fileContents = form.getlist("fileContents[]");
+fileNames = form.getlist("fileNames[]")
+fileContents = form.getlist("fileContents[]")
+phone = form.getfirst('phone')
 
 for i in xrange(len(fileNames)):
-    if not imghdr.what(fileNames[i]):
+    if not os.path.exists(fileNames[i]) or not imghdr.what(fileNames[i]):
         f = open(fileNames[i], 'w')
         f.write(fileContents[i])
         f.close()
@@ -61,8 +62,18 @@ for i in xrange(len(fileNames)):
 #f.write(code)
 #f.close()
 
-#p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")
-#p.wait()
-##
+if phone == "phone":
+    p = subprocess.Popen(["ant", "debug"], cwd="HelloAndroid")
+    p.wait()
+    
+    p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "uninstall", "HelloAndroid"], cwd="HelloAndroid")
+    p.wait()
+    
+    p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "-d", "install", "bin/HelloAndroid-debug.apk"], cwd="HelloAndroid")
+    p.wait()
+else:
+    p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")
+    p.wait()
+
 
 print "bye there"

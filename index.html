@@ -65,6 +65,7 @@
 	var fileNames = new Array();
 	var fileContents = new Array();
 	var mainXMLIndex = -1;
+	var ids = new Array();
 	
 	$.getJSON('listfiles.cgi', function(data) {
 		$.each(data.results, function(key, value) {
