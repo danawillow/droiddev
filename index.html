@@ -3,6 +3,9 @@
 <head>
 	<!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
 	<script src="jquery-latest.js"></script>
+	<script src="CodeMirror/lib/codemirror.js"></script>
+	<link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
+	<script src="CodeMirror/mode/xml/xml.js"></script>
 	
 	<script src="view.js"></script>
 	<script src="containers.js"></script>
@@ -61,7 +64,18 @@
 	var fileNames = new Array();
 	var fileContents = new Array();
 	var mainXMLIndex = -1;
+	
+	$.getJSON('listfiles.cgi', function(data) {
+		$.each(data.results, function(key, value) {
+			window.console.log(value);
+			$("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
+		});
 
+		startImport();
+	});
+	
+	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("code"));
+	
 	/* attach a submit handler to the form */
 	$("#codeForm").submit(function(event) {
 		/* stop form from submitting normally */
@@ -85,15 +99,6 @@
 		function( data ) {
 			$( "#result" ).append( data );
 		});
-	});
-
-	$.getJSON('listfiles.cgi', function(data) {
-		$.each(data.results, function(key, value) {
-			window.console.log(value);
-			$("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
-		});
-
-		startImport();
 	});
 	
 	//genPreview();
