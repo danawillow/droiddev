@@ -63,14 +63,20 @@ for i in xrange(len(fileNames)):
 #f.close()
 
 if phone == "phone":
-    p = subprocess.Popen(["ant", "debug"], cwd="HelloAndroid")
-    p.wait()
+    p = subprocess.Popen(["ant", "debug"], cwd="HelloAndroid", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    #p.wait()
+    print p.communicate()[0].replace('\n', '<br>')
+    print "Return code:", p.returncode, "<br>"
+	#print output.read()
+	#print p.stdout.read()
+    #p.wait()
     
-    p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "uninstall", "HelloAndroid"], cwd="HelloAndroid")
-    p.wait()
+    if not p.returncode:
+        p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "uninstall", "HelloAndroid"], cwd="HelloAndroid")
+        p.wait()
     
-    p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "-d", "install", "bin/HelloAndroid-debug.apk"], cwd="HelloAndroid")
-    p.wait()
+        p = subprocess.Popen(["/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb", "-d", "install", "bin/HelloAndroid-debug.apk"], cwd="HelloAndroid")
+        p.wait()
 else:
     p = subprocess.Popen(["ant", "debug", "install"], cwd="HelloAndroid")
     p.wait()
