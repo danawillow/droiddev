@@ -6,6 +6,7 @@
 	<script src="CodeMirror/lib/codemirror.js"></script>
 	<link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
 	<script src="CodeMirror/mode/xml/xml.js"></script>
+	<script src="CodeMirror/mode/clike/clike.js"></script>
 	
 	<script src="view.js"></script>
 	<script src="containers.js"></script>
@@ -74,7 +75,7 @@
 		startImport();
 	});
 	
-	var myCodeMirror = CodeMirror.fromTextArea(document.getElementById("code"));
+	var codeMirror = CodeMirror.fromTextArea(document.getElementById("code"));
 	
 	/* attach a submit handler to the form */
 	$("#codeForm").submit(function(event) {
@@ -89,10 +90,10 @@
 
 		/* get some values from elements on the page: */
 		var $form = $( this ),
-		term = $form.find( 'textarea[name="code"]' ).val(),
+		//term = $form.find( 'textarea[name="code"]' ).val(),
 		url = $form.attr( 'action' ),
 		phone = $form.find('input[name="phone"]:checked').val();
-		window.console.log(phone);
+		//window.console.log(phone);
 
 		/* Send the data using post and put the results in a div */
 		$.post(url, { 'fileNames[]': fileNames, 'fileContents[]': fileContents, 'phone':  phone} ,
@@ -105,7 +106,8 @@
 	
 	function genPreview() {
 		if (currFile == mainXMLIndex) 
-			fileContents[currFile] = $("#code").val();
+			fileContents[currFile] = codeMirror.getValue();
+			//fileContents[currFile] = $("#code").val();
 			
 		$("#preview").empty();
 		var ids = new Array();
@@ -176,9 +178,11 @@
 		if (i == mainXMLIndex) genPreview();
 		if (i == 0) {
 			if (fileNames[i].match(/(jpg|gif|png)$/))
-			$("#code").val("");
+				codeMirror.setValue("");
+			//$("#code").val("");
 			else
-			$("#code").val(data);
+				codeMirror.setValue(data);
+			//$("#code").val(data);
 		}
 	}
 
@@ -186,13 +190,20 @@
 
 	function changeTab(src) {
 		if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
-			fileContents[currFile] = $("#code").val();
+			fileContents[currFile] = codeMirror.getValue();
+			//fileContents[currFile] = $("#code").val();
 		}
 		currFile = src;
+		var ext = fileNames[currFile].split(".")[1];
 		if (fileNames[currFile].match(/(jpg|gif|png)$/))
-		$("#code").val("");
-		else
-		$("#code").val(fileContents[currFile]);
+			codeMirror.setValue("");
+		//$("#code").val("");
+		else {
+			if (ext == "java") ext = "clike";
+			codeMirror.setOption("mode", ext);
+			codeMirror.setValue(fileContents[currFile]);
+		//$("#code").val(fileContents[currFile]);
+		}
 	}
 
 	function newFile(dir, ext) {
