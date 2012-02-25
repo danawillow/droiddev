@@ -120,6 +120,7 @@ function Other(xmlNode, parentObj, vertical, tableElement, tableRow) {
             codeMirror.focus();
         }
     });
+    $(this.div).draggable({helper: 'clone', revert: true, revertDuration: 50, appendTo: 'body'});
     
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
