@@ -3,37 +3,44 @@
 <head>
 	<!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
 	<script src="jquery-latest.js"></script>
+	
 	<script src="CodeMirror/lib/codemirror.js"></script>
 	<link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
 	<script src="CodeMirror/mode/xml/xml.js"></script>
 	<script src="CodeMirror/mode/clike/clike.js"></script>
+	
+	<script src="bootstrap/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
 	
 	<script src="view.js"></script>
 	<script src="containers.js"></script>
 	<script src="widgets.js"></script>
 
 	<style type="text/css">
-	  #preview {
-	      width: 360px;
-	      height: 640px;
-	      border: 1px solid #000;
-	      overflow: hidden;
-	      position:relative;
-	  }
-	  .element {
-	      background-color: rgba(200, 200, 200, .5);
-	      box-sizing: border-box;
-	      float:left;
-	  }
-	  .widthFillParent {
-	      width: 100%;
-	  }
-	  .heightFillParent {
-	      height: 100%;
-	  }
-	  .vertical {
-	      clear:both;
-	  }
+	#preview {
+		width: 360px;
+		height: 640px;
+		border: 1px solid #000;
+		overflow: hidden;
+		position:relative;
+	}
+	.element {
+		background-color: rgba(200, 200, 200, .5);
+		box-sizing: border-box;
+		float:left;
+	}
+	.widthFillParent {
+		width: 100%;
+	}
+	.heightFillParent {
+		height: 100%;
+	}
+	.vertical {
+		clear:both;
+	}
+	.bordered {
+		border: 1px solid #000;
+	}
 	</style>
 </head>
 <body>
@@ -48,6 +55,7 @@
 	</div>
 	<div style="float:left">
 		<form action="saysomething.cgi" id="codeForm" method="post" style="display:inline">
+			<div id="fileName"></div><br>
 			<textarea name="code" rows="50" cols="50" id="code" style="display:inline"></textarea>
 			<br>
 			<input type="radio" name="phone" value="phone" />Phone<br>
@@ -59,7 +67,13 @@
 	<div id="preview" style="float:left"></div>
 	
 	<!-- the output of the run will be rendered inside this div -->
-	<div id="result" style="clear:both"></div>
+	<div id="modal" style="clear:both" class="modal hide fade">
+		<div class="modal-header">
+			<a href="#" class="close" data-dismiss="modal">x</a>
+			<h3>Build results</h3>
+		</div>
+		<div class="modal-body" id="result"></div>
+	</div>
 
 	<script>
 	var fileNames = new Array();
@@ -69,14 +83,16 @@
 	
 	$.getJSON('listfiles.cgi', function(data) {
 		$.each(data.results, function(key, value) {
-			window.console.log(value);
+			//window.console.log(value);
 			$("#nav").append("<ul>" + makeListFromDir(value) + "</ul>");
 		});
 
 		startImport();
 	});
 	
-	var codeMirror = CodeMirror.fromTextArea(document.getElementById("code"));
+	var codeMirror = CodeMirror.fromTextArea(document.getElementById("code"), {lineNumbers: true});
+	
+	$('#modal').modal({"show": false});
 	
 	/* attach a submit handler to the form */
 	$("#codeForm").submit(function(event) {
@@ -84,6 +100,8 @@
 		event.preventDefault(); 
 
 		$("#result").empty();
+		$("#modal").modal('show');
+		$("#result").append("Building...");
 
 		if (!fileNames[currFile].match(/(jpg|gif|png)$/)) {
 			fileContents[currFile] = $("#code").val();
@@ -184,6 +202,7 @@
 			else
 				codeMirror.setValue(data);
 			//$("#code").val(data);
+			$("#fileName").empty().append(fileNames[0]);
 		}
 	}
 
@@ -200,11 +219,12 @@
 			codeMirror.setValue("");
 		//$("#code").val("");
 		else {
-			if (ext == "java") ext = "clike";
+			if (ext == "java") ext = "text/x-java";
 			codeMirror.setOption("mode", ext);
 			codeMirror.setValue(fileContents[currFile]);
 		//$("#code").val(fileContents[currFile]);
 		}
+		$("#fileName").empty().append(fileNames[currFile]);
 	}
 
 	function newFile(dir, ext) {
