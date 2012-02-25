@@ -37,6 +37,9 @@ function RelativeLayout(xmlNode, parentObj, vertical, width, height) {
             case "LinearLayout":
                 child = new LinearLayout($(this), ll, 0);
                 break;
+            case "TableLayout":
+                child = new TableLayout($(this), ll, 0);
+                break;
 			default:
 				child = new Other($(this), ll, 0);
 				break;
@@ -51,7 +54,10 @@ function RelativeLayout(xmlNode, parentObj, vertical, width, height) {
         
         // set child position
         $(child.div).css('position', 'absolute');
-        child.position();
+        var fixedWH = child.position();
+        
+        if (fixedWH[0]) $(child.div).width("auto");
+        if (fixedWH[1]) $(child.div).height("auto");
     });
 }
 
@@ -110,6 +116,10 @@ function TableLayout(xmlNode, parentObj, vertical) {
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     this.vertical = vertical;
     
+    if ($(xmlNode).attr('android:id')) {
+        ids[$(xmlNode).attr('android:id').replace(/\+/, '')] = this.div;
+    }
+    
     var ll = this;
     var childNodes = $(xmlNode).children();
 
@@ -122,19 +132,19 @@ function TableLayout(xmlNode, parentObj, vertical) {
         $(this).attr('android:layout_width', "MATCH_PARENT");
         switch(nodeName) {
             case "TableRow":
-                child = new TableRow($(this), ll);
+                child = new TableRow($(this), ll, true, true);
                 break;
             case "TextView":
-                child = new TextView($(this), ll, true);
+                child = new TextView($(this), ll, true, true);
                 break;
             case "ImageView":
-                child = new ImageView($(this), ll, true);
+                child = new ImageView($(this), ll, true, true);
                 break;
             case "LinearLayout":
-                child = new LinearLayout($(this), ll, true);
+                child = new LinearLayout($(this), ll, true, true);
                 break;
 			default:
-				child = new Other($(this), ll, true);
+				child = new Other($(this), ll, true, false, true);
                 break;
         }
         ll.childObjs.push(child);
@@ -149,14 +159,18 @@ function TableLayout(xmlNode, parentObj, vertical) {
     this.requestedWidth = viewRequestedWidth;
     this.requestedHeight = viewRequestedHeight;
     
-    this.setExtraWidth = linearExtraWidth;
+    //this.setExtraWidth = linearExtraWidth;
+    this.setExtraWidth = viewSetExtraWidth;
     this.setExtraHeight = linearExtraHeight;
+    
+    this.position = viewPosition;
 }
 
 function TableRow(xmlNode, parentObj, vertical) {
     this.div = $("<tr />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
+    $(this.div).css('float', 'none');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     this.vertical = vertical;
     
@@ -184,7 +198,7 @@ function TableRow(xmlNode, parentObj, vertical) {
                 child = new LinearLayout($(this), ll, false, true);
                 break;
 			default:
-				child = new Other($(this), ll, true);
+				child = new Other($(this), ll, false, true);
                 break;
         }
         ll.childObjs.push(child);
@@ -199,7 +213,8 @@ function TableRow(xmlNode, parentObj, vertical) {
     this.requestedWidth = viewRequestedWidth;
     this.requestedHeight = viewRequestedHeight;
     
-    this.setExtraWidth = linearExtraWidth;
+    //this.setExtraWidth = linearExtraWidth;
+    this.setExtraWidth = viewSetExtraWidth;
     this.setExtraHeight = linearExtraHeight;
 }
 

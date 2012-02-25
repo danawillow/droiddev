@@ -53,17 +53,20 @@ viewSetExtraHeight = function(height, extra, heightAvail) {
 viewPosition = function() {
     var h = false;
     var v = false;
+    var t = false, b = false, l = false, r = false;
     
     /* Position center relative to parent */
     if ($(this.xmlNode).attr('android:layout_centerHorizontal') == "true" ||
         $(this.xmlNode).attr('android:layout_centerInParent') == "true") {
         $(this.div).css('left', this.parentObj.requestedWidth()/2 - $(this.div).width()/2);
         h = true;
+        l = true;
     }
     if ($(this.xmlNode).attr('android:layout_centerVertical') == "true" ||
         $(this.xmlNode).attr('android:layout_centerInParent') == "true") {
         $(this.div).css('top', this.parentObj.requestedHeight()/2 - $(this.div).height()/2);
         v = true;
+        t = true;
     }
     
     /* Position relative to other element */
@@ -72,10 +75,12 @@ viewPosition = function() {
         if (other.css('right') == "auto") {
             $(this.div).css('left', +$(other).css('left').replace(/px/, '') + $(other).width());
             h = true;
+            l = true;
         }
         else if (other) {
             $(this.div).css('left', this.parentObj.requestedWidth() - +$(other).css('right').replace(/px/, ''));
             h = true;
+            l = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_toLeftOf')) {
@@ -83,10 +88,12 @@ viewPosition = function() {
         if (other.css('left') == "auto") {
             $(this.div).css('right', +$(other).css('right').replace(/px/, '') + $(other).width());
             h = true;
+            r = true;
         }
         else if (other) {
             $(this.div).css('right', this.parentObj.requestedWidth() - +$(other).css('left').replace(/px/, ''));
             h = true;
+            r = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_above')) {
@@ -94,10 +101,12 @@ viewPosition = function() {
         if (other.css('top') == "auto") {
             $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, '') + $(other).height());
             v = true;
+            b = true;
         }
         else if (other) {
             $(this.div).css('bottom', this.parentObj.requestedHeight() - +$(other).css('top').replace(/px/, ''));
             v = true;
+            b = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_below')) {
@@ -105,10 +114,12 @@ viewPosition = function() {
         if (other.css('bottom') == "auto") {
             $(this.div).css('top', +$(other).css('top').replace(/px/, '') + $(other).height());
             v = true;
+            t = true;
         }
         else if (other) {
             $(this.div).css('top', this.parentObj.requestedHeight() - +$(other).css('bottom').replace(/px/, ''));
             v = true;
+            t = true;
         }
     }
     
@@ -118,10 +129,12 @@ viewPosition = function() {
         if (other.css('right') == "auto") {
             $(this.div).css('right', this.parentObj.requestedWidth() - (+$(other).css('left').replace(/px/, '') + $(other).width()));
             h = true;
+            r = true;
         }
         else if (other) {
             $(this.div).css('right', +$(other).css('right').replace(/px/, ''));
             h = true;
+            r = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_alignLeft')) {
@@ -129,10 +142,12 @@ viewPosition = function() {
         if (other.css('left') == "auto") {
             $(this.div).css('left', this.parentObj.requestedWidth() - (+$(other).css('right').replace(/px/, '') + $(other).width()));
             h = true;
+            l = true;
         }
         else if (other) {
             $(this.div).css('left', +$(other).css('left').replace(/px/, ''));
             h = true;
+            l = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_alignTop')) {
@@ -140,10 +155,12 @@ viewPosition = function() {
         if (other.css('top') == "auto") {
             $(this.div).css('top', this.parentObj.requestedHeight() - (+$(other).css('bottom').replace(/px/, '') + $(other).height()));
             v = true;
+            t = true;
         }
         else if (other) {
             $(this.div).css('top', +$(other).css('top').replace(/px/, ''));
             v = true;
+            t = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_alignBottom')) {
@@ -151,10 +168,12 @@ viewPosition = function() {
         if (other.css('bottom') == "auto") {
             $(this.div).css('bottom', this.parentObj.requestedHeight() - (+$(other).css('top').replace(/px/, '') + $(other).height()));
             v = true;
+            b = true;
         }
         else if (other) {
             $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, ''));
             v = true;
+            b = true;
         }
     }
     if ($(this.xmlNode).attr('android:layout_alignBaseline')) { // note: wrong.
@@ -162,10 +181,12 @@ viewPosition = function() {
         if (other.css('bottom') == "auto") {
             $(this.div).css('bottom', this.parentObj.requestedHeight() - (+$(other).css('top').replace(/px/, '') + $(other).height()));
             v = true;
+            b = true;
         }
         else if (other) {
             $(this.div).css('bottom', +$(other).css('bottom').replace(/px/, ''));
             v = true;
+            b = true;
         }
     }
     
@@ -173,22 +194,28 @@ viewPosition = function() {
     if ($(this.xmlNode).attr('android:layout_alignParentLeft') == "true") {
         $(this.div).css('left', '0px');
         h = true;
+        l = true;
     }
     if ($(this.xmlNode).attr('android:layout_alignParentRight') == "true") {
         $(this.div).css('right', '0px');
         h = true;
+        r = true;
     }
     if ($(this.xmlNode).attr('android:layout_alignParentTop') == "true") {
         $(this.div).css('top', '0px');
         v = true;
+        t = true;
     }
     if ($(this.xmlNode).attr('android:layout_alignParentBottom') == "true") {
         $(this.div).css('bottom', '0px');
         v = true;
+        b = true;
     }
     
     if (!h)
         $(this.div).css('left', '0px');
     if (!v)
         $(this.div).css('top', '0px');
+    
+    return [l && r, t && b];
 }

@@ -35,7 +35,32 @@ function TextView(xmlNode, parentObj, vertical, tableElement) {
     this.div = tableElement? $("<td />") : $("<div />");
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
+    if (tableElement) $(this.div).css('float', 'none');
+    
     $(this.div).text($(xmlNode).attr('android:text'));
+    
+    $(this.div).hover(
+        function() {
+            $(this).addClass('bordered');
+        },
+        function() {
+            $(this).removeClass('bordered');
+        }
+    );
+    $(this.div).click(function() {
+        if ($(xmlNode).attr('android:id')) {
+            var cursor = codeMirror.getCursor();
+            var lineContent = codeMirror.getLine(cursor.line);
+            var id = $(xmlNode).attr('android:id').split("/")[1];
+            var nodeName = $(xmlNode)[0].nodeName;
+            var nextLine = nodeName + " " + id + " = (" + nodeName + ")findViewById(R.id." + id + ");";
+            codeMirror.setLine(cursor.line, lineContent + '\n' + nextLine);
+            codeMirror.setSelection({line: cursor.line+1, ch: nodeName.length+1},
+                                    {line: cursor.line+1, ch: (nodeName + " " + id).length});
+            codeMirror.indentLine(cursor.line+1);
+            codeMirror.focus();
+        }
+    });
     
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
@@ -64,10 +89,14 @@ function TextView(xmlNode, parentObj, vertical, tableElement) {
     this.position = viewPosition;
 }
 
-function Other(xmlNode, parentObj, vertical, tableElement) {
-    this.div = tableElement? $("<td />") : $("<div />");
+function Other(xmlNode, parentObj, vertical, tableElement, tableRow) {
+    this.div = tableElement? $("<td />") : tableRow? $("<tr><td /></tr>") : $("<div />");
+    //if (tableElement) this.div = $("<td />");
+    //else if (tableRow) this.div = $("<tr><td /></tr>")
     $(parentObj.div).append($(this.div));
     $(this.div).addClass('element');
+    if (tableElement) $(this.div).css('float', 'none');
+    
     $(this.div).text($(xmlNode)[0].nodeName);
     $(this.div).hover(
         function() {
