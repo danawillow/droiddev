@@ -106,21 +106,34 @@ function Other(xmlNode, parentObj, vertical, tableElement, tableRow) {
             $(this).removeClass('bordered');
         }
     );
-    $(this.div).click(function() {
-        if ($(xmlNode).attr('android:id')) {
-            var cursor = codeMirror.getCursor();
-            var lineContent = codeMirror.getLine(cursor.line);
-            var id = $(xmlNode).attr('android:id').split("/")[1];
-            var nodeName = $(xmlNode)[0].nodeName;
-            var nextLine = nodeName + " " + id + " = (" + nodeName + ")findViewById(R.id." + id + ");";
-            codeMirror.setLine(cursor.line, lineContent + '\n' + nextLine);
-            codeMirror.setSelection({line: cursor.line+1, ch: nodeName.length+1},
-                                    {line: cursor.line+1, ch: (nodeName + " " + id).length});
-            codeMirror.indentLine(cursor.line+1);
+    
+    $(this.div).draggable({
+        helper: 'clone',
+        revert: true,
+        revertDuration: 50,
+        appendTo: 'body',
+        start: function() {
             codeMirror.focus();
+        },
+        drag: function(event, ui) {
+            var coordsChar = codeMirror.coordsChar({x: event.pageX, y: event.pageY});
+            codeMirror.setCursor(coordsChar);
+        },
+        stop: function(event, ui) {
+            if ($(xmlNode).attr('android:id')) {
+                var cursor = codeMirror.coordsChar({x: event.pageX, y: event.pageY});
+                codeMirror.setCursor(cursor);
+                var lineContent = codeMirror.getLine(cursor.line);
+                var id = $(xmlNode).attr('android:id').split("/")[1];
+                var nodeName = $(xmlNode)[0].nodeName;
+                var nextLine = nodeName + " " + id + " = (" + nodeName + ")findViewById(R.id." + id + ");";
+                codeMirror.setLine(cursor.line, lineContent + '\n' + nextLine);
+                codeMirror.setSelection({line: cursor.line+1, ch: nodeName.length+1},
+                                        {line: cursor.line+1, ch: (nodeName + " " + id).length});
+                codeMirror.indentLine(cursor.line+1);
+            }
         }
     });
-    $(this.div).draggable({helper: 'clone', revert: true, revertDuration: 50, appendTo: 'body'});
     
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
