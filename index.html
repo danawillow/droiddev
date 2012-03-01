@@ -3,6 +3,7 @@
 <head>
 	<!--<script src="http://code.jquery.com/jquery-latest.js"></script>-->
 	<script src="jquery-latest.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 	
 	<script src="CodeMirror/lib/codemirror.js"></script>
 	<link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
@@ -11,6 +12,9 @@
 	
 	<script src="bootstrap/js/bootstrap.js"></script>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+	
+	<script src="contextMenu/jquery.contextMenu.js"></script>
+	<link rel="stylesheet" href="contextMenu/jquery.contextMenu.css">
 	
 	<script src="view.js"></script>
 	<script src="containers.js"></script>
@@ -74,6 +78,10 @@
 		</div>
 		<div class="modal-body" id="result"></div>
 	</div>
+	
+	<ul id="editTextMenu" class="contextMenu">
+		<li><a href="#getText()">getText()</a></li>
+	</ul>
 
 	<script>
 	var fileNames = new Array();

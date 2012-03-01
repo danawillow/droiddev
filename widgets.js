@@ -143,6 +143,23 @@ function Other(xmlNode, parentObj, vertical, tableElement, tableRow) {
         }
     });
     
+    $(this.div).contextMenu({
+        menu: "editTextMenu",
+        inSpeed: 50
+        },
+        function(action, el, pos) {
+            if ($(xmlNode).attr('android:id')) {
+                var varName = findViewVarName($(xmlNode).attr('android:id').split("/")[1]);
+                var cursor = codeMirror.getCursor();
+                var lineContent = codeMirror.getLine(cursor.line);
+                var nextLine = varName + "." + action + ";";
+                codeMirror.setLine(cursor.line, lineContent + '\n' + nextLine);
+                codeMirror.indentLine(cursor.line+1);
+                codeMirror.focus();
+            }
+        }
+    );
+    
     if (vertical) $(this.div).addClass('vertical');
     this.weight = +$(xmlNode).attr('android:layout_weight') || 0;
     if ($(xmlNode).attr('android:id')) {

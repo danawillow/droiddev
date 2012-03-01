@@ -219,3 +219,11 @@ viewPosition = function() {
     
     return [l && r, t && b];
 }
+
+findViewVarName = function(id) {
+    var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
+    //var index = fileContents[currFile].search(re);
+    var m = re.exec(fileContents[currFile]);
+    if (m == null) return -1;
+    return m[0];
+}
