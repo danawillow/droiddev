@@ -135,7 +135,8 @@ init = function(xmlNode, parentObj, vertical, tableElement, tableRow) {
     
     $(this.div).contextMenu({
         menu: $(xmlNode)[0].nodeName + "Menu",
-        inSpeed: 50
+        inSpeed: 0,
+        outSpeed: 0
         },
         function(action, el, pos) {
             if ($(xmlNode).attr('android:id')) {
