@@ -28,6 +28,10 @@
 		overflow: hidden;
 		position:relative;
 	}
+	#emulator {
+		width: 480px;
+		height:720px;
+	}
 	.element {
 		background-color: rgba(200, 200, 200, .5);
 		box-sizing: border-box;
@@ -47,7 +51,7 @@
 	}
 	</style>
 </head>
-<body>
+<body style="width:140%">
 	<div id="nav" style="display:inline; float:left">
 		<a href="javascript:newFile('HelloAndroid/res/layout')">New XML layout file</a><br>
 		<a href="javascript:newFile('HelloAndroid/res/values')">New XML values file</a><br>
@@ -70,6 +74,8 @@
 	<button id="previewButton" type="Button" style="float:left" onclick="javascript:genPreview()">Preview</button>
 	<div id="preview" style="float:left"></div>
 	
+	<div style="float:left"><iframe src="http://localhost:6080/vnc_auto.html?host=localhost&port=6080" id="emulator"></iframe></div>
+	
 	<!-- the output of the run will be rendered inside this div -->
 	<div id="modal" style="clear:both" class="modal hide fade">
 		<div class="modal-header">
@@ -80,8 +86,25 @@
 	</div>
 	
 	<ul id="EditTextMenu" class="contextMenu">
-		<li><a href="#getText()">getText()</a></li>
-		<li><a href="#setText()">setText()</a></li>
+		<li><a href="#getText()">CharSequence getText()</a></li>
+		<li><a href="#length()">int length()</a></li>
+		<li><a href="#setInputType(int type)">void setInputType(int type)</a></li>
+		<li><a href="#setText(CharSequence text)">final void setText(CharSequence text)</a></li>
+	</ul>
+	
+	<ul id="RadioGroupMenu" class="contextMenu">
+		<li><a href="#check(int id)">void check(int id)</a></li>
+		<li><a href="#clearCheck()">void clearCheck()</a></li>
+		<li><a href="#getCheckedRadioButtonId()">int getCheckedRadioButtonId()</a></li>
+		<li><a href="#setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener listener)">setOnCheckedChangeListener(RadioGroup.OnCheckedChangeListener listener)</a></li>
+	</ul>
+	
+	<ul id="ButtonMenu" class="contextMenu">
+		<li><a href="#setOnClickListener(View.OnClickListener l)">void setOnClickListener(View.OnClickListener l)</a></li>
+	</ul>
+	
+	<ul id="ListViewMenu" class="contextMenu">
+		<li><a href="#setAdapter(ListAdapter adapter)">void setAdapter(ListAdapter adapter)</a></li>
 	</ul>
 
 	<script>
