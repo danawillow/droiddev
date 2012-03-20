@@ -226,15 +226,15 @@
 
 	function importData(data, status, i) {
 		fileContents[i] = data;
-		if (i == mainXMLIndex) genPreview();
-		if (i == 0) {
-			if (fileNames[i].match(/(jpg|gif|png)$/))
+		if (i == mainXMLIndex) {
+			genPreview();
+			if (fileNames[i].match(/(jpg|gif|png)$/)) // probably not needed now that I'm doing it for main.xml
 				codeMirror.setValue("");
 			//$("#code").val("");
 			else
 				codeMirror.setValue(data);
 			//$("#code").val(data);
-			$("#fileName").empty().append(fileNames[0]);
+			$("#fileName").empty().append(fileNames[i]);
 		}
 	}
 
