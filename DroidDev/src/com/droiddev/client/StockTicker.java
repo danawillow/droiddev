@@ -171,7 +171,8 @@ public class StockTicker implements EntryPoint {
       *
       * @param prices Stock data for all rows.
       */
-     private void updateTable(StockPrice[] prices) {
+     @SuppressWarnings("deprecation")
+	private void updateTable(StockPrice[] prices) {
         for (int i = 0; i < prices.length; i++) {
             updateTable(prices[i]);
         }

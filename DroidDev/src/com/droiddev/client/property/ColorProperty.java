@@ -1,8 +1,5 @@
 package com.droiddev.client.property;
 
-
-import com.droiddev.client.AndroidEditor;
-
 public class ColorProperty extends StringProperty {
 	String c;
 	String defaultColor;

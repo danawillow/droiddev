@@ -50,7 +50,7 @@ public class StringProperty extends Property {
 	}
 	
 	public void setStringValue(String value, boolean setDefault) {
-		String old = this.value;
+		//String old = this.value;
 		this.value = value;
 		if (setDefault) {
 			this.defaultValue = value;

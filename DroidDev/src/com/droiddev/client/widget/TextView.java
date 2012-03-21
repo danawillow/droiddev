@@ -1,12 +1,5 @@
 package com.droiddev.client.widget;
 
-/*import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-*/
-import com.google.gwt.canvas.dom.client.Context;
-
 import java.util.Vector;
 
 import com.droiddev.client.AndroidEditor;
@@ -15,7 +8,7 @@ import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
-import com.droiddev.client.util.DisplayMetrics;
+import com.droiddev.client.util.FontMetrics;
 
 public class TextView extends AbstractWidget {
 	public static final String TAG_NAME = "TextView";
@@ -102,7 +95,6 @@ public class TextView extends AbstractWidget {
 		//buildFont();
 		this.readWidthHeight();
 		this.baseline = fontSize+pad_y/2;
-		this.setHTML(getText());
 	}
 
 	protected Vector<String> buildLineBreaks(String textVal) {
@@ -147,7 +139,8 @@ public class TextView extends AbstractWidget {
 		if (str == null)
 			return 0;
 		//return bg.getGraphics().getFontMetrics(f).stringWidth(str);
-		return str.length();
+		return str.length()*fontSize; // FIX THIS ANOTHER TIME
+		//return FontMetrics.stringWidth("14pt Arial", str);
 	}
 
     public String getText() {
@@ -242,8 +235,11 @@ public class TextView extends AbstractWidget {
 	}
 	*/
 	
-	public void paint(Context g) {
-	    
+	public void paint() {
+		canvas.setCoordinateSpaceWidth(getWidth());
+		canvas.setCoordinateSpaceHeight(getHeight());
+		canvas.getContext2d().setFont("14pt Arial");
+	    canvas.getContext2d().fillText(getText(), pad_x/2, fontSize+pad_y/2);
 	}
 
 	@Override

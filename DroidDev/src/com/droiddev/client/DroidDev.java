@@ -9,16 +9,13 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
-import com.droiddev.client.widget.AbstractLayout;
-import com.droiddev.client.widget.AbstractWidget;
+import com.droiddev.client.widget.Button;
 import com.droiddev.client.widget.Layout;
 import com.droiddev.client.widget.LinearLayout;
 import com.droiddev.client.widget.TextView;
@@ -28,7 +25,6 @@ import java.util.Vector;
 
 public class DroidDev implements EntryPoint {
     private Layout root;
-    private VerticalPanel mainPanel = new VerticalPanel();
     private AbsolutePanel layoutPanel = new AbsolutePanel();
     private Label text = new Label();
     
@@ -57,7 +53,7 @@ public class DroidDev implements EntryPoint {
         /* Get XML file */
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "main.xml");
         try {
-            Request response = builder.sendRequest(null, new RequestCallback() {
+            builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
                     text.setText("Error!");
                 }
@@ -70,6 +66,7 @@ public class DroidDev implements EntryPoint {
                     
                     root.apply();
                     root.repositionAllWidgets();
+                    root.paint();
                 }
             });
             
@@ -124,19 +121,26 @@ public class DroidDev implements EntryPoint {
             }
             
             //((AbstractLayout)l).setHTML(qName + " " + l.getWidth() + " " + l.getHeight());
-            layoutPanel.add((AbstractWidget)l, l.getX(), l.getY());
+            layoutPanel.add(l.getCanvas(), l.getX(), l.getY());
         }
         else {
             Widget w = null;
-            if (qName.equals("TextView")) {
+            if ( qName.equals( "Button" ) ) {
+				String txt = el.getAttribute("android:text" );
+				Button b = new Button( txt );
+				w = b;
+			}
+            else if (qName.equals("TextView")) {
                 String txt = el.getAttribute("android:text");
                 w = new TextView( txt );
                 if (el.hasAttribute("android:textAlign")) {
                     w.setPropertyByAttName( "android:textAlign", el.getAttribute("android:textAlign"));
                 }
             }
-            addWidget(w, el);
-            layoutPanel.add((AbstractWidget)w, w.getX(), w.getY());
+            if (w != null) {
+            	addWidget(w, el);
+            	layoutPanel.add(w.getCanvas(), w.getX(), w.getY());
+            }
         }
         
         for (int i = 0; i < el.getChildNodes().getLength(); i++) {

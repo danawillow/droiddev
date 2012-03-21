@@ -1,6 +1,6 @@
 package com.droiddev.client.widget;
 
-import com.google.gwt.canvas.dom.client.Context;
+import com.google.gwt.canvas.client.Canvas;
 
 import com.droiddev.client.property.Property;
 
@@ -23,7 +23,7 @@ public interface Widget extends Cloneable {
     public void setHeight(int height);
     public void setSizeInternal(int w, int h);
     public void move(int dx, int dy);
-    public void paint(Context g);
+    public void paint();
     public void apply();
     public Vector<Property> getProperties();
     public void setPropertyByAttName(String attName, String value);
@@ -42,6 +42,8 @@ public interface Widget extends Cloneable {
     public void setPadding(int pad);
     public void setPadding(int pad, int which);
     public boolean isVisible();
+    
+    public Canvas getCanvas();
 
     public int getMargin(int which);
 

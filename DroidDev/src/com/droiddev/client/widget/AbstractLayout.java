@@ -1,8 +1,5 @@
 package com.droiddev.client.widget;
 
-import com.google.gwt.canvas.dom.client.Context;
-import com.google.gwt.canvas.dom.client.Context2d;
-
 import java.util.Vector;
 
 //import com.droiddev.client.AndroidEditor;
@@ -50,7 +47,7 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 		widgets.clear();
 	}
 	
-	public void paint(Context g) {
+	public void paint() {
 	    /*
 		Graphics2D g2d = (Graphics2D)g;
 	
@@ -68,6 +65,7 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 		}
 		g2d.translate(-getX(),-getY());
 		*/
+		/*
 		Context2d g2d= (Context2d)g;
 		
 		drawBackground(g);
@@ -84,6 +82,11 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 				w.paint(g);
 		}
 		g2d.translate(-getX(),-getY());
+		*/
+		for (Widget w: widgets) {
+			if (w.isVisible())
+				w.paint();
+		}
 	}
 	
 	

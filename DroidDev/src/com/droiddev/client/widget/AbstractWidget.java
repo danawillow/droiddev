@@ -1,9 +1,8 @@
 package com.droiddev.client.widget;
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.Window;
 
 /*import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;*/
@@ -18,7 +17,7 @@ import com.droiddev.client.property.WidthProperty;
 import com.droiddev.client.util.DisplayMetrics;
 
 
-public abstract class AbstractWidget extends HTML implements Widget {
+public abstract class AbstractWidget implements Widget {
     int x, y;
     int[] padding;
 
@@ -43,6 +42,8 @@ public abstract class AbstractWidget extends HTML implements Widget {
     StringProperty marginRight;
 
     ColorProperty background;
+    
+    Canvas canvas;
 
     public AbstractWidget(String tagName) {
         this.setTagName(tagName);
@@ -80,12 +81,18 @@ public abstract class AbstractWidget extends HTML implements Widget {
         this.baseline = 14;
 
         this.parent = null;
+        
+        this.canvas = Canvas.createIfSupported();
     }
 
 /*
     public void setPropertyChangeListener(PropertyChangeListener l) {
         this.listener = l;
     }*/
+    
+    public Canvas getCanvas() {
+    	return canvas;
+    }
 
     public Layout getParentLayout() {
         return parent;
@@ -173,22 +180,26 @@ public abstract class AbstractWidget extends HTML implements Widget {
         //Window.alert("Setting position of " + tagName + " to " + x + ", " + y);
         this.x = x;
         this.y = y;
-        if (this.getParent() != null) {
-            ((AbsolutePanel)this.getParent()).setWidgetPosition(this, x, y);
+        if (canvas.getParent() != null) {
+            ((AbsolutePanel)canvas.getParent()).setWidgetPosition(canvas, x, y);
         }
     }
 
     public void setWidth(int width) {
+    	canvas.setWidth(width + "px");
         this.widthProp.setStringValue(width + AndroidEditor.instance().getScreenUnit());
         apply();
     }
 
     public void setHeight(int height) {
+    	canvas.setHeight(height + "px");
         this.heightProp.setStringValue(height + AndroidEditor.instance().getScreenUnit());
         apply();
     }
 
     public void setSize(int width, int height) {
+    	canvas.setWidth(width + "px");
+    	canvas.setHeight(height + "px");
         this.widthProp.setStringValue(width + AndroidEditor.instance().getScreenUnit());
         this.heightProp.setStringValue(height + AndroidEditor.instance().getScreenUnit());
         apply();
@@ -278,9 +289,14 @@ public abstract class AbstractWidget extends HTML implements Widget {
             }
             h = h-getY()-padding[BOTTOM];
         }
-
+        /*
         width = w;
         height = h;
+
+    	super.setWidth(width + "px");
+    	super.setHeight(height + "px");
+    	*/
+        setSizeInternal(w, h);
     }
 
     public void apply() {
@@ -302,6 +318,8 @@ public abstract class AbstractWidget extends HTML implements Widget {
     }
 
     public void setSizeInternal(int w, int h) {
+    	canvas.setWidth(w + "px");
+    	canvas.setHeight(h + "px");
         this.width = w;
         this.height = h;
     }

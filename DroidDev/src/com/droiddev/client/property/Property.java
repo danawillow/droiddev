@@ -1,9 +1,5 @@
 package com.droiddev.client.property;
 
-/*import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;*/
-import java.util.Vector;
-
 public abstract class Property {
 	protected String englishName;
 	protected String attName;

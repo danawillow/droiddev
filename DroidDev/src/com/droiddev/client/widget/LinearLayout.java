@@ -47,10 +47,12 @@ public class LinearLayout extends AbstractLayout {
 		if (orientation != null)
 			vertical = "vertical".equals(orientation.getStringValue());
 			
+		/*
 		if (widgets.size() == 0)
-		    this.setHTML(TAG_NAME);
+		    this.setText(TAG_NAME);
 	    else
-	        this.setHTML("");
+	        this.setText("");
+	        */
 	}
 
 	
