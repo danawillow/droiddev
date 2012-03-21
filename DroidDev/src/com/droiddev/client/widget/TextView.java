@@ -3,12 +3,11 @@ package com.droiddev.client.widget;
 import java.util.Vector;
 
 import com.droiddev.client.AndroidEditor;
-//import com.droiddev.client.gui.PropertiesPanel;
 import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
-import com.droiddev.client.util.FontMetrics;
+import com.google.gwt.user.client.Window;
 
 public class TextView extends AbstractWidget {
 	public static final String TAG_NAME = "TextView";
@@ -16,7 +15,8 @@ public class TextView extends AbstractWidget {
 	public static final int CENTER = 1;
 	public static final int END = 2;
 
-	int fontSize = 14;
+	int fontSize = 9;
+	String font = "14px Monaco"; // Yeah it's weird. fix later.
 
 	StringProperty text;
 	StringProperty hint;
@@ -139,7 +139,7 @@ public class TextView extends AbstractWidget {
 		if (str == null)
 			return 0;
 		//return bg.getGraphics().getFontMetrics(f).stringWidth(str);
-		return str.length()*fontSize; // FIX THIS ANOTHER TIME
+		return str.length()*(fontSize-1) + 2; // FIX THIS ANOTHER TIME: http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/canvas/dom/client/Context2d.html#measureText(java.lang.String)
 		//return FontMetrics.stringWidth("14pt Arial", str);
 	}
 
@@ -167,8 +167,8 @@ public class TextView extends AbstractWidget {
 		return h;
 	}
 
-/*
-	protected void drawText(Graphics g, int x, int h) {
+
+	protected void drawText(int x, int h) {
 		int aln = START;
 		if (align.getStringValue().equals("end")) {
 			aln = END;
@@ -176,15 +176,15 @@ public class TextView extends AbstractWidget {
 		else if (align.getStringValue().equals("center")) {
 			aln = CENTER;
 		}
-		this.drawText(g, x, h, aln);
+		this.drawText(x, h, aln);
 	}
 
-	protected void drawText(Graphics g, int dx, int h, int align) {
+	protected void drawText(int dx, int h, int align) {
 		String txt = getText();
-		drawText(g, txt, dx, h, align);
+		drawText(txt, dx, h, align);
 	}
 
-	protected void drawText(Graphics g, String txt, int dx, int h, int align) {
+	protected void drawText(String txt, int dx, int h, int align) {
 		int tx = 0;
 		if (txt == null) {
 			return;
@@ -192,21 +192,25 @@ public class TextView extends AbstractWidget {
 		for (String s : buildLineBreaks(txt)) {
 			int l = stringLength(s);
 			if (align == END) {
-				tx = getX()+getWidth()-l-pad_x/2+dx;
+				tx = getWidth()-l-pad_x/2+dx;
 			}
 			else if (align == CENTER) {
-				tx = getX()+getWidth()/2-l/2+dx;
+				tx = getWidth()/2-l/2+dx;
+				Window.alert("Width: " + getWidth() + ", l: " + l + ", dx: " + dx);
 			}
 			else {
-				tx = getX()+pad_x/2+dx;
+				tx = pad_x/2+dx;
 			}
-			g.drawString(s, tx, getY()+h);
+			//g.drawString(s, tx, getY()+h);
+			canvas.getContext2d().setFont(font);
+			canvas.getContext2d().fillText(getText(), tx, h);
 			h += fontSize+1;
 			if (h > getHeight())
 				break;
 		}
 	}
 
+	/*
 	protected void setTextColor(Graphics g) {
 		Color c = textColor.getColorValue();
 		String theme = AndroidEditor.instance().getTheme();
@@ -239,7 +243,7 @@ public class TextView extends AbstractWidget {
 		canvas.setCoordinateSpaceWidth(getWidth());
 		canvas.setCoordinateSpaceHeight(getHeight());
 		canvas.getContext2d().setFont("14pt Arial");
-	    canvas.getContext2d().fillText(getText(), pad_x/2, fontSize+pad_y/2);
+	    drawText(0, fontSize+pad_y/2);
 	}
 
 	@Override
