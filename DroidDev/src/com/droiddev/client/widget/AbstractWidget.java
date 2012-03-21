@@ -1,20 +1,24 @@
 package com.droiddev.client.widget;
-import com.google.gwt.canvas.dom.client.Context
+import com.google.gwt.canvas.dom.client.Context;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.Window;
 
 /*import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;*/
 import java.util.Vector;
 
-import org.droiddraw.AndroidEditor;
-import org.droiddraw.property.ColorProperty;
-import org.droiddraw.property.Property;
-import org.droiddraw.property.SelectProperty;
-import org.droiddraw.property.StringProperty;
-import org.droiddraw.property.WidthProperty;
-import org.droiddraw.util.DisplayMetrics;
+import com.droiddev.client.AndroidEditor;
+import com.droiddev.client.property.ColorProperty;
+import com.droiddev.client.property.Property;
+import com.droiddev.client.property.SelectProperty;
+import com.droiddev.client.property.StringProperty;
+import com.droiddev.client.property.WidthProperty;
+import com.droiddev.client.util.DisplayMetrics;
 
 
-public abstract class AbstractWidget implements Widget {
+public abstract class AbstractWidget extends HTML implements Widget {
     int x, y;
     int[] padding;
 
@@ -83,11 +87,11 @@ public abstract class AbstractWidget implements Widget {
         this.listener = l;
     }*/
 
-    public Layout getParent() {
+    public Layout getParentLayout() {
         return parent;
     }
 
-    public void setParent(Layout parent) {
+    public void setParentLayout(Layout parent) {
         this.parent = parent;
         ((AbstractWidget)parent).parentTest(this);
     }
@@ -99,10 +103,10 @@ public abstract class AbstractWidget implements Widget {
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            //System.exit(0);
         }
-        if (getParent() != null) {
-            ((AbstractWidget)getParent()).parentTest(w);
+        if (getParentLayout() != null) {
+            ((AbstractWidget)getParentLayout()).parentTest(w);
         }
     }
 
@@ -166,8 +170,12 @@ public abstract class AbstractWidget implements Widget {
     }
 
     public void setPosition(int x, int y) {
+        //Window.alert("Setting position of " + tagName + " to " + x + ", " + y);
         this.x = x;
         this.y = y;
+        if (this.getParent() != null) {
+            ((AbsolutePanel)this.getParent()).setWidgetPosition(this, x, y);
+        }
     }
 
     public void setWidth(int width) {
@@ -244,12 +252,12 @@ public abstract class AbstractWidget implements Widget {
 
         if (widthProp.getStringValue().equals("fill_parent") ||
         widthProp.getStringValue().equals("match_parent")) {
-            if (getParent() != null) {
+            if (getParentLayout() != null) {
                 StringProperty prop = (StringProperty)parent.getPropertyByAttName("android:layout_width");
                 if (prop.getStringValue().equals("wrap_content"))
                     w = getContentWidth();
                 else
-                    w = getParent().getWidth();
+                    w = getParentLayout().getWidth();
             }
             else {
                 w = AndroidEditor.instance().getScreenX()-AndroidEditor.OFFSET_X;
@@ -258,12 +266,12 @@ public abstract class AbstractWidget implements Widget {
         }
         if (heightProp.getStringValue().equals("fill_parent") ||
         heightProp.getStringValue().equals("match_parent")) {
-            if (getParent() != null) {
+            if (getParentLayout() != null) {
                 StringProperty prop = (StringProperty)parent.getPropertyByAttName("android:layout_height");
                 if (prop.getStringValue().equals("wrap_content"))
                     h = getContentHeight();
                 else
-                    h = getParent().getHeight();
+                    h = getParentLayout().getHeight();
             }
             else {
                 h = AndroidEditor.instance().getScreenY();
@@ -277,19 +285,19 @@ public abstract class AbstractWidget implements Widget {
 
     public void apply() {
         readWidthHeight();
-        if (getParent() == null) {
+        if (getParentLayout() == null) {
             setPosition(getPadding(LEFT)+AndroidEditor.OFFSET_X, getPadding(TOP)+AndroidEditor.OFFSET_Y);
         }
         if (widthProp.getStringValue().equals("fill_parent")) {
             x = padding[LEFT];
         }
         if (heightProp.getStringValue().equals("fill_parent") &&
-            this.getParent() != null) 
+            this.getParentLayout() != null) 
         {
             y = padding[TOP];
         }
-        //if (getParent() != null) {
-            //      getParent().repositionAllWidgets();
+        //if (getParentLayout() != null) {
+            //      getParentLayout().repositionAllWidgets();
             //}
     }
 
@@ -302,15 +310,16 @@ public abstract class AbstractWidget implements Widget {
         return baseline;
     }
 
-    public void drawBackground(Context g) {
+    public void drawBackground(Context cg) {
         /*
         if (background.getColorValue() != null) {
             g.setColor(background.getColorValue());
             g.fillRect(getX()-getPadding(LEFT), getY()-getPadding(TOP), getWidth()+getPadding(LEFT)+getPadding(RIGHT), getHeight()+getPadding(TOP)+getPadding(BOTTOM));
         }
         */
+        Context2d g = (Context2d)cg;
         if (background.getColorValue() != null) {
-            g.setFillStyle(background.makeColor(background.getColorValue()));
+            g.setFillStyle(background.getColorValue());
             g.fillRect(getX()-getPadding(LEFT), getY()-getPadding(TOP), getWidth()+getPadding(LEFT)+getPadding(RIGHT), getHeight()+getPadding(TOP)+getPadding(BOTTOM));
         }
     }
@@ -360,6 +369,7 @@ public abstract class AbstractWidget implements Widget {
     }
 
     public Widget copy() {
+        /*
         try {
             //StringWriter sw = new StringWriter();
             //PrintWriter pw = new PrintWriter(sw);
@@ -373,5 +383,7 @@ public abstract class AbstractWidget implements Widget {
             ex.printStackTrace();
             return null;
         }
+        */
+        return null;
     }
 }

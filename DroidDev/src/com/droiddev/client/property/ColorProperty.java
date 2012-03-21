@@ -1,15 +1,14 @@
 package com.droiddev.client.property;
 
-import java.awt.Color;
 
-import com.droiddev.AndroidEditor;
+import com.droiddev.client.AndroidEditor;
 
 public class ColorProperty extends StringProperty {
-	Color c;
-	Color defaultColor;
+	String c;
+	String defaultColor;
 	
-	public ColorProperty(String englishName, String attName, Color defaultValue) {
-		super(englishName, attName, makeColor(defaultValue));
+	public ColorProperty(String englishName, String attName, String defaultValue) {
+		super(englishName, attName, defaultValue);
 		this.c = defaultValue;
 		this.defaultColor = defaultValue;
 	}
@@ -24,6 +23,7 @@ public class ColorProperty extends StringProperty {
 	
 	@Override
     public void setStringValue(String col) {
+        /*
 		if (col == null || col.length() == 0) {
 			setColorValue(null);
 		}
@@ -37,9 +37,10 @@ public class ColorProperty extends StringProperty {
 			catch (NumberFormatException ex) {
 				AndroidEditor.instance().error(ex);
 			}
-		}
+		}*/
+		super.setStringValue(col);
 	}
-	
+	/*
 	public static Color parseColor(String col) {
 		if (col.length() == 0) {
 			return null;
@@ -93,11 +94,15 @@ public class ColorProperty extends StringProperty {
 		this.c = c;
 		super.setStringValue(makeColor(this.c));
 	}
+	*/
 	
+	public String getColorValue() {
+	    return c;
+	}
 	public static final int readHex(String in) {
 		return Integer.parseInt(in, 16);
 	}
-	
+	/*
 	public static final String makeColor(java.awt.Color c) {
 		if (c == null)
 			return "";
@@ -106,7 +111,7 @@ public class ColorProperty extends StringProperty {
 				hexString(c.getGreen())+
 				hexString(c.getBlue());
 	}
-	
+	*/
 	public static final String hexString(int c) {
 		String res = Integer.toHexString(c);
 		if (res.length() == 1) {

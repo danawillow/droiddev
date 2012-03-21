@@ -1,11 +1,11 @@
 package com.droiddev.client.widget;
 
-import com.google.gwt.canvas.dom.client.Context
-import com.google.gwt.canvas.dom.client.Context2d
+import com.google.gwt.canvas.dom.client.Context;
+import com.google.gwt.canvas.dom.client.Context2d;
 
 import java.util.Vector;
 
-import org.droiddraw.AndroidEditor;
+//import com.droiddev.client.AndroidEditor;
 
 public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	protected Vector<Widget> widgets;
@@ -24,12 +24,12 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	public void addWidget(Widget w) {
 		assert (w != this);
 		widgets.add(w);
-		w.setParent(this);
+		w.setParentLayout(this);
 		addEditableProperties(w);
 		positionWidget(w);
 		this.readWidthHeight();
-		if (getParent() != null) {
-			getParent().repositionAllWidgets();
+		if (getParentLayout() != null) {
+			getParentLayout().repositionAllWidgets();
 		}
 	}
 	
@@ -68,17 +68,17 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 		}
 		g2d.translate(-getX(),-getY());
 		*/
-		Context2D g2d= (Context2D)g;
+		Context2d g2d= (Context2d)g;
 		
 		drawBackground(g);
 		g2d.translate(getX(), getY());
 		
-		g.setFillStyle("#000");
-		g.setStrokeStyle("#000");
+		g2d.setFillStyle("#000");
+		g2d.setStrokeStyle("#000");
 		if (widgets.size() == 0) {
-			g.fillText(getTagName(), 2, 15);
+			g2d.fillText(getTagName(), 2, 15);
 		}
-		g.strokeRect(0, 0, getWidth(), getHeight());
+		g2d.strokeRect(0, 0, getWidth(), getHeight());
 		for (Widget w : widgets) {
 			if (w.isVisible())
 				w.paint(g);
@@ -182,7 +182,7 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	}
 	
 	public Widget copy() {
-		AndroidEditor.instance().error("Cloning layouts is not supported (yet)");
+		//AndroidEditor.instance().error("Cloning layouts is not supported (yet)");
 		return null;
 	}
 }

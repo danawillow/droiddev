@@ -2,10 +2,10 @@ package com.droiddev.client.widget;
 
 import java.util.Vector;
 
-import org.droiddraw.property.FloatProperty;
-import org.droiddraw.property.Property;
-import org.droiddraw.property.SelectProperty;
-import org.droiddraw.property.StringProperty;
+import com.droiddev.client.property.FloatProperty;
+import com.droiddev.client.property.Property;
+import com.droiddev.client.property.SelectProperty;
+import com.droiddev.client.property.StringProperty;
 
 public class LinearLayout extends AbstractLayout {
 	public static final String TAG_NAME = "LinearLayout";
@@ -46,6 +46,11 @@ public class LinearLayout extends AbstractLayout {
 		super.apply();
 		if (orientation != null)
 			vertical = "vertical".equals(orientation.getStringValue());
+			
+		if (widgets.size() == 0)
+		    this.setHTML(TAG_NAME);
+	    else
+	        this.setHTML("");
 	}
 
 	

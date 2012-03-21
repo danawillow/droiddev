@@ -2,7 +2,7 @@ package com.droiddev.client.property;
 
 //import java.beans.PropertyChangeEvent;
 
-import com.droiddev.AndroidEditor;
+import com.droiddev.client.AndroidEditor;
 
 public class StringProperty extends Property {
 	String value;

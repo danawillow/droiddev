@@ -1,6 +1,6 @@
 package com.droiddev.client.property;
 
-import com.droiddev.AndroidEditor;
+import com.droiddev.client.AndroidEditor;
 
 public class WidthProperty extends StringProperty {
 	public WidthProperty(String name, String attName, int defaultValue) {
