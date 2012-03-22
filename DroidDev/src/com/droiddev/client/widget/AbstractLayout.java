@@ -124,13 +124,13 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	}
 	
 
-	/*
+	
 	public void setPosition(int x, int y) {
 		super.setPosition(x, y);
-		//repositionAllWidgets();
+		repositionAllWidgets(); // this wasn't here in the droiddraw code, but it makes nested layouts work for me.
 		//apply();
 	}
-	*/
+	
 	
 	public abstract void positionWidget(Widget w);
 	public abstract void repositionAllWidgets();

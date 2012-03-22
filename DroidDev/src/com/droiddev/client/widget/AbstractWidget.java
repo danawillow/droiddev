@@ -174,11 +174,16 @@ public abstract class AbstractWidget implements Widget {
     }
 
     public void setPosition(int x, int y) {
-        //Window.alert("Setting position of " + tagName + " to " + x + ", " + y);
         this.x = x;
         this.y = y;
         if (canvas.getParent() != null) {
-            ((AbsolutePanel)canvas.getParent()).setWidgetPosition(canvas, x, y);
+        	int actualX = x;
+        	int actualY = y;
+        	if (this.getParentLayout() != null) {
+        		actualX += ((AbsolutePanel)canvas.getParent()).getWidgetLeft(this.getParentLayout().getCanvas());
+        		actualY += ((AbsolutePanel)canvas.getParent()).getWidgetTop(this.getParentLayout().getCanvas());
+        	}
+            ((AbsolutePanel)canvas.getParent()).setWidgetPosition(canvas, actualX, actualY);
         }
     }
 

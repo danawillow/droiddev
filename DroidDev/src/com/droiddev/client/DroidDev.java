@@ -1,5 +1,6 @@
 package com.droiddev.client;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import com.droiddev.client.util.DisplayMetrics;
@@ -15,6 +16,8 @@ import com.droiddev.client.widget.LinearLayout;
 import com.droiddev.client.widget.RadioButton;
 import com.droiddev.client.widget.RadioGroup;
 import com.droiddev.client.widget.RelativeLayout;
+import com.droiddev.client.widget.TableLayout;
+import com.droiddev.client.widget.TableRow;
 import com.droiddev.client.widget.TextView;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
@@ -40,6 +43,9 @@ public class DroidDev implements EntryPoint {
     
     Vector<String> all_props;
     Vector<String> layout_props;
+    
+    private HashMap<Element, Layout> elToLayout = new HashMap<Element, Layout>();
+    private HashMap<Element, Vector<String>> elToProps = new HashMap<Element, Vector<String>>();
     
     public void onModuleLoad() {
     	
@@ -83,6 +89,7 @@ public class DroidDev implements EntryPoint {
                             parseLayoutElement(messageDom.getDocumentElement());
                     		root.apply();
                     		root.repositionAllWidgets();
+                    		root.resizeForRendering();
                     		root.paint();
                     	}
                     });
@@ -158,6 +165,15 @@ public class DroidDev implements EntryPoint {
 			else if ( qName.equals( "FrameLayout" ) ) {
 				l = new FrameLayout();
 			}
+			else if ( qName.equals( "TableLayout" ) ) {
+				l = new TableLayout();
+				l.setPropertyByAttName( "android:stretchColumns", el.getAttribute( "android:stretchColumns" ) );
+			}
+			else if ( qName.equals( "TableRow" ) ) {
+				l = new TableRow();
+				l_props.add( "android:layout_column" );
+				l_props.add( "android:layout_span" );
+			}
             
             if (root == null) {
                 l.setPosition( AndroidEditor.OFFSET_X, AndroidEditor.OFFSET_Y );
@@ -169,7 +185,12 @@ public class DroidDev implements EntryPoint {
                 l.apply();
                 root = l;
             }
-            layout_props = l_props;
+            else {
+            	addWidget(l, el);
+            }
+            elToLayout.put(el, l);
+            elToProps.put(el, l_props);
+            //layout_props = l_props;
             
             //((AbstractLayout)l).setHTML(qName + " " + l.getWidth() + " " + l.getHeight());
             layoutPanel.add(l.getCanvas(), l.getX(), l.getY());
@@ -245,13 +266,14 @@ public class DroidDev implements EntryPoint {
         Layout layout = layoutStack.peek();
         */
         
-        for (String prop: layout_props) {
+        for (String prop: elToProps.get(el.getParentNode())) {
         	if (el.hasAttribute(prop)) {
         		w.setPropertyByAttName(prop, el.getAttribute(prop));
         	}
         }
         
-        Layout layout = root;
+        //Layout layout = root;
+        Layout layout = elToLayout.get(el.getParentNode());
         w.apply();
         if ( layout instanceof LinearLayout ) {
             w.setPosition( layout.getWidth(), layout.getHeight() );
