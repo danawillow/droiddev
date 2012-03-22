@@ -11,6 +11,7 @@ import com.droiddev.client.widget.Layout;
 import com.droiddev.client.widget.LinearLayout;
 import com.droiddev.client.widget.RadioButton;
 import com.droiddev.client.widget.RadioGroup;
+import com.droiddev.client.widget.RelativeLayout;
 import com.droiddev.client.widget.TextView;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
@@ -35,6 +36,7 @@ public class DroidDev implements EntryPoint {
     private Label text = new Label();
     
     Vector<String> all_props;
+    Vector<String> layout_props;
     
     public void onModuleLoad() {
     	
@@ -142,6 +144,12 @@ public class DroidDev implements EntryPoint {
                 l_props.add( "android:layout_gravity" );
                 l_props.add( "android:layout_weight" );
             }
+            else if ( qName.equals( "RelativeLayout" ) ) {
+				l = new RelativeLayout();
+				for ( int i = 0; i < RelativeLayout.propNames.length; i++ ) {
+					l_props.add( RelativeLayout.propNames[ i ] );
+				}
+			}
             
             if (root == null) {
                 l.setPosition( AndroidEditor.OFFSET_X, AndroidEditor.OFFSET_Y );
@@ -153,6 +161,7 @@ public class DroidDev implements EntryPoint {
                 l.apply();
                 root = l;
             }
+            layout_props = l_props;
             
             //((AbstractLayout)l).setHTML(qName + " " + l.getWidth() + " " + l.getHeight());
             layoutPanel.add(l.getCanvas(), l.getX(), l.getY());
@@ -227,6 +236,13 @@ public class DroidDev implements EntryPoint {
         }
         Layout layout = layoutStack.peek();
         */
+        
+        for (String prop: layout_props) {
+        	if (el.hasAttribute(prop)) {
+        		w.setPropertyByAttName(prop, el.getAttribute(prop));
+        	}
+        }
+        
         Layout layout = root;
         w.apply();
         if ( layout instanceof LinearLayout ) {
