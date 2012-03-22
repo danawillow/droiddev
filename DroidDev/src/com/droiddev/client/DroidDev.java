@@ -2,11 +2,14 @@ package com.droiddev.client;
 
 import java.util.Vector;
 
+import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
 import com.droiddev.client.util.ImagesReadyEvent;
+import com.droiddev.client.widget.AbsoluteLayout;
 import com.droiddev.client.widget.Button;
 import com.droiddev.client.widget.CheckBox;
 import com.droiddev.client.widget.EditView;
+import com.droiddev.client.widget.FrameLayout;
 import com.droiddev.client.widget.Layout;
 import com.droiddev.client.widget.LinearLayout;
 import com.droiddev.client.widget.RadioButton;
@@ -120,7 +123,9 @@ public class DroidDev implements EntryPoint {
         if (isLayout(qName)) {
             Layout l = null;
             Vector<String> l_props = new Vector<String>();
-            if ( qName.equals( "LinearLayout" ) || ( qName.equals( "RadioGroup" ) ) ) {
+			if ( qName.equals( "AbsoluteLayout" ) )
+				l = new AbsoluteLayout();
+			else if ( qName.equals( "LinearLayout" ) || ( qName.equals( "RadioGroup" ) ) ) {
 				if ( qName.equals( "LinearLayout" ) ) {
 					l = new LinearLayout();
 				}
@@ -149,6 +154,9 @@ public class DroidDev implements EntryPoint {
 				for ( int i = 0; i < RelativeLayout.propNames.length; i++ ) {
 					l_props.add( RelativeLayout.propNames[ i ] );
 				}
+			}
+			else if ( qName.equals( "FrameLayout" ) ) {
+				l = new FrameLayout();
 			}
             
             if (root == null) {
@@ -249,14 +257,14 @@ public class DroidDev implements EntryPoint {
             w.setPosition( layout.getWidth(), layout.getHeight() );
         }
         layout.addWidget( w );
-        /*
+        
         if ( layout instanceof AbsoluteLayout ) {
-            int x = DisplayMetrics.readSize( getValue(atts,  "android:layout_x" ) );
-            int y = DisplayMetrics.readSize( getValue(atts,  "android:layout_y" ) );
-            w.setPropertyByAttName( "android:layout_x", getValue(atts,  "android:layout_x" ) );
-            w.setPropertyByAttName( "android:layout_y", getValue(atts,  "android:layout_y" ) );
+            int x = DisplayMetrics.readSize( el.getAttribute("android:layout_x" ) );
+            int y = DisplayMetrics.readSize( el.getAttribute("android:layout_y" ) );
+            w.setPropertyByAttName( "android:layout_x", el.getAttribute( "android:layout_x" ) );
+            w.setPropertyByAttName( "android:layout_y", el.getAttribute( "android:layout_y" ) );
             w.setPosition( x, y );
         }
-        */
+        
     }
 }
