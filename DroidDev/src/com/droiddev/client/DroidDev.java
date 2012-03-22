@@ -14,6 +14,7 @@ import com.droiddev.client.widget.FrameLayout;
 import com.droiddev.client.widget.ImageView;
 import com.droiddev.client.widget.Layout;
 import com.droiddev.client.widget.LinearLayout;
+import com.droiddev.client.widget.ListView;
 import com.droiddev.client.widget.RadioButton;
 import com.droiddev.client.widget.RadioGroup;
 import com.droiddev.client.widget.RelativeLayout;
@@ -229,6 +230,9 @@ public class DroidDev implements EntryPoint {
 				else if ( qName.equals( "RadioButton" ) )
 					w = new RadioButton( txt );
 				w.setPropertyByAttName( "android:checked", el.getAttribute("android:checked" ) );
+			}
+			else if ( qName.equals( "ListView" ) ) {
+				w = new ListView();
 			}
 			else if ( qName.equals( "ImageView" ) ) {
 				w = new ImageView();
