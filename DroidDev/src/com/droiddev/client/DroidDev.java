@@ -1,27 +1,33 @@
 package com.droiddev.client;
 
+import java.util.Vector;
+
+import com.droiddev.client.util.ImageResources;
+import com.droiddev.client.util.ImagesReadyEvent;
+import com.droiddev.client.widget.Button;
+import com.droiddev.client.widget.CheckBox;
+import com.droiddev.client.widget.EditView;
+import com.droiddev.client.widget.Layout;
+import com.droiddev.client.widget.LinearLayout;
+import com.droiddev.client.widget.RadioButton;
+import com.droiddev.client.widget.RadioGroup;
+import com.droiddev.client.widget.TextView;
+import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.DOMException;
+import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
-
-import com.droiddev.client.widget.Button;
-import com.droiddev.client.widget.Layout;
-import com.droiddev.client.widget.LinearLayout;
-import com.droiddev.client.widget.TextView;
-import com.droiddev.client.widget.Widget;
-
-import java.util.Vector;
 
 public class DroidDev implements EntryPoint {
     private Layout root;
@@ -31,6 +37,7 @@ public class DroidDev implements EntryPoint {
     Vector<String> all_props;
     
     public void onModuleLoad() {
+    	
         RootPanel.get("preview").add(layoutPanel);
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
@@ -60,13 +67,34 @@ public class DroidDev implements EntryPoint {
                 
                 public void onResponseReceived(Request request, Response response) {
                     /* parse the XML document into a DOM */
-                    Document messageDom = XMLParser.parse(response.getText());
+                    final Document messageDom = XMLParser.parse(response.getText());
                     
-                    parseLayoutElement(messageDom.getDocumentElement());
-                    
-                    root.apply();
-                    root.repositionAllWidgets();
-                    root.paint();
+
+                	//start loading images
+                	ImageResources.instance();
+                    ImagesReadyEvent.register(AndroidEditor.EVENT_BUS, new ImagesReadyEvent.Handler() {
+                    	public void onImagesReady(ImagesReadyEvent event) {
+                    		Window.alert("Images ready, beginning to parse");
+                            parseLayoutElement(messageDom.getDocumentElement());
+                    		root.apply();
+                    		root.repositionAllWidgets();
+                    		root.paint();
+                    	}
+                    });
+                    /*
+                    WidgetReadyEvent.register(AndroidEditor.EVENT_BUS, new WidgetReadyEvent.Handler() {
+                    	public void onWidgetReady(WidgetReadyEvent event) {
+                    		numWR++;
+                    		Window.alert("numW = " + numW + ", numWR = " + numWR);
+                    		if (numW == numWR) {
+                                root.apply();
+                                Window.alert("finished root.apply");
+                                root.repositionAllWidgets();
+                                Window.alert("finished root.repositionAllWidgets");
+                                root.paint();
+                    		}
+                    	}
+                    });*/
                 }
             });
             
@@ -90,8 +118,14 @@ public class DroidDev implements EntryPoint {
         if (isLayout(qName)) {
             Layout l = null;
             Vector<String> l_props = new Vector<String>();
-            if (qName.equals("LinearLayout")) {
-                l = new LinearLayout();
+            if ( qName.equals( "LinearLayout" ) || ( qName.equals( "RadioGroup" ) ) ) {
+				if ( qName.equals( "LinearLayout" ) ) {
+					l = new LinearLayout();
+				}
+				else if ( qName.equals( "RadioGroup" ) ) {
+					l = new RadioGroup();
+					l.setPropertyByAttName( "android:checkedButton", el.getAttribute("android:checkedButton" ) );
+				}
                 l.setPropertyByAttName("android:gravity", el.getAttribute("android:gravity"));
                 
                 if (!el.hasAttribute("android:orientation")) {
@@ -137,6 +171,26 @@ public class DroidDev implements EntryPoint {
                     w.setPropertyByAttName( "android:textAlign", el.getAttribute("android:textAlign"));
                 }
             }
+            else if ( qName.equals( "EditText" ) ) {
+				String txt = el.getAttribute("android:text" );
+				EditView et = new EditView( txt );
+				String hint = el.getAttribute("android:hint");
+				if (hint != null) {
+					et.setPropertyByAttName("android:hint", hint);
+				}
+				for ( int i = 0; i < EditView.propertyNames.length; i++ ) {
+					et.setPropertyByAttName( EditView.propertyNames[ i ], el.getAttribute(EditView.propertyNames[ i ] ) );
+				}
+				w = et;
+			}
+            else if (qName.equals( "CheckBox" ) || qName.equals( "RadioButton" ) ) {
+				String txt = el.getAttribute("android:text" );
+				if ( qName.equals( "CheckBox" ) )
+					w = new CheckBox( txt );
+				else if ( qName.equals( "RadioButton" ) )
+					w = new RadioButton( txt );
+				w.setPropertyByAttName( "android:checked", el.getAttribute("android:checked" ) );
+			}
             if (w != null) {
             	addWidget(w, el);
             	layoutPanel.add(w.getCanvas(), w.getX(), w.getY());

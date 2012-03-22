@@ -1,11 +1,4 @@
 package com.droiddev.client.widget;
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-
-/*import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;*/
 import java.util.Vector;
 
 import com.droiddev.client.AndroidEditor;
@@ -15,6 +8,10 @@ import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.property.WidthProperty;
 import com.droiddev.client.util.DisplayMetrics;
+import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.Context;
+import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 
 
 public abstract class AbstractWidget implements Widget {

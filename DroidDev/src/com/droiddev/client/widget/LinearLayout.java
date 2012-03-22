@@ -199,7 +199,7 @@ public class LinearLayout extends AbstractLayout {
 					w.setPosition(x+extra, y);
 				}
 			}
-			if (vertical) {			
+			if (vertical) {
 				y+=w.getHeight()+w.getPadding(Widget.BOTTOM)+w.getMargin(Widget.BOTTOM);
 				if (with_weight.contains(w)) {
 					y+=share;

@@ -1,12 +1,9 @@
 package com.droiddev.client.widget;
 
 import com.droiddev.client.property.StringProperty;
+import com.droiddev.client.util.ImageResources;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.event.dom.client.LoadEvent;
-import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.RootPanel;
 
 public class Button extends TextView {
 
@@ -37,11 +34,9 @@ public class Button extends TextView {
 				this.img = new NineWayImage(img_base, 10, 10);
 			}
 		}
-		*/
-		img_base = new Image("images/btn_default_normal.9.png");
-		RootPanel.get().add(img_base);
-		img_base.setVisible(false);
-		
+		 */
+		img_base = ImageResources.instance().get("btn_default_normal.9.png");
+
 		this.onClick = new StringProperty("Click Listener Classname", "android:onClickListener", null);
 		addProperty(onClick);
 		apply();
@@ -54,7 +49,7 @@ public class Button extends TextView {
 		//this.addStyleDependentName("button");
 	}
 
-	
+
 	@Override
 	protected int getContentHeight() {
 		if (img_base != null) {
@@ -73,7 +68,7 @@ public class Button extends TextView {
 		}
 		return w;
 	}
-	
+
 
 	/*
 	@Override
@@ -96,20 +91,16 @@ public class Button extends TextView {
 		drawText(g, 0, getHeight()/2+fontSize/2-5, CENTER);
 		//g.drawString(text.getStringValue(), getX()+getWidth()/2-w/2, getY()+fontSize+2);
 	}
-	*/
-	
+	 */
+
 	@Override
 	public void paint() {
 		canvas.setCoordinateSpaceWidth(getWidth());
 		canvas.setCoordinateSpaceHeight(getHeight());
-		img_base.addLoadHandler(new LoadHandler() {
-			public void onLoad(LoadEvent event) {
-				ImageElement imageElement = ImageElement.as(img_base.getElement());
-				//Window.alert("Drawing image width: " + getWidth() + ", height: " + getHeight());
-				//canvas.getContext2d().fillRect(0, 0, getWidth(), getHeight());
-				canvas.getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
-				drawText(0, getHeight()/2+fontSize/2-5, CENTER);
-			}
-		});
+		ImageElement imageElement = ImageElement.as(img_base.getElement());
+		//Window.alert("Drawing image width: " + getWidth() + ", height: " + getHeight());
+		//canvas.getContext2d().fillRect(0, 0, getWidth(), getHeight());
+		canvas.getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
+		drawText(0, getHeight()/2+fontSize/2-5, CENTER);
 	}
 }

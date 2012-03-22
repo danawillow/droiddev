@@ -7,7 +7,6 @@ import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
-import com.google.gwt.user.client.Window;
 
 public class TextView extends AbstractWidget {
 	public static final String TAG_NAME = "TextView";
@@ -196,7 +195,7 @@ public class TextView extends AbstractWidget {
 			}
 			else if (align == CENTER) {
 				tx = getWidth()/2-l/2+dx;
-				Window.alert("Width: " + getWidth() + ", l: " + l + ", dx: " + dx);
+				//Window.alert("Width: " + getWidth() + ", l: " + l + ", dx: " + dx);
 			}
 			else {
 				tx = pad_x/2+dx;
