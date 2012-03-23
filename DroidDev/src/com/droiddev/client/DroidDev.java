@@ -23,15 +23,18 @@ import com.droiddev.client.widget.TableRow;
 import com.droiddev.client.widget.TextView;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -42,6 +45,10 @@ public class DroidDev implements EntryPoint {
     private Layout root;
     private AbsolutePanel layoutPanel = new AbsolutePanel();
     private Label text = new Label();
+    private HorizontalPanel mainPanel = new HorizontalPanel();
+    //private TextArea code = new TextArea();
+    private CodeMirrorTextArea code = new CodeMirrorTextArea("code");
+    private ImageResources imageResources = ImageResources.instance();
     
     Vector<String> all_props;
     Vector<String> layout_props;
@@ -50,12 +57,24 @@ public class DroidDev implements EntryPoint {
     private HashMap<Element, Vector<String>> elToProps = new HashMap<Element, Vector<String>>();
     
     public void onModuleLoad() {
+        //RootPanel.get("preview").add(layoutPanel);
+    	RootPanel.get().add(mainPanel);
     	
-        RootPanel.get("preview").add(layoutPanel);
+    	
+    	code.setCharacterWidth(50);
+        code.setVisibleLines(25);
+    	mainPanel.add(code);
+        
+        com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		generatePreview(code.getText());
+        	}
+        });
+        mainPanel.add(previewButton);
+    	
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
-        //mainPanel.add(text);
-        //mainPanel.add(layoutPanel);
+    	mainPanel.add(layoutPanel);
         
 
         all_props = new Vector<String>();
@@ -79,36 +98,8 @@ public class DroidDev implements EntryPoint {
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                    /* parse the XML document into a DOM */
-                    final Document messageDom = XMLParser.parse(response.getText());
-                    
-
-                	//start loading images
-                	ImageResources.instance();
-                    ImagesReadyEvent.register(AndroidEditor.EVENT_BUS, new ImagesReadyEvent.Handler() {
-                    	public void onImagesReady(ImagesReadyEvent event) {
-                    		Window.alert("Images ready, beginning to parse");
-                            parseLayoutElement(messageDom.getDocumentElement());
-                    		root.apply();
-                    		root.repositionAllWidgets();
-                    		root.resizeForRendering();
-                    		root.paint();
-                    	}
-                    });
-                    /*
-                    WidgetReadyEvent.register(AndroidEditor.EVENT_BUS, new WidgetReadyEvent.Handler() {
-                    	public void onWidgetReady(WidgetReadyEvent event) {
-                    		numWR++;
-                    		Window.alert("numW = " + numW + ", numWR = " + numWR);
-                    		if (numW == numWR) {
-                                root.apply();
-                                Window.alert("finished root.apply");
-                                root.repositionAllWidgets();
-                                Window.alert("finished root.repositionAllWidgets");
-                                root.paint();
-                    		}
-                    	}
-                    });*/
+                	code.setText(response.getText());
+                    generatePreview(response.getText());
                 }
             });
             
@@ -118,6 +109,31 @@ public class DroidDev implements EntryPoint {
         catch (RequestException e) {
             text.setText("Request exception: " + e.getMessage());
         }
+    }
+    
+    public void generatePreview(final String text) {
+    	if (imageResources.isReady())
+    		doGeneratePreview(text);
+    	else {
+    		ImagesReadyEvent.register(AndroidEditor.EVENT_BUS, new ImagesReadyEvent.Handler() {
+    			public void onImagesReady(ImagesReadyEvent event) {
+    				//Window.alert("Images ready, beginning to parse");
+    				doGeneratePreview(text);
+    			}
+    		});
+    	}
+    }
+    
+    private void doGeneratePreview(String text) {
+    	/* parse the XML document into a DOM */
+        Document messageDom = XMLParser.parse(text);
+        layoutPanel.clear();
+        root = null;
+        parseLayoutElement(messageDom.getDocumentElement());
+		root.apply();
+		root.repositionAllWidgets();
+		root.resizeForRendering();
+		root.paint();
     }
     
     protected boolean isLayout( String name ) {
