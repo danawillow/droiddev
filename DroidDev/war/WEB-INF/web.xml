@@ -16,6 +16,16 @@
     <url-pattern>/droiddev/droidDev</url-pattern>
   </servlet-mapping>
   
+   <servlet>
+    <servlet-name>listFiles</servlet-name>
+    <servlet-class>com.droiddev.server.ListFiles</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>listFiles</servlet-name>
+    <url-pattern>/droiddev/droidDev</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>DroidDev.html</welcome-file>

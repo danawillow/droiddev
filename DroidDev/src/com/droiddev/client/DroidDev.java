@@ -24,6 +24,7 @@ import com.droiddev.client.widget.TextView;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -31,6 +32,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -38,6 +40,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Document;
@@ -64,6 +68,36 @@ public class DroidDev implements EntryPoint {
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
     	RootPanel.get().add(mainPanel);
+    	final Tree t = new Tree();
+    	mainPanel.add(t);
+    	
+    	RequestBuilder listFilesRB = new RequestBuilder(RequestBuilder.GET, URL.encode(GWT.getModuleBaseURL() + "droidDev"));
+    	try {
+    		listFilesRB.sendRequest(null, new RequestCallback() {
+				@Override
+				public void onResponseReceived(Request request,
+						Response response) {
+					if (response.getStatusCode() == 200) {
+						JsArray<DirInfo> dirInfo = asArrayOfDirInfo(response.getText());
+						for (int i = 0; i < dirInfo.length(); i++) {
+							TreeItem item = dirInfoToTreeItem(dirInfo.get(i));
+							t.addItem(item);
+							item.setState(true);
+						}
+					}
+					else {
+						GWT.log("Couldn't retrieve JSON: " + response.getStatusText());
+					}
+				}
+
+				@Override
+				public void onError(Request request, Throwable exception) {
+					GWT.log("Couldn't retrieve JSON");
+				}
+    		});
+    	} catch (RequestException e) {
+    		GWT.log("Couldn't retrieve JSON");
+    	}
     	
     	VerticalPanel vp = new VerticalPanel();
     	code.setCharacterWidth(50);
@@ -163,6 +197,27 @@ public class DroidDev implements EntryPoint {
         catch (RequestException e) {
             text.setText("Request exception: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Convert the string of JSON into JavaScript object.
+     */
+    private final native JsArray<DirInfo> asArrayOfDirInfo(String json) /*-{
+      return eval(json);
+    }-*/;
+    
+    public TreeItem dirInfoToTreeItem(DirInfo d) {
+    	TreeItem item = new TreeItem(d.getName());
+    	
+    	JsArray<DirInfo> children = d.getChildren();
+    	
+    	for (int i = 0; i < children.length(); i++) {
+    		TreeItem child = dirInfoToTreeItem(children.get(i));
+    		item.addItem(child);
+    		child.setState(true);
+    	}
+    	
+    	return item;
     }
     
     public void generatePreview(final String text) {
