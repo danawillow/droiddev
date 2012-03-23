@@ -33,6 +33,8 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -70,15 +72,46 @@ public class DroidDev implements EntryPoint {
     	
     	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save", new ClickHandler() {
     		public void onClick(ClickEvent event) {
-    			service.saveFile("main.xml", code.getText(), new AsyncCallback<Void>() {
+    			service.saveFile("HelloAndroid/res/layout/main.xml", code.getText(), new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						GWT.log("failure");
 					}
 
 					@Override
 					public void onSuccess(Void result) {
-						GWT.log("success");
+						final DialogBox dialog = new DialogBox();
+						dialog.setHTML("Build results");
+						dialog.setWidth("500px");
+						dialog.setHeight("500px");
+						
+						final VerticalPanel dialogPanel = new VerticalPanel();
+						final HTML contents = new HTML();
+						contents.setHTML("Building...");
+						contents.setHeight("470px");
+						contents.getElement().getStyle().setProperty("overflow", "auto");
+						dialogPanel.add(contents);
+						dialog.setWidget(dialogPanel);
+						
+						dialog.center();
+						dialog.show();
+						service.build(new AsyncCallback<String>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								GWT.log("failure");
+							}
+
+							@Override
+							public void onSuccess(String result) {
+								contents.setHTML(result);
+								com.google.gwt.user.client.ui.Button closeButton = new com.google.gwt.user.client.ui.Button("Close", new ClickHandler() {
+									public void onClick(ClickEvent event) {
+										dialog.hide();
+									}
+								});
+								dialogPanel.add(closeButton);
+								dialog.center();
+							}
+						});
 					}
     			});
     		}
@@ -111,7 +144,7 @@ public class DroidDev implements EntryPoint {
         all_props.add( "android:layout_marginRight" );
         
         /* Get XML file */
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "main.xml");
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "HelloAndroid/res/layout/main.xml");
         try {
             builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {

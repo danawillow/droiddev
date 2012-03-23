@@ -7,4 +7,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DroidDevService extends RemoteService {
 	
 	public void saveFile(String fileName, String contents);
+	
+	public String build();
 }
