@@ -23,6 +23,7 @@ import com.droiddev.client.widget.TableRow;
 import com.droiddev.client.widget.TextView;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -30,11 +31,12 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -49,6 +51,7 @@ public class DroidDev implements EntryPoint {
     //private TextArea code = new TextArea();
     private CodeMirrorTextArea code = new CodeMirrorTextArea("code");
     private ImageResources imageResources = ImageResources.instance();
+    private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
     
     Vector<String> all_props;
     Vector<String> layout_props;
@@ -60,10 +63,28 @@ public class DroidDev implements EntryPoint {
         //RootPanel.get("preview").add(layoutPanel);
     	RootPanel.get().add(mainPanel);
     	
-    	
+    	VerticalPanel vp = new VerticalPanel();
     	code.setCharacterWidth(50);
         code.setVisibleLines(25);
-    	mainPanel.add(code);
+    	vp.add(code);
+    	
+    	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save", new ClickHandler() {
+    		public void onClick(ClickEvent event) {
+    			service.saveFile("main.xml", code.getText(), new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("failure");
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						GWT.log("success");
+					}
+    			});
+    		}
+    	});
+    	vp.add(saveButton);
+    	mainPanel.add(vp);
         
         com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
         	public void onClick(ClickEvent event) {
