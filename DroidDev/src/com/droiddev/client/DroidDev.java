@@ -106,6 +106,7 @@ public class DroidDev implements EntryPoint {
 							@Override
 							public void onSelection(
 									SelectionEvent<TreeItem> event) {
+								fileContents.put(currFile, code.getText());
 								currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
 								if (currFile.endsWith(".xml")) {
 									code.setText(fileContents.get(currFile));
