@@ -88,7 +88,7 @@ public class DroidDev implements EntryPoint {
     }
     
     public void listFiles() {
-    	RequestBuilder listFilesRB = new RequestBuilder(RequestBuilder.GET, URL.encode(GWT.getModuleBaseURL() + "droidDev"));
+    	RequestBuilder listFilesRB = new RequestBuilder(RequestBuilder.GET, URL.encode(GWT.getModuleBaseURL() + "listFiles"));
     	try {
     		listFilesRB.sendRequest(null, new RequestCallback() {
 				@Override
@@ -106,7 +106,9 @@ public class DroidDev implements EntryPoint {
 							@Override
 							public void onSelection(
 									SelectionEvent<TreeItem> event) {
-								fileContents.put(currFile, code.getText());
+								if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
+									fileContents.put(currFile, code.getText());
+								
 								currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
 								if (currFile.endsWith(".xml")) {
 									code.setText(fileContents.get(currFile));
@@ -195,9 +197,12 @@ public class DroidDev implements EntryPoint {
         code.setVisibleLines(25);
     	vp.add(code);
     	
-    	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save", new ClickHandler() {
+    	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save and Build", new ClickHandler() {
     		public void onClick(ClickEvent event) {
-    			service.saveFile("HelloAndroid/res/layout/main.xml", code.getText(), new AsyncCallback<Void>() {
+    			if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
+    				fileContents.put(currFile, code.getText());
+    			
+    			service.saveFile(fileContents, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
 					}

@@ -23,7 +23,7 @@
 
   <servlet-mapping>
     <servlet-name>listFiles</servlet-name>
-    <url-pattern>/droiddev/droidDev</url-pattern>
+    <url-pattern>/droiddev/listFiles</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

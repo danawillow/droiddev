@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 
 import com.droiddev.client.DroidDevService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -13,14 +14,16 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDevService {
 	@Override
-	public void saveFile(String fileName, String contents) {
+	public void saveFile(HashMap<String, String> fileContents) {
 		BufferedWriter writer;
-		try {
-			writer = new BufferedWriter(new FileWriter(fileName));
-			writer.write(contents);
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (String fileName: fileContents.keySet()) {
+			try {
+				writer = new BufferedWriter(new FileWriter(fileName));
+				writer.write(fileContents.get(fileName));
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
