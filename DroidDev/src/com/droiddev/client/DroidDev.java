@@ -1,5 +1,6 @@
 package com.droiddev.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -65,12 +66,26 @@ public class DroidDev implements EntryPoint {
     private HashMap<Element, Layout> elToLayout = new HashMap<Element, Layout>();
     private HashMap<Element, Vector<String>> elToProps = new HashMap<Element, Vector<String>>();
     
+
+	private Tree fileTree = new Tree();
+    private ArrayList<String> fileNames = new ArrayList<String>();
+    private HashMap<String, String> fileContents = new HashMap<String, String>();
+    
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
     	RootPanel.get().add(mainPanel);
-    	final Tree t = new Tree();
-    	mainPanel.add(t);
-    	
+    	mainPanel.add(fileTree);
+
+        initProps();
+
+    	addCodePanelAndBuildButton();
+        
+        addPreviewButtonAndPane();
+        
+    	listFiles();
+    }
+    
+    public void listFiles() {
     	RequestBuilder listFilesRB = new RequestBuilder(RequestBuilder.GET, URL.encode(GWT.getModuleBaseURL() + "droidDev"));
     	try {
     		listFilesRB.sendRequest(null, new RequestCallback() {
@@ -80,9 +95,13 @@ public class DroidDev implements EntryPoint {
 					if (response.getStatusCode() == 200) {
 						JsArray<DirInfo> dirInfo = asArrayOfDirInfo(response.getText());
 						for (int i = 0; i < dirInfo.length(); i++) {
-							TreeItem item = dirInfoToTreeItem(dirInfo.get(i));
-							t.addItem(item);
+							TreeItem item = dirInfoToTreeItem(dirInfo.get(i), null);
+							fileTree.addItem(item);
 							item.setState(true);
+						}
+						
+						for (String name: fileNames) {
+							importFile(name);
 						}
 					}
 					else {
@@ -98,7 +117,57 @@ public class DroidDev implements EntryPoint {
     	} catch (RequestException e) {
     		GWT.log("Couldn't retrieve JSON");
     	}
+    }
+    
+    /**
+     * Convert the string of JSON into JavaScript object.
+     */
+    private final native JsArray<DirInfo> asArrayOfDirInfo(String json) /*-{
+      return eval(json);
+    }-*/;
+    
+    public TreeItem dirInfoToTreeItem(DirInfo d, DirInfo parent) {
+    	TreeItem item = new TreeItem(d.getName());
     	
+    	JsArray<DirInfo> children = d.getChildren();
+    	
+    	if (children.length() == 0) {
+    		fileNames.add(parent.getName() + "/" + d.getName());
+    	}
+    	
+    	for (int i = 0; i < children.length(); i++) {
+    		TreeItem child = dirInfoToTreeItem(children.get(i), d);
+    		item.addItem(child);
+    		child.setState(true);
+    	}
+    	
+    	return item;
+    }
+    
+    public void importFile(final String name) {
+    	RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, name);
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                    text.setText("Error!");
+                }
+                
+                public void onResponseReceived(Request request, Response response) {
+                	fileContents.put(name, response.getText());
+                	if (name.endsWith("/main.xml")) {
+                    	code.setText(response.getText());
+                        generatePreview(response.getText());
+                	}
+                }
+            });
+            
+        }
+        catch (RequestException e) {
+            text.setText("Request exception: " + e.getMessage());
+        }
+    }
+    
+    public void addCodePanelAndBuildButton() {
     	VerticalPanel vp = new VerticalPanel();
     	code.setCharacterWidth(50);
         code.setVisibleLines(25);
@@ -152,8 +221,10 @@ public class DroidDev implements EntryPoint {
     	});
     	vp.add(saveButton);
     	mainPanel.add(vp);
-        
-        com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
+    }
+    
+    public void addPreviewButtonAndPane() {
+    	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
         	public void onClick(ClickEvent event) {
         		generatePreview(code.getText());
         	}
@@ -163,9 +234,10 @@ public class DroidDev implements EntryPoint {
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
     	mainPanel.add(layoutPanel);
-        
-
-        all_props = new Vector<String>();
+    }
+    
+    public void initProps() {
+    	all_props = new Vector<String>();
         all_props.add( "android:layout_width" );
         all_props.add( "android:layout_height" );
         all_props.add( "android:background" );
@@ -176,48 +248,6 @@ public class DroidDev implements EntryPoint {
         all_props.add( "android:layout_marginBottom" );
         all_props.add( "android:layout_marginLeft" );
         all_props.add( "android:layout_marginRight" );
-        
-        /* Get XML file */
-        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, "HelloAndroid/res/layout/main.xml");
-        try {
-            builder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    text.setText("Error!");
-                }
-                
-                public void onResponseReceived(Request request, Response response) {
-                	code.setText(response.getText());
-                    generatePreview(response.getText());
-                }
-            });
-            
-        } catch (DOMException e) {
-            text.setText("Could not parse XML document.");
-        }
-        catch (RequestException e) {
-            text.setText("Request exception: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Convert the string of JSON into JavaScript object.
-     */
-    private final native JsArray<DirInfo> asArrayOfDirInfo(String json) /*-{
-      return eval(json);
-    }-*/;
-    
-    public TreeItem dirInfoToTreeItem(DirInfo d) {
-    	TreeItem item = new TreeItem(d.getName());
-    	
-    	JsArray<DirInfo> children = d.getChildren();
-    	
-    	for (int i = 0; i < children.length(); i++) {
-    		TreeItem child = dirInfoToTreeItem(children.get(i));
-    		item.addItem(child);
-    		child.setState(true);
-    	}
-    	
-    	return item;
     }
     
     public void generatePreview(final String text) {
@@ -234,15 +264,19 @@ public class DroidDev implements EntryPoint {
     }
     
     private void doGeneratePreview(String text) {
-    	/* parse the XML document into a DOM */
-        Document messageDom = XMLParser.parse(text);
-        layoutPanel.clear();
-        root = null;
-        parseLayoutElement(messageDom.getDocumentElement());
-		root.apply();
-		root.repositionAllWidgets();
-		root.resizeForRendering();
-		root.paint();
+    	try {
+    		/* parse the XML document into a DOM */
+    		Document messageDom = XMLParser.parse(text);
+    		layoutPanel.clear();
+    		root = null;
+    		parseLayoutElement(messageDom.getDocumentElement());
+    		root.apply();
+    		root.repositionAllWidgets();
+    		root.resizeForRendering();
+    		root.paint();
+    	} catch (DOMException e) {
+    		GWT.log("Could not parse XML");
+    	}
     }
     
     protected boolean isLayout( String name ) {
