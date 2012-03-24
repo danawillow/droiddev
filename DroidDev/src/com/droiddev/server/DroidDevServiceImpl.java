@@ -31,7 +31,7 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 	public String build() {
 		Runtime r = Runtime.getRuntime();
 		try {
-			Process p = r.exec("ant debug install", null, new File("HelloAndroid"));
+			Process p = r.exec("ant debug", null, new File("HelloAndroid"));
 			String s = "";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
@@ -39,6 +39,17 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 				s += line + "<br>";
 			}
 			reader.close();
+			
+			if (p.exitValue() != 0)
+				return s;
+			
+			p = r.exec("/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb -r install HelloAndroid/HelloAndroid-debug.apk");
+			reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			while ((line = reader.readLine()) != null) {
+				s += line + "<br>";
+			}
+			reader.close();
+			
 			return s;
 		} catch (IOException e) {
 			e.printStackTrace();
