@@ -1,6 +1,5 @@
 package com.droiddev.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -28,6 +27,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -68,8 +69,9 @@ public class DroidDev implements EntryPoint {
     
 
 	private Tree fileTree = new Tree();
-    private ArrayList<String> fileNames = new ArrayList<String>();
+    private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
     private HashMap<String, String> fileContents = new HashMap<String, String>();
+    private String currFile;
     
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
@@ -100,7 +102,25 @@ public class DroidDev implements EntryPoint {
 							item.setState(true);
 						}
 						
-						for (String name: fileNames) {
+						fileTree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+							@Override
+							public void onSelection(
+									SelectionEvent<TreeItem> event) {
+								currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
+								if (currFile.endsWith(".xml")) {
+									code.setText(fileContents.get(currFile));
+									code.setOption("mode", "xml");
+								}
+								else if (currFile.endsWith(".java")) {
+									code.setText(fileContents.get(currFile));
+									code.setOption("mode", "text/x-java");
+								}
+								else
+									code.setText("");
+							}
+						});
+						
+						for (String name: fileNamesToPaths.values()) {
 							importFile(name);
 						}
 					}
@@ -132,7 +152,7 @@ public class DroidDev implements EntryPoint {
     	JsArray<DirInfo> children = d.getChildren();
     	
     	if (children.length() == 0) {
-    		fileNames.add(parent.getName() + "/" + d.getName());
+    		fileNamesToPaths.put(d.getName(), parent.getName() + "/" + d.getName());
     	}
     	
     	for (int i = 0; i < children.length(); i++) {
@@ -155,6 +175,7 @@ public class DroidDev implements EntryPoint {
                 public void onResponseReceived(Request request, Response response) {
                 	fileContents.put(name, response.getText());
                 	if (name.endsWith("/main.xml")) {
+                		currFile = name;
                     	code.setText(response.getText());
                         generatePreview(response.getText());
                 	}

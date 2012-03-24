@@ -34,4 +34,21 @@ public class CodeMirrorTextArea extends TextArea {
 	private static native void setCodeMirrorText(JavaScriptObject cm, String s) /*-{
 		cm.setValue(s);
 	}-*/;
+	
+	@Override
+	public String getText() {
+		return getCodeMirrorText(cm);
+	}
+	
+	private static native String getCodeMirrorText(JavaScriptObject cm) /*-{
+		return cm.getValue();
+	}-*/;
+	
+	public void setOption(String name, String value) {
+		setCMOption(cm, name, value);
+	}
+	
+	private static native void setCMOption(JavaScriptObject cm, String name, String value) /*-{
+		cm.setOption(name, value);
+	}-*/;
 }
