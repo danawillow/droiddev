@@ -210,7 +210,7 @@ public class LinearLayout extends AbstractLayout {
 				if (with_weight.contains(w)) {
 					x+=share;
 				}
-			}	
+			}
 		}
 	}
 

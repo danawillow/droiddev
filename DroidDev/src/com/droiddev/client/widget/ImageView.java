@@ -69,11 +69,11 @@ public class ImageView extends AbstractWidget {
 	 */
 	
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
 		if (paint != null) {
 			ImageElement imageElement = ImageElement.as(paint.getElement());
-			canvas.getContext2d().drawImage(imageElement, 0, 0);
+			getCanvas().getContext2d().drawImage(imageElement, 0, 0);
 		}
 	}
 }

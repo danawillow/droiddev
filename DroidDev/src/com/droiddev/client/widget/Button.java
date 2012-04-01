@@ -95,12 +95,12 @@ public class Button extends TextView {
 
 	@Override
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
 		ImageElement imageElement = ImageElement.as(img_base.getElement());
 		//Window.alert("Drawing image width: " + getWidth() + ", height: " + getHeight());
 		//canvas.getContext2d().fillRect(0, 0, getWidth(), getHeight());
-		canvas.getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
+		getCanvas().getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
 		drawText(0, getHeight()/2+fontSize/2-5, CENTER);
 	}
 }

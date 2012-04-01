@@ -3,8 +3,9 @@ package com.droiddev.client;
 import java.util.HashMap;
 import java.util.Vector;
 
+import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
-import com.allen_sauer.gwt.dnd.client.drop.AbsolutePositionDropController;
+import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
 import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
 import com.droiddev.client.util.ImagesReadyEvent;
@@ -84,7 +85,19 @@ public class DroidDev implements EntryPoint {
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
     	RootPanel.get().add(mainPanel);
-    	dragController = new PickupDragController(RootPanel.get(), false);
+    	dragController = new PickupDragController(RootPanel.get(), false) {
+    		@Override
+    		protected com.google.gwt.user.client.ui.Widget newDragProxy(DragContext context) {
+    			AbsolutePanel container = new AbsolutePanel();
+    		    container.getElement().getStyle().setProperty("overflow", "visible");
+    		    Button b = new Button(Button.TAG_NAME);
+    		    b.apply();
+    		    b.paint();
+    			container.add(b.getCanvasWidget());
+    			return container;
+    		}
+    	};
+    	dragController.setBehaviorDragProxy(true);
     	mainPanel.add(fileTree);
 
         initProps();
@@ -283,7 +296,18 @@ public class DroidDev implements EntryPoint {
         layoutPanel.addStyleName("previewPane");
     	mainPanel.add(layoutPanel);
     	
-    	AbsolutePositionDropController dropController = new AbsolutePositionDropController(layoutPanel);
+    	SimpleDropController dropController = new SimpleDropController(layoutPanel) {
+    		public void onDrop(DragContext context) {
+    			GWT.log(((CanvasWidget)(context.draggable)).widget.getTagName());
+    			Button b = new Button(Button.TAG_NAME);
+				if (root instanceof LinearLayout) {
+					b.setPosition(root.getWidth(), root.getHeight());
+				}
+				root.addWidget(b);
+            	layoutPanel.add(b.getCanvasWidget(), b.getX(), b.getY());
+	    		root.paint();
+    		}
+    	};
     	dragController.registerDropController(dropController);
     }
 
@@ -291,8 +315,8 @@ public class DroidDev implements EntryPoint {
     	Button b = new Button(Button.TAG_NAME);
     	b.apply();
     	b.paint();
-    	widgetPanel.add(b.getCanvas());
-    	dragController.makeDraggable(b.getCanvas());
+    	widgetPanel.add(b.getCanvasWidget());
+    	dragController.makeDraggable(b.getCanvasWidget(), b.getCanvas());
     	// note: it looks like I can't have both draggable and double click
     	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
 			@Override
@@ -431,7 +455,7 @@ public class DroidDev implements EntryPoint {
             //layout_props = l_props;
             
             //((AbstractLayout)l).setHTML(qName + " " + l.getWidth() + " " + l.getHeight());
-            layoutPanel.add(l.getCanvas(), l.getX(), l.getY());
+            layoutPanel.add(l.getCanvasWidget(), l.getX(), l.getY());
         }
         else {
             Widget w = null;
@@ -476,7 +500,7 @@ public class DroidDev implements EntryPoint {
 			}
             if (w != null) {
             	addWidget(w, el);
-            	layoutPanel.add(w.getCanvas(), w.getX(), w.getY());
+            	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
             }
         }
         

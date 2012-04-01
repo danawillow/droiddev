@@ -99,19 +99,19 @@ public class CheckBox extends CompoundButton {
 
 	@Override
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
 		if ("true".equals(this.getPropertyByAttName("android:checked").getValue())) {
 			ImageElement imageElement = ImageElement.as(on.getElement());
-			canvas.getContext2d().drawImage(imageElement, 0, 0);
-			canvas.getContext2d().setFont(font);
-			canvas.getContext2d().fillText(getText(), on.getWidth(), (on.getHeight()+fontSize)/2 - 4);
+			getCanvas().getContext2d().drawImage(imageElement, 0, 0);
+			getCanvas().getContext2d().setFont(font);
+			getCanvas().getContext2d().fillText(getText(), on.getWidth(), (on.getHeight()+fontSize)/2 - 4);
 		}
 		else {
 			ImageElement imageElement = ImageElement.as(off.getElement());
-			canvas.getContext2d().drawImage(imageElement, 0, 0);
-			canvas.getContext2d().setFont(font);
-			canvas.getContext2d().fillText(getText(), off.getWidth(), (off.getHeight()+fontSize)/2 - 4);
+			getCanvas().getContext2d().drawImage(imageElement, 0, 0);
+			getCanvas().getContext2d().setFont(font);
+			getCanvas().getContext2d().fillText(getText(), off.getWidth(), (off.getHeight()+fontSize)/2 - 4);
 		}
 	}
 }

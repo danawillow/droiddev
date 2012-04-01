@@ -138,7 +138,7 @@ public class TextView extends AbstractWidget {
 		if (str == null)
 			return 0;
 		//return bg.getGraphics().getFontMetrics(f).stringWidth(str);
-		return str.length()*(fontSize-1) + 2; // FIX THIS ANOTHER TIME: http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/canvas/dom/client/Context2d.html#measureText(java.lang.String)
+		return str.length()*(fontSize-1) + 2; // FIX THIS ANOTHER TIME: http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/getCanvas()/dom/client/Context2d.html#measureText(java.lang.String)
 		//return FontMetrics.stringWidth("14pt Arial", str);
 	}
 
@@ -201,8 +201,8 @@ public class TextView extends AbstractWidget {
 				tx = pad_x/2+dx;
 			}
 			//g.drawString(s, tx, getY()+h);
-			canvas.getContext2d().setFont(font);
-			canvas.getContext2d().fillText(getText(), tx, h);
+			getCanvas().getContext2d().setFont(font);
+			getCanvas().getContext2d().fillText(getText(), tx, h);
 			h += fontSize+1;
 			if (h > getHeight())
 				break;
@@ -239,9 +239,9 @@ public class TextView extends AbstractWidget {
 	*/
 	
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
-		canvas.getContext2d().setFont("14pt Arial");
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
+		getCanvas().getContext2d().setFont("14pt Arial");
 	    drawText(0, fontSize+pad_y/2);
 	}
 

@@ -1,10 +1,10 @@
 package com.droiddev.client.widget;
 
-import com.google.gwt.canvas.client.Canvas;
-
-import com.droiddev.client.property.Property;
-
 import java.util.Vector;
+
+import com.droiddev.client.CanvasWidget;
+import com.droiddev.client.property.Property;
+import com.google.gwt.canvas.client.Canvas;
 
 public interface Widget extends Cloneable {
     public static final int TOP = 0;
@@ -44,6 +44,7 @@ public interface Widget extends Cloneable {
     public boolean isVisible();
     
     public Canvas getCanvas();
+    public CanvasWidget getCanvasWidget();
 
     public int getMargin(int which);
 

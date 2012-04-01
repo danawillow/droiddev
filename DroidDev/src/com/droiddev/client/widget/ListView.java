@@ -38,12 +38,12 @@ public class ListView extends AbstractWidget {
 	*/
 	
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
-		canvas.getContext2d().setFont(font);
-		canvas.getContext2d().setFillStyle("#888");
-		canvas.getContext2d().setStrokeStyle("#888");
-		canvas.getContext2d().fillText("ListView", 2, 14);
-		canvas.getContext2d().strokeRect(0, 0, getWidth(), getHeight());
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
+		getCanvas().getContext2d().setFont(font);
+		getCanvas().getContext2d().setFillStyle("#888");
+		getCanvas().getContext2d().setStrokeStyle("#888");
+		getCanvas().getContext2d().fillText("ListView", 2, 14);
+		getCanvas().getContext2d().strokeRect(0, 0, getWidth(), getHeight());
 	}
 }

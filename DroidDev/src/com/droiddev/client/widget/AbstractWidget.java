@@ -2,6 +2,7 @@ package com.droiddev.client.widget;
 import java.util.Vector;
 
 import com.droiddev.client.AndroidEditor;
+import com.droiddev.client.CanvasWidget;
 import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
@@ -40,7 +41,8 @@ public abstract class AbstractWidget implements Widget {
 
     ColorProperty background;
     
-    Canvas canvas;
+    //Canvas canvas;
+    CanvasWidget canvas;
 
     public AbstractWidget(String tagName) {
         this.setTagName(tagName);
@@ -79,7 +81,7 @@ public abstract class AbstractWidget implements Widget {
 
         this.parent = null;
         
-        this.canvas = Canvas.createIfSupported();
+        this.canvas = new CanvasWidget(Canvas.createIfSupported(), this);
     }
 
 /*
@@ -87,8 +89,12 @@ public abstract class AbstractWidget implements Widget {
         this.listener = l;
     }*/
     
-    public Canvas getCanvas() {
+    public CanvasWidget getCanvasWidget() {
     	return canvas;
+    }
+    
+    public Canvas getCanvas() {
+    	return canvas.canvas;
     }
 
     public Layout getParentLayout() {
@@ -180,8 +186,8 @@ public abstract class AbstractWidget implements Widget {
         	int actualX = x;
         	int actualY = y;
         	if (this.getParentLayout() != null) {
-        		actualX += ((AbsolutePanel)canvas.getParent()).getWidgetLeft(this.getParentLayout().getCanvas());
-        		actualY += ((AbsolutePanel)canvas.getParent()).getWidgetTop(this.getParentLayout().getCanvas());
+        		actualX += ((AbsolutePanel)canvas.getParent()).getWidgetLeft(this.getParentLayout().getCanvasWidget());
+        		actualY += ((AbsolutePanel)canvas.getParent()).getWidgetTop(this.getParentLayout().getCanvasWidget());
         	}
             ((AbsolutePanel)canvas.getParent()).setWidgetPosition(canvas, actualX, actualY);
         }

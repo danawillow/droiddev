@@ -151,10 +151,10 @@ public class EditView extends TextView {
 
 	@Override
 	public void paint() {
-		canvas.setCoordinateSpaceWidth(getWidth());
-		canvas.setCoordinateSpaceHeight(getHeight());
+		getCanvas().setCoordinateSpaceWidth(getWidth());
+		getCanvas().setCoordinateSpaceHeight(getHeight());
 		ImageElement imageElement = ImageElement.as(img_base.getElement());
-		canvas.getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
+		getCanvas().getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
 		String s;
 		if (password.getBooleanValue()) {
 			s = "";
@@ -165,6 +165,6 @@ public class EditView extends TextView {
 			s = text.getStringValue();
 		}
 		drawText(0, (getHeight()+fontSize)/2-1, CENTER);
-		canvas.getContext2d().fillRect(pad_x/2-4, (getHeight()-fontSize)/2-3, 1, fontSize+5);
+		getCanvas().getContext2d().fillRect(pad_x/2-4, (getHeight()-fontSize)/2-3, 1, fontSize+5);
 	}
 }
