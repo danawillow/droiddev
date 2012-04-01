@@ -27,6 +27,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -38,6 +40,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -54,6 +57,7 @@ import com.google.gwt.xml.client.XMLParser;
 public class DroidDev implements EntryPoint {
     private Layout root;
     private AbsolutePanel layoutPanel = new AbsolutePanel();
+    private FlowPanel widgetPanel = new FlowPanel();
     private Label text = new Label();
     private HorizontalPanel mainPanel = new HorizontalPanel();
     //private TextArea code = new TextArea();
@@ -257,10 +261,46 @@ public class DroidDev implements EntryPoint {
         	}
         });
         mainPanel.add(previewButton);
+        
+        widgetPanel.setSize("200px", "480px");
+        if (imageResources.isReady())
+            addWidgetsToPanel();
+    	else {
+    		ImagesReadyEvent.register(AndroidEditor.EVENT_BUS, new ImagesReadyEvent.Handler() {
+    			public void onImagesReady(ImagesReadyEvent event) {
+    		        addWidgetsToPanel();
+    			}
+    		});
+    	}
+        mainPanel.add(widgetPanel);
     	
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
     	mainPanel.add(layoutPanel);
+    }
+
+    public void addWidgetsToPanel() {
+    	Button b = new Button(Button.TAG_NAME);
+    	b.apply();
+    	b.paint();
+    	widgetPanel.add(b.getCanvas());
+    	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event) {
+				if (root != null) {
+					Button b = new Button(Button.TAG_NAME);
+					if (root instanceof LinearLayout) {
+						b.setPosition(root.getWidth(), root.getHeight());
+					}
+					root.addWidget(b);
+	            	layoutPanel.add(b.getCanvas(), b.getX(), b.getY());
+					//root.apply();
+		    		//root.repositionAllWidgets();
+		    		//root.resizeForRendering();
+		    		root.paint();
+				}
+			}
+    	});
     }
     
     public void initProps() {
