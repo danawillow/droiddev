@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
+import com.allen_sauer.gwt.dnd.client.drop.AbsolutePositionDropController;
 import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
 import com.droiddev.client.util.ImagesReadyEvent;
@@ -281,6 +282,9 @@ public class DroidDev implements EntryPoint {
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
     	mainPanel.add(layoutPanel);
+    	
+    	AbsolutePositionDropController dropController = new AbsolutePositionDropController(layoutPanel);
+    	dragController.registerDropController(dropController);
     }
 
     public void addWidgetsToPanel() {
