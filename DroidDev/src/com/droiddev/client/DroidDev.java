@@ -289,6 +289,7 @@ public class DroidDev implements EntryPoint {
     	b.paint();
     	widgetPanel.add(b.getCanvas());
     	dragController.makeDraggable(b.getCanvas());
+    	// note: it looks like I can't have both draggable and double click
     	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {
