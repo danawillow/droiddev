@@ -30,8 +30,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DoubleClickEvent;
-import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -88,6 +86,11 @@ public class DroidDev implements EntryPoint {
     	dragController = new PickupDragController(RootPanel.get(), false) {
     		@Override
     		protected com.google.gwt.user.client.ui.Widget newDragProxy(DragContext context) {
+    			Widget w = createWidget(((CanvasWidget)(context.draggable)).widget.getTagName());
+    			w.apply();
+    			w.paint();
+    			return w.getCanvasWidget();
+    			/*
     			AbsolutePanel container = new AbsolutePanel();
     		    container.getElement().getStyle().setProperty("overflow", "visible");
     		    Button b = new Button(Button.TAG_NAME);
@@ -95,6 +98,7 @@ public class DroidDev implements EntryPoint {
     		    b.paint();
     			container.add(b.getCanvasWidget());
     			return container;
+    			*/
     		}
     	};
     	dragController.setBehaviorDragProxy(true);
@@ -290,6 +294,7 @@ public class DroidDev implements EntryPoint {
     			}
     		});
     	}
+        widgetPanel.addStyleName("widgetPanel");
         mainPanel.add(widgetPanel);
     	
         layoutPanel.setSize("320px", "480px");
@@ -298,13 +303,14 @@ public class DroidDev implements EntryPoint {
     	
     	SimpleDropController dropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
-    			GWT.log(((CanvasWidget)(context.draggable)).widget.getTagName());
-    			Button b = new Button(Button.TAG_NAME);
+    			//GWT.log(((CanvasWidget)(context.draggable)).widget.getTagName());
+    			//Button b = new Button(Button.TAG_NAME);
+    			Widget w = createWidget(((CanvasWidget)(context.draggable)).widget.getTagName());
 				if (root instanceof LinearLayout) {
-					b.setPosition(root.getWidth(), root.getHeight());
+					w.setPosition(root.getWidth(), root.getHeight());
 				}
-				root.addWidget(b);
-            	layoutPanel.add(b.getCanvasWidget(), b.getX(), b.getY());
+				root.addWidget(w);
+            	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();
     		}
     	};
@@ -312,12 +318,26 @@ public class DroidDev implements EntryPoint {
     }
 
     public void addWidgetsToPanel() {
+    	String[] widgets = {"Button", "TextView", "EditText", "RadioButton", "RadioGroup", "CheckBox", "ImageView"};
+
+    	for (String s: widgets) {
+    		Widget w = createWidget(s);
+    		w.apply();
+    		w.paint();
+    		widgetPanel.add(w.getCanvasWidget());
+    		dragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
+    	}
+    	
+    	/*
     	Button b = new Button(Button.TAG_NAME);
     	b.apply();
     	b.paint();
     	widgetPanel.add(b.getCanvasWidget());
     	dragController.makeDraggable(b.getCanvasWidget(), b.getCanvas());
+    	*/
+    	
     	// note: it looks like I can't have both draggable and double click
+    	/*
     	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {
@@ -335,6 +355,7 @@ public class DroidDev implements EntryPoint {
 				}
 			}
     	});
+    	*/
     }
     
     public void initProps() {
@@ -558,4 +579,74 @@ public class DroidDev implements EntryPoint {
         }
         
     }
+
+    public Widget createWidget(String str) {
+		/*if (str.equals(ToggleButton.TAG_NAME))
+			return new ToggleButton("Toggle On", "Toggle Off");
+		else */if (str.equals(Button.TAG_NAME))
+			return new Button(Button.TAG_NAME);
+		else if (str.equals(CheckBox.TAG_NAME))
+			return new CheckBox(CheckBox.TAG_NAME);
+		else if (str.equals(EditView.TAG_NAME))
+			return new EditView(EditView.TAG_NAME);
+		else if (str.equals(TextView.TAG_NAME))
+			return new TextView(TextView.TAG_NAME);
+		/*else if (str.equals(AnalogClock.TAG_NAME))
+			return new AnalogClock();
+		else if (str.equals(DigitalClock.TAG_NAME))
+			return new DigitalClock();
+		else if (str.equals(ProgressBar.TAG_NAME))
+			return new ProgressBar();*/
+		else if (str.equals(LinearLayout.TAG_NAME))
+			return new LinearLayout();
+		else if (str.equals(AbsoluteLayout.TAG_NAME))
+			return new AbsoluteLayout();
+		else if (str.equals(RelativeLayout.TAG_NAME))
+			return new RelativeLayout();
+		else if (str.equals(RadioButton.TAG_NAME))
+			return new RadioButton(RadioButton.TAG_NAME);
+		else if (str.equals(RadioGroup.TAG_NAME))
+			return new RadioGroup();
+		/*else if (str.equals(TimePicker.TAG_NAME))
+			return new TimePicker();*/
+		else if (str.equals(ListView.TAG_NAME))
+			return new ListView();
+		/*else if (str.equals(Ticker.TAG_NAME))
+			return new Ticker();
+		else if (str.equals(Spinner.TAG_NAME))
+			return new Spinner();*/
+		else if (str.equals(ImageView.TAG_NAME))
+			return new ImageView();
+		/*else if (str.equals(ImageButton.TAG_NAME))
+			return new ImageButton();
+		else if (str.equals(AutoCompleteTextView.TAG_NAME))
+			return new AutoCompleteTextView("AutoComplete");*/
+		else if (str.equals(TableRow.TAG_NAME))
+			return new TableRow();
+		else if (str.equals(TableLayout.TAG_NAME))
+			return new TableLayout();
+		else if (str.equals(FrameLayout.TAG_NAME))
+			return new FrameLayout();
+		/*else if (str.equals(ScrollView.TAG_NAME))
+			return new ScrollView();
+		else if (str.equals(GridView.TAG_NAME))
+			return new GridView();
+		else if (str.equals(Gallery.TAG_NAME))
+			return new Gallery();
+		else if (str.equals(DatePicker.TAG_NAME))
+			return new DatePicker();
+		else if (str.equals(ImageSwitcher.TAG_NAME))
+			return new ImageSwitcher();
+		else if (str.equals(TabHost.TAG_NAME))
+			return new TabHost();
+		else if (str.equals(TabWidget.TAG_NAME))
+			return new TabWidget();
+		else if (str.equals(MapView.TAG_NAME))
+			return new MapView();
+		else if (str.equals(RatingBar.TAG_NAME)) {
+			return new RatingBar();
+		}*/
+		else
+			return null;
+	}
 }

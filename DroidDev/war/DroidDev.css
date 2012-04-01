@@ -2,8 +2,6 @@
     background-color: #ccc;
 }
 
-.gwt-Label-button {
-	background:url('images/btn_default_normal.9.png') no-repeat;
-	background-size: 100% 100%;
-	padding: 10px 15px;
+.widgetPanel {
+	border: 1px solid #000;
 }
