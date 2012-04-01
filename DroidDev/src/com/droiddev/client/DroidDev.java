@@ -306,9 +306,13 @@ public class DroidDev implements EntryPoint {
     			//GWT.log(((CanvasWidget)(context.draggable)).widget.getTagName());
     			//Button b = new Button(Button.TAG_NAME);
     			Widget w = createWidget(((CanvasWidget)(context.draggable)).widget.getTagName());
+    			
+    			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
+    			/*
 				if (root instanceof LinearLayout) {
 					w.setPosition(root.getWidth(), root.getHeight());
 				}
+				*/
 				root.addWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();
