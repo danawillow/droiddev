@@ -3,6 +3,7 @@ package com.droiddev.client;
 import java.util.HashMap;
 import java.util.Vector;
 
+import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
 import com.droiddev.client.util.ImagesReadyEvent;
@@ -65,6 +66,8 @@ public class DroidDev implements EntryPoint {
     private ImageResources imageResources = ImageResources.instance();
     private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
     
+    private PickupDragController dragController;
+    
     Vector<String> all_props;
     Vector<String> layout_props;
     
@@ -80,6 +83,7 @@ public class DroidDev implements EntryPoint {
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
     	RootPanel.get().add(mainPanel);
+    	dragController = new PickupDragController(RootPanel.get(), false);
     	mainPanel.add(fileTree);
 
         initProps();
@@ -284,6 +288,7 @@ public class DroidDev implements EntryPoint {
     	b.apply();
     	b.paint();
     	widgetPanel.add(b.getCanvas());
+    	dragController.makeDraggable(b.getCanvas());
     	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {

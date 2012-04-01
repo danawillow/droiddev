@@ -15,6 +15,7 @@
   <!-- Other module inherits                                      -->
   <inherits name="com.google.gwt.http.HTTP" />
   <inherits name="com.google.gwt.xml.XML" />
+  <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.droiddev.client.DroidDev'/>
