@@ -6,6 +6,8 @@ import java.util.Vector;
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
+import com.droiddev.client.property.Property;
+import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
 import com.droiddev.client.util.ImagesReadyEvent;
@@ -53,6 +55,7 @@ import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
 
 public class DroidDev implements EntryPoint {
@@ -277,12 +280,22 @@ public class DroidDev implements EntryPoint {
     }
     
     public void addPreviewButtonAndPane() {
+    	VerticalPanel buttonPanel = new VerticalPanel();
+    	
     	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
         	public void onClick(ClickEvent event) {
         		generatePreview(code.getText());
         	}
         });
-        mainPanel.add(previewButton);
+    	com.google.gwt.user.client.ui.Button xmlButton = new com.google.gwt.user.client.ui.Button("Generate XML", new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		generateXML();
+        	}
+        });
+        
+    	buttonPanel.add(previewButton);
+    	buttonPanel.add(xmlButton);
+    	mainPanel.add(buttonPanel);
         
         widgetPanel.setSize("200px", "480px");
         if (imageResources.isReady())
@@ -396,6 +409,9 @@ public class DroidDev implements EntryPoint {
     		layoutPanel.clear();
     		root = null;
     		parseLayoutElement(messageDom.getDocumentElement());
+    		if (root.getPropertyByAttName("xmlns:android") == null) {
+    			root.addProperty(new StringProperty("xmlns", "xmlns:android", "http://schemas.android.com/apk/res/android", false));
+    		}
     		root.apply();
     		root.repositionAllWidgets();
     		root.resizeForRendering();
@@ -652,5 +668,48 @@ public class DroidDev implements EntryPoint {
 		}*/
 		else
 			return null;
+	}
+
+    public void generateXML() {
+    	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+    	xml += generateWidget(root);
+    	
+    	code.setText(xml);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public String generateWidget(Widget w) {
+    	String xml = "";
+		xml += "<"+w.getTagName();
+		Vector<Property> props = (Vector<Property>)w.getProperties().clone();
+		if (w != root)
+			w.getParentLayout().addOutputProperties(w, props);
+		for (Property prop : props) {
+			if (prop.getValue() != null && prop.getValue().toString().length() > 0 && !prop.isDefault()) {
+				// Work around an android bug... *sigh*
+				if (w instanceof CheckBox && prop.getAtttributeName().equals("android:padding"))
+					continue;
+				String value;
+				if (prop instanceof StringProperty) {
+					Document d = XMLParser.createDocument();
+					Text textNode= d.createTextNode(((StringProperty)prop).getRawStringValue());
+					value = textNode.toString();
+				} else {
+					value = prop.getValue().toString();
+				}
+				xml += "\n";
+				xml += "\t" + prop.getAtttributeName()+"=\""+ value +"\"";
+			}
+		}
+		if (w instanceof Layout) {
+			xml += ">\n";
+			for (Widget wt : ((Layout)w).getWidgets()) {
+				xml += generateWidget(wt);
+			}
+			xml += "</"+w.getTagName()+">\n";
+		} else {
+			xml += " />\n";
+		}
+		return xml;
 	}
 }
