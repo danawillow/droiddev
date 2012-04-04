@@ -70,6 +70,7 @@ public class DroidDev implements EntryPoint {
     private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
     
     private PickupDragController dragController;
+    private PickupDragController previewDragController;
     
     Vector<String> all_props;
     Vector<String> layout_props;
@@ -93,15 +94,6 @@ public class DroidDev implements EntryPoint {
     			w.apply();
     			w.paint();
     			return w.getCanvasWidget();
-    			/*
-    			AbsolutePanel container = new AbsolutePanel();
-    		    container.getElement().getStyle().setProperty("overflow", "visible");
-    		    Button b = new Button(Button.TAG_NAME);
-    		    b.apply();
-    		    b.paint();
-    			container.add(b.getCanvasWidget());
-    			return container;
-    			*/
     		}
     	};
     	dragController.setBehaviorDragProxy(true);
@@ -313,25 +305,41 @@ public class DroidDev implements EntryPoint {
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
     	mainPanel.add(layoutPanel);
+    	AndroidEditor.instance().layoutPanel = layoutPanel;
+    	
+    	previewDragController = new PickupDragController(layoutPanel, false);
     	
     	SimpleDropController dropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
-    			//GWT.log(((CanvasWidget)(context.draggable)).widget.getTagName());
-    			//Button b = new Button(Button.TAG_NAME);
     			Widget w = createWidget(((CanvasWidget)(context.draggable)).widget.getTagName());
     			
     			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
-    			/*
-				if (root instanceof LinearLayout) {
-					w.setPosition(root.getWidth(), root.getHeight());
-				}
-				*/
+
 				root.addWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();
+	    		
+	    		previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
     		}
     	};
     	dragController.registerDropController(dropController);
+    	
+    	SimpleDropController previewDropController = new SimpleDropController(layoutPanel) {
+    		public void onDrop(DragContext context) {
+    			Widget w = ((CanvasWidget)(context.draggable)).widget;
+    			
+    			
+    			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
+    			root.positionWidget(w);
+    			//root.removeWidget(w);
+				//root.addWidget(w);
+            	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
+	    		root.paint();
+	    		
+	    		//previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
+    		}
+    	};
+    	previewDragController.registerDropController(previewDropController);
     }
 
     public void addWidgetsToPanel() {
@@ -344,35 +352,6 @@ public class DroidDev implements EntryPoint {
     		widgetPanel.add(w.getCanvasWidget());
     		dragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
     	}
-    	
-    	/*
-    	Button b = new Button(Button.TAG_NAME);
-    	b.apply();
-    	b.paint();
-    	widgetPanel.add(b.getCanvasWidget());
-    	dragController.makeDraggable(b.getCanvasWidget(), b.getCanvas());
-    	*/
-    	
-    	// note: it looks like I can't have both draggable and double click
-    	/*
-    	b.getCanvas().addDoubleClickHandler(new DoubleClickHandler() {
-			@Override
-			public void onDoubleClick(DoubleClickEvent event) {
-				if (root != null) {
-					Button b = new Button(Button.TAG_NAME);
-					if (root instanceof LinearLayout) {
-						b.setPosition(root.getWidth(), root.getHeight());
-					}
-					root.addWidget(b);
-	            	layoutPanel.add(b.getCanvas(), b.getX(), b.getY());
-					//root.apply();
-		    		//root.repositionAllWidgets();
-		    		//root.resizeForRendering();
-		    		root.paint();
-				}
-			}
-    	});
-    	*/
     }
     
     public void initProps() {
@@ -427,8 +406,6 @@ public class DroidDev implements EntryPoint {
             
     public void parseLayoutElement(Element el) {
         String qName = el.getTagName();
-        
-        //text.setText(qName);
         
         if (isLayout(qName)) {
             Layout l = null;
@@ -598,6 +575,7 @@ public class DroidDev implements EntryPoint {
             w.setPosition( x, y );
         }
         
+        previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
     }
 
     public Widget createWidget(String str) {

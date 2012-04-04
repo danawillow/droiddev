@@ -3,6 +3,7 @@ package com.droiddev.client;
 import java.util.HashMap;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -12,6 +13,7 @@ public class AndroidEditor {
     HashMap<String, String> strings = new HashMap<String, String>();
     private static AndroidEditor inst;
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
+    AbsolutePanel layoutPanel;
 
     public String getScreenUnit() {
         return "dp";
@@ -27,6 +29,10 @@ public class AndroidEditor {
 
     public HashMap<String, String> getStrings() {
         return strings;
+    }
+    
+    public AbsolutePanel getLayoutPanel() {
+    	return layoutPanel;
     }
     
     public static AndroidEditor instance() {

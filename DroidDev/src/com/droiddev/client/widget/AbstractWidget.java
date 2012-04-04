@@ -12,7 +12,7 @@ import com.droiddev.client.util.DisplayMetrics;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.core.client.GWT;
 
 
 public abstract class AbstractWidget implements Widget {
@@ -182,14 +182,34 @@ public abstract class AbstractWidget implements Widget {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
-        if (canvas.getParent() != null) {
+        if (getCanvasWidget().getParent() != null) {
         	int actualX = x;
         	int actualY = y;
         	if (this.getParentLayout() != null) {
-        		actualX += ((AbsolutePanel)canvas.getParent()).getWidgetLeft(this.getParentLayout().getCanvasWidget());
-        		actualY += ((AbsolutePanel)canvas.getParent()).getWidgetTop(this.getParentLayout().getCanvasWidget());
+        		/*
+        		GWT.log(getTagName());
+        		GWT.log(this.getParentLayout().getCanvasWidget().getParent().toString());
+        		GWT.log(getCanvasWidget().toString());
+        		GWT.log(((AbsolutePanel)(getCanvasWidget().getParent())).toString() + "\n");
+        		//GWT.log(((AbsolutePanel)(getCanvas().getParent())).toString() + "\n");
+        		actualX += ((AbsolutePanel)getCanvasWidget().getParent()).getWidgetLeft(this.getParentLayout().getCanvasWidget());
+        		actualY += ((AbsolutePanel)getCanvasWidget().getParent()).getWidgetTop(this.getParentLayout().getCanvasWidget());
+        		*/
+        		actualX += AndroidEditor.instance().getLayoutPanel().getWidgetLeft(this.getParentLayout().getCanvasWidget());
+        		actualY += AndroidEditor.instance().getLayoutPanel().getWidgetTop(this.getParentLayout().getCanvasWidget());
         	}
-            ((AbsolutePanel)canvas.getParent()).setWidgetPosition(canvas, actualX, actualY);
+            //((AbsolutePanel)getCanvasWidget().getParent()).setWidgetPosition(getCanvasWidget(), actualX, actualY);
+        	if (getCanvasWidget().getParent().equals(AndroidEditor.instance().getLayoutPanel())) {
+        		AndroidEditor.instance().getLayoutPanel().setWidgetPosition(getCanvasWidget(), actualX, actualY);
+        	}
+        	else if (getCanvasWidget().getParent().getParent().equals(AndroidEditor.instance().getLayoutPanel())) {
+        		AndroidEditor.instance().getLayoutPanel().setWidgetPosition(getCanvasWidget().getParent(), actualX, actualY);
+        	}
+        	else {
+        		GWT.log("Can't change position because " + getTagName() + "'s parent is not LayoutPanel");
+        		GWT.log("Widget's parent is " + getCanvasWidget().getParent().toString());
+        		GWT.log("Widget's parent's parent is " + getCanvasWidget().getParent().getParent().toString());
+        	}
         }
     }
 
