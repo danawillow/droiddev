@@ -186,19 +186,17 @@ public abstract class AbstractWidget implements Widget {
         	int actualX = x;
         	int actualY = y;
         	if (this.getParentLayout() != null) {
-        		/*
-        		GWT.log(getTagName());
-        		GWT.log(this.getParentLayout().getCanvasWidget().getParent().toString());
-        		GWT.log(getCanvasWidget().toString());
-        		GWT.log(((AbsolutePanel)(getCanvasWidget().getParent())).toString() + "\n");
-        		//GWT.log(((AbsolutePanel)(getCanvas().getParent())).toString() + "\n");
-        		actualX += ((AbsolutePanel)getCanvasWidget().getParent()).getWidgetLeft(this.getParentLayout().getCanvasWidget());
-        		actualY += ((AbsolutePanel)getCanvasWidget().getParent()).getWidgetTop(this.getParentLayout().getCanvasWidget());
-        		*/
-        		actualX += AndroidEditor.instance().getLayoutPanel().getWidgetLeft(this.getParentLayout().getCanvasWidget());
-        		actualY += AndroidEditor.instance().getLayoutPanel().getWidgetTop(this.getParentLayout().getCanvasWidget());
+        		
+        		if (this.getParentLayout().getCanvasWidget().getParent().equals(AndroidEditor.instance().getLayoutPanel())) {
+        			actualX += AndroidEditor.instance().getLayoutPanel().getWidgetLeft(this.getParentLayout().getCanvasWidget());
+            		actualY += AndroidEditor.instance().getLayoutPanel().getWidgetTop(this.getParentLayout().getCanvasWidget());
+            	}
+            	else if (this.getParentLayout().getCanvasWidget().getParent().getParent().equals(AndroidEditor.instance().getLayoutPanel())) {
+            		actualX += AndroidEditor.instance().getLayoutPanel().getWidgetLeft(this.getParentLayout().getCanvasWidget().getParent());
+            		actualY += AndroidEditor.instance().getLayoutPanel().getWidgetTop(this.getParentLayout().getCanvasWidget().getParent());
+            	}
         	}
-            //((AbsolutePanel)getCanvasWidget().getParent()).setWidgetPosition(getCanvasWidget(), actualX, actualY);
+        	
         	if (getCanvasWidget().getParent().equals(AndroidEditor.instance().getLayoutPanel())) {
         		AndroidEditor.instance().getLayoutPanel().setWidgetPosition(getCanvasWidget(), actualX, actualY);
         	}
