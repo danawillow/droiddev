@@ -5,3 +5,7 @@
 .widgetPanel {
 	border: 1px solid #000;
 }
+
+.selectedWidget {
+	border: 1px solid #FFFF00;
+}

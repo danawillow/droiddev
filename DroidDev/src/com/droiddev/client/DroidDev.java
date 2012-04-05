@@ -307,7 +307,23 @@ public class DroidDev implements EntryPoint {
     	mainPanel.add(layoutPanel);
     	AndroidEditor.instance().layoutPanel = layoutPanel;
     	
-    	previewDragController = new PickupDragController(layoutPanel, false);
+    	previewDragController = new PickupDragController(layoutPanel, false) {
+    		@Override
+    		public void dragStart() {
+    			super.dragStart();
+    			for (com.google.gwt.user.client.ui.Widget w: context.selectedWidgets) {
+    				w.addStyleName("selectedWidget");
+    			}
+    		}
+    		
+    		@Override
+    		public void dragEnd() {
+    			for (com.google.gwt.user.client.ui.Widget w: context.selectedWidgets) {
+    				w.removeStyleName("selectedWidget");
+    			}
+    			super.dragEnd();
+    		}
+    	};
     	
     	SimpleDropController dropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
