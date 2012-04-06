@@ -7,7 +7,7 @@ import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.util.ImageResources;
-import com.google.gwt.dom.client.ImageElement;
+import com.droiddev.client.util.NineWayImage;
 import com.google.gwt.user.client.ui.Image;
 
 public class EditView extends TextView {
@@ -21,7 +21,7 @@ public class EditView extends TextView {
 	SelectProperty capitalize;
 	StringProperty digits;
 
-	//NineWayImage img;
+	NineWayImage img;
 	Image img_base;
 
 	public static final String[] propertyNames =
@@ -70,6 +70,7 @@ public class EditView extends TextView {
 		fontSz.setStringValue("18sp");
 		fontSize = 18;
 		img_base = ImageResources.instance().get("textfield_default.9.png");
+		img = new NineWayImage(img_base, 11, 6);
 		pad_x = 20;
 		pad_y = 0;
 
@@ -153,8 +154,7 @@ public class EditView extends TextView {
 	public void paint() {
 		getCanvas().setCoordinateSpaceWidth(getWidth());
 		getCanvas().setCoordinateSpaceHeight(getHeight());
-		ImageElement imageElement = ImageElement.as(img_base.getElement());
-		getCanvas().getContext2d().drawImage(imageElement, 0, 0, getWidth(), getHeight());
+		img.paint(getCanvas().getContext2d(), 0, 0, getWidth(), getHeight());
 		String s;
 		if (password.getBooleanValue()) {
 			s = "";
