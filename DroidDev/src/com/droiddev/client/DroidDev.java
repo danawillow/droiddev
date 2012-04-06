@@ -317,6 +317,17 @@ public class DroidDev implements EntryPoint {
     		}
     		
     		@Override
+    		public void dragMove() {
+    			super.dragMove();
+    			Widget w = ((CanvasWidget)(context.draggable)).widget;
+    			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
+    			root.positionWidget(w);
+    			//root.removeWidget(w);
+				//root.addWidget(w);
+	    		root.paint();
+    		}
+
+    		@Override
     		public void dragEnd() {
     			for (com.google.gwt.user.client.ui.Widget w: context.selectedWidgets) {
     				w.removeStyleName("selectedWidget");
@@ -342,7 +353,7 @@ public class DroidDev implements EntryPoint {
     	
     	SimpleDropController previewDropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
-    			Widget w = ((CanvasWidget)(context.draggable)).widget;
+    			final Widget w = ((CanvasWidget)(context.draggable)).widget;
     			
     			
     			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
@@ -350,12 +361,19 @@ public class DroidDev implements EntryPoint {
     			//root.removeWidget(w);
 				//root.addWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
+            	w.getCanvas().addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						GWT.log(w.getTagName());
+					}
+            	});
 	    		root.paint();
 	    		
 	    		//previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
     		}
     	};
     	previewDragController.registerDropController(previewDropController);
+    	previewDragController.setBehaviorDragStartSensitivity(1);
     }
 
     public void addWidgetsToPanel() {
