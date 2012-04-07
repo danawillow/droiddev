@@ -7,10 +7,14 @@ import com.droiddev.client.property.StringProperty;
 public class ListView extends AbstractWidget {
 
 	public static final String TAG_NAME = "ListView";
+	public static final String[] menuItems = {"void setAdapter(ListAdapter adapter)"};
+	public static final String[] menuFunctions = {"setAdapter(ListAdapter adapter)"};
 	String font = "14px Monaco";
 
 	public ListView() {
 		super(TAG_NAME);
+		this.setMenuItems(menuItems);
+		this.setMenuFunctions(menuFunctions);
 		props.add(new StringProperty("List Selector", "android:listSelector", ""));
 		props.add(new BooleanProperty("Selector on Top", "android:drawSelectorOnTop", false));
 

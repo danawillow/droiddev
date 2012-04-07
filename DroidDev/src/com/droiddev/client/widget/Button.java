@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.Image;
 public class Button extends TextView {
 
 	public static final String TAG_NAME = "Button";
+	public static final String[] menuItems = {"void setOnClickListener(View.OnClickListener l)"};
+	public static final String[] menuFunctions = {"setOnClickListener(View.OnClickListener l)"};
 	NineWayImage img;
 	Image img_base;
 	StringProperty onClick;
@@ -15,6 +17,8 @@ public class Button extends TextView {
 	public Button(String txt) {
 		super(txt);
 		this.setTagName(TAG_NAME);
+		this.setMenuItems(menuItems);
+		this.setMenuFunctions(menuFunctions);
 
 		pad_x = 10;
 		pad_y = 0;

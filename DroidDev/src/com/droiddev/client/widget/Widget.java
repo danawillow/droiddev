@@ -43,6 +43,7 @@ public interface Widget extends Cloneable {
     public void setPadding(int pad, int which);
     public boolean isVisible();
     public String[] getMenuItems();
+    public String[] getMenuFunctions();
     
     public Canvas getCanvas();
     public CanvasWidget getCanvasWidget();

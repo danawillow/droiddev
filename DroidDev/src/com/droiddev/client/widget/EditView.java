@@ -13,6 +13,10 @@ import com.google.gwt.user.client.ui.Image;
 public class EditView extends TextView {
 
 	public static final String TAG_NAME = "EditText";
+	public static final String[] menuItems =
+		{"CharSequence getText()", "int length()", "void setInputType(int type)", "final void setText(CharSequence text)"};
+	public static final String[] menuFunctions =
+		{"getText()", "length()", "setInputType(int type)", "setText(CharSequence text)"};
 
 	BooleanProperty password;
 	SelectProperty numeric;
@@ -30,6 +34,8 @@ public class EditView extends TextView {
 	public EditView(String txt) {
 		super(txt);
 		this.setTagName(TAG_NAME);
+		this.setMenuItems(menuItems);
+		this.setMenuFunctions(menuFunctions);
 
 		password = new BooleanProperty("Password", "android:password", false);
 		capitalize = new SelectProperty("Capitalize", "android:capitalize", new String[] {"sentences", "words"}, 0);

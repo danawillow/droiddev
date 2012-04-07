@@ -55,12 +55,14 @@ public class CanvasWidget extends Composite{
 		if (widget.getMenuItems() == null) return false;
 		
 		MenuBar popupMenuBar = new MenuBar(true);
-		for (final String s: widget.getMenuItems()) {
-			MenuItem item = new MenuItem(s, true, new Command() {
+		String[] menuItems = widget.getMenuItems();
+		String[] menuFunctions = widget.getMenuFunctions();
+		for (int i = 0; i < menuItems.length; i++) {
+			final String fn = menuFunctions[i];
+			MenuItem item = new MenuItem(menuItems[i], true, new Command() {
 				public void execute() {
 					//AndroidEditor.instance().code.setLine(widget.getId().split("/")[1], widget.getTagName());
-					String[] sWords = s.split(" ");
-					AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], sWords[sWords.length-1]);
+					AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
 					//Window.alert(s);
 					menu.hide();
 				}
