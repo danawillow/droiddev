@@ -15,7 +15,6 @@ public class CanvasWidget extends Composite{
 	public com.droiddev.client.widget.Widget widget;
 	
 	private PopupPanel menu;
-	private boolean menuExists;
 	
 	public CanvasWidget(Canvas canvas, com.droiddev.client.widget.Widget widget) {
 		this.canvas = canvas;
@@ -39,40 +38,44 @@ public class CanvasWidget extends Composite{
     			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
         			event.preventDefault();
         			event.stopPropagation();
-        			if (menuExists) {
-        				menu.setPopupPosition(event.getClientX(), event.getClientY());
-        				menu.show();
-        			}
+        			menu.setPopupPosition(event.getClientX(), event.getClientY());
+        			menu.show();
     			}
     		}
     	}, MouseDownEvent.getType());
 		
 		menu = new PopupPanel(true);
-		menuExists = createPopupMenu();
+		createPopupMenu();
 	}
 	
-	private boolean createPopupMenu() {
-		if (widget.getMenuItems() == null) return false;
-		
+	private void createPopupMenu() {
 		MenuBar popupMenuBar = new MenuBar(true);
-		String[] menuItems = widget.getMenuItems();
-		String[] menuFunctions = widget.getMenuFunctions();
-		for (int i = 0; i < menuItems.length; i++) {
-			final String fn = menuFunctions[i];
-			MenuItem item = new MenuItem(menuItems[i], true, new Command() {
-				public void execute() {
-					//AndroidEditor.instance().code.setLine(widget.getId().split("/")[1], widget.getTagName());
-					AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
-					//Window.alert(s);
-					menu.hide();
-				}
-			});
+		
+		popupMenuBar.addItem("Add to code", new Command() {
+			public void execute() {
+				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
+				menu.hide();
+			}
+		});
+		
+		if (widget.getMenuItems() != null) {
+			popupMenuBar.addSeparator();
+			String[] menuItems = widget.getMenuItems();
+			String[] menuFunctions = widget.getMenuFunctions();
+			for (int i = 0; i < menuItems.length; i++) {
+				final String fn = menuFunctions[i];
+				MenuItem item = new MenuItem(menuItems[i], true, new Command() {
+					public void execute() {
+						AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
+						menu.hide();
+					}
+				});
 
-			popupMenuBar.addItem(item);
+				popupMenuBar.addItem(item);
+			}
 		}
 
 		popupMenuBar.setVisible(true);
 		menu.add(popupMenuBar);
-		return true;
 	}
 }
