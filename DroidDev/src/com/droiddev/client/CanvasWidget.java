@@ -15,6 +15,7 @@ public class CanvasWidget extends Composite{
 	public com.droiddev.client.widget.Widget widget;
 	
 	private PopupPanel menu;
+	private boolean menuExists;
 	
 	public CanvasWidget(Canvas canvas, com.droiddev.client.widget.Widget widget) {
 		this.canvas = canvas;
@@ -38,28 +39,38 @@ public class CanvasWidget extends Composite{
     			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
         			event.preventDefault();
         			event.stopPropagation();
-    				menu.setPopupPosition(event.getClientX(), event.getClientY());
-    				menu.show();
+        			if (menuExists) {
+        				menu.setPopupPosition(event.getClientX(), event.getClientY());
+        				menu.show();
+        			}
     			}
     		}
     	}, MouseDownEvent.getType());
 		
 		menu = new PopupPanel(true);
-		createPopupMenu();
+		menuExists = createPopupMenu();
 	}
 	
-	private void createPopupMenu() {
+	private boolean createPopupMenu() {
+		if (widget.getMenuItems() == null) return false;
+		
 		MenuBar popupMenuBar = new MenuBar(true);
-		MenuItem alertItem = new MenuItem("Add to code", true, new Command() {
-			public void execute() {
-				AndroidEditor.instance().code.setLine(widget.getId().split("/")[1], widget.getTagName());
-				menu.hide();
-			}
-		});
+		for (final String s: widget.getMenuItems()) {
+			MenuItem item = new MenuItem(s, true, new Command() {
+				public void execute() {
+					//AndroidEditor.instance().code.setLine(widget.getId().split("/")[1], widget.getTagName());
+					String[] sWords = s.split(" ");
+					AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], sWords[sWords.length-1]);
+					//Window.alert(s);
+					menu.hide();
+				}
+			});
 
-		popupMenuBar.addItem(alertItem);
+			popupMenuBar.addItem(item);
+		}
 
 		popupMenuBar.setVisible(true);
 		menu.add(popupMenuBar);
+		return true;
 	}
 }
