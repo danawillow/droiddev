@@ -14,6 +14,7 @@ public class AndroidEditor {
     private static AndroidEditor inst;
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
     AbsolutePanel layoutPanel;
+    CodeMirrorTextArea code;
 
     public String getScreenUnit() {
         return "dp";
@@ -33,6 +34,10 @@ public class AndroidEditor {
     
     public AbsolutePanel getLayoutPanel() {
     	return layoutPanel;
+    }
+    
+    public CodeMirrorTextArea getCodeMirror() {
+    	return code;
     }
     
     public static AndroidEditor instance() {

@@ -52,11 +52,11 @@ public class CodeMirrorTextArea extends TextArea {
 		cm.setOption(name, value);
 	}-*/;
 	
-	public void setLine(String id, String nodeName) {
-		setCMLine(cm, id, nodeName);
+	public void setFindViewLine(String id, String nodeName) {
+		setCMFindViewLine(cm, id, nodeName);
 	}
 	
-	private static native void setCMLine(JavaScriptObject cm, String id, String nodeName) /*-{
+	private static native void setCMFindViewLine(JavaScriptObject cm, String id, String nodeName) /*-{
 		var cursor = cm.getCursor();
 		var lineContent = cm.getLine(cursor.line);
 		var nextLine = nodeName + " " + id + " = (" + nodeName + ")findViewById(R.id." + id + ");";
@@ -65,5 +65,25 @@ public class CodeMirrorTextArea extends TextArea {
                         {line: cursor.line+1, ch: (nodeName + " " + id).length});
 		cm.indentLine(cursor.line+1);
 		cm.focus();
+	}-*/;
+	
+	public void setMethodLine(String id, String method) {
+		setCMMethodLine(cm, id, method);
+	}
+	
+	private static native void setCMMethodLine(JavaScriptObject cm, String id, String method) /*-{
+		var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
+    	var m = re.exec(cm.getValue());
+    	if (m == null) return -1;
+    	var varName = m[0];
+    	
+    	if (varName != 1) {
+    		var cursor = cm.getCursor();
+            var lineContent = cm.getLine(cursor.line);
+            var nextLine = varName + "." + method + ";";
+            cm.setLine(cursor.line, lineContent + '\n' + nextLine);
+            cm.indentLine(cursor.line+1);
+            cm.focus();
+    	}
 	}-*/;
 }

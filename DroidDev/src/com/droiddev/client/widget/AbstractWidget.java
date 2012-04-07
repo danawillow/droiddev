@@ -43,6 +43,8 @@ public abstract class AbstractWidget implements Widget {
     
     //Canvas canvas;
     CanvasWidget canvas;
+    
+    private String[] menuItems;
 
     public AbstractWidget(String tagName) {
         this.setTagName(tagName);
@@ -265,6 +267,11 @@ public abstract class AbstractWidget implements Widget {
     public String getTagName() {
         return tagName;
     }
+    
+    public String[] getMenuItems() {
+    	if (menuItems == null) return new String[0];
+    	return menuItems;
+    }
 
     protected void readWidthHeight() {
         int w = DisplayMetrics.readSize(widthProp);
@@ -410,6 +417,10 @@ public abstract class AbstractWidget implements Widget {
     */
     public void setTagName(String tagName) {
         this.tagName = tagName;
+    }
+    
+    public void setMenuItems(String[] menuItems) {
+    	this.menuItems = menuItems;
     }
 
     public Widget copy() {
