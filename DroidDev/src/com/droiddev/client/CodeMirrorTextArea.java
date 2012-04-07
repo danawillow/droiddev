@@ -74,10 +74,11 @@ public class CodeMirrorTextArea extends TextArea {
 	private static native void setCMMethodLine(JavaScriptObject cm, String id, String method) /*-{
 		var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
     	var m = re.exec(cm.getValue());
-    	if (m == null) return -1;
+    	if (m == null) return;
     	var varName = m[0];
     	
     	if (varName != 1) {
+    		// TODO: Highlight the parameters
     		var cursor = cm.getCursor();
             var lineContent = cm.getLine(cursor.line);
             var nextLine = varName + "." + method + ";";
