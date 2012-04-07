@@ -2,6 +2,7 @@ package com.droiddev.client;
 
 import java.util.HashMap;
 
+import com.droiddev.client.widget.Layout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.web.bindery.event.shared.EventBus;
@@ -16,6 +17,7 @@ public class AndroidEditor {
     AbsolutePanel layoutPanel;
     CodeMirrorTextArea code;
     CanvasWidget selected;
+    Layout layout;
 
     public String getScreenUnit() {
         return "dp";
@@ -47,6 +49,10 @@ public class AndroidEditor {
     	}
     	selected = c;
     	selected.canvas.addStyleName("selectedWidget");
+    }
+    
+    public Layout getLayout() {
+    	return layout;
     }
     
     public static AndroidEditor instance() {

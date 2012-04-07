@@ -1,7 +1,10 @@
 package com.droiddev.client;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Command;
@@ -77,6 +80,19 @@ public class CanvasWidget extends Composite{
 				popupMenuBar.addItem(item);
 			}
 		}
+		
+		popupMenuBar.addSeparator();
+		popupMenuBar.addItem("Remove widget", new Command() {
+			public void execute() {
+				widget.getParentLayout().removeWidget(widget);
+				if (AndroidEditor.instance().selected == widget) {
+					AndroidEditor.instance().selected = null;
+				}
+				AndroidEditor.instance().getLayoutPanel().remove(CanvasWidget.this);
+				AndroidEditor.instance().getLayout().paint();
+				menu.hide();
+			}
+		});
 
 		popupMenuBar.setVisible(true);
 		menu.add(popupMenuBar);

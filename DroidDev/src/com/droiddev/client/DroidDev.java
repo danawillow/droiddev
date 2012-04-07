@@ -34,6 +34,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -220,6 +224,8 @@ public class DroidDev implements EntryPoint {
         code.setVisibleLines(25);
     	vp.add(code);
     	
+    	AndroidEditor.instance().code = code;
+    	
     	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save and Build", new ClickHandler() {
     		public void onClick(ClickEvent event) {
     			if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
@@ -364,12 +370,6 @@ public class DroidDev implements EntryPoint {
     			//root.removeWidget(w);
 				//root.addWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
-            	w.getCanvas().addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						GWT.log(w.getTagName());
-					}
-            	});
 	    		root.paint();
 	    		
 	    		//previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
@@ -443,6 +443,7 @@ public class DroidDev implements EntryPoint {
     	} catch (DOMException e) {
     		GWT.log("Could not parse XML");
     	}
+    	AndroidEditor.instance().layout = root;
     }
     
     protected boolean isLayout( String name ) {
