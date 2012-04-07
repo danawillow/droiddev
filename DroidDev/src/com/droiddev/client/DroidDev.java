@@ -30,8 +30,13 @@ import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -374,6 +379,27 @@ public class DroidDev implements EntryPoint {
     	};
     	previewDragController.registerDropController(previewDropController);
     	previewDragController.setBehaviorDragStartSensitivity(1);
+    	
+    	addRightClickMenu();
+    }
+    
+    public void addRightClickMenu() {
+    	layoutPanel.addDomHandler(new ContextMenuHandler() {
+    		@Override
+    		public void onContextMenu(ContextMenuEvent event) {
+    			event.preventDefault();
+    			event.stopPropagation();
+    		}
+    	}, ContextMenuEvent.getType());
+    	
+    	layoutPanel.addDomHandler(new MouseDownHandler() {
+    		@Override
+    		public void onMouseDown(MouseDownEvent event) {
+    			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
+    				GWT.log("Right clicked at " + event.getRelativeX(layoutPanel.getElement()) + ", " + event.getRelativeY(layoutPanel.getElement()));
+    			}
+    		}
+    	}, MouseDownEvent.getType());
     }
 
     public void addWidgetsToPanel() {
