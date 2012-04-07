@@ -30,13 +30,10 @@ import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -352,6 +349,7 @@ public class DroidDev implements EntryPoint {
 	    		root.paint();
 	    		
 	    		previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
+	    		w.getCanvasWidget().addRightClickHandler();
     		}
     	};
     	dragController.registerDropController(dropController);
@@ -380,10 +378,6 @@ public class DroidDev implements EntryPoint {
     	previewDragController.registerDropController(previewDropController);
     	previewDragController.setBehaviorDragStartSensitivity(1);
     	
-    	addRightClickMenu();
-    }
-    
-    public void addRightClickMenu() {
     	layoutPanel.addDomHandler(new ContextMenuHandler() {
     		@Override
     		public void onContextMenu(ContextMenuEvent event) {
@@ -391,15 +385,6 @@ public class DroidDev implements EntryPoint {
     			event.stopPropagation();
     		}
     	}, ContextMenuEvent.getType());
-    	
-    	layoutPanel.addDomHandler(new MouseDownHandler() {
-    		@Override
-    		public void onMouseDown(MouseDownEvent event) {
-    			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
-    				GWT.log("Right clicked at " + event.getRelativeX(layoutPanel.getElement()) + ", " + event.getRelativeY(layoutPanel.getElement()));
-    			}
-    		}
-    	}, MouseDownEvent.getType());
     }
 
     public void addWidgetsToPanel() {
@@ -589,7 +574,7 @@ public class DroidDev implements EntryPoint {
         }
     }
 
-    protected void addWidget( Widget w, Element el ) {
+    protected void addWidget( final Widget w, Element el ) {
         if ( w instanceof TextView ) {
             for ( int i = 0; i < TextView.propertyNames.length; i++ ) {
                 w.setPropertyByAttName( TextView.propertyNames[ i ], el.getAttribute(TextView.propertyNames[ i ] ) );
@@ -636,6 +621,7 @@ public class DroidDev implements EntryPoint {
         }
         
         previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
+        w.getCanvasWidget().addRightClickHandler();
     }
 
     public Widget createWidget(String str) {
