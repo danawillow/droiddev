@@ -15,6 +15,7 @@ public class AndroidEditor {
     public static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
     AbsolutePanel layoutPanel;
     CodeMirrorTextArea code;
+    CanvasWidget selected;
 
     public String getScreenUnit() {
         return "dp";
@@ -38,6 +39,14 @@ public class AndroidEditor {
     
     public CodeMirrorTextArea getCodeMirror() {
     	return code;
+    }
+    
+    public void setSelected(CanvasWidget c) {
+    	if (selected != null) {
+    		selected.canvas.removeStyleName("selectedWidget");
+    	}
+    	selected = c;
+    	selected.canvas.addStyleName("selectedWidget");
     }
     
     public static AndroidEditor instance() {

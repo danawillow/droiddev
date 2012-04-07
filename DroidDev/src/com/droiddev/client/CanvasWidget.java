@@ -41,6 +41,9 @@ public class CanvasWidget extends Composite{
         			menu.setPopupPosition(event.getClientX(), event.getClientY());
         			menu.show();
     			}
+    			else {
+    				AndroidEditor.instance().setSelected(CanvasWidget.this);
+    			}
     		}
     	}, MouseDownEvent.getType());
 		
