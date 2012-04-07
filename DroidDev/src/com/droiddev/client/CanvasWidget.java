@@ -27,28 +27,26 @@ public class CanvasWidget extends Composite{
 	}
 	
 	public void addRightClickHandler() {
+		/*
 		canvas.addDomHandler(new ContextMenuHandler() {
     		@Override
     		public void onContextMenu(ContextMenuEvent event) {
     			event.preventDefault();
     			event.stopPropagation();
-    			menu.setPopupPosition(event.getNativeEvent().getClientX(), event.getNativeEvent().getClientY());
-    			menu.show();
     		}
-    	}, ContextMenuEvent.getType());
+    	}, ContextMenuEvent.getType());*/
 		
-		/*
 		canvas.addDomHandler(new MouseDownHandler() {
     		@Override
     		public void onMouseDown(MouseDownEvent event) {
     			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
-    				GWT.log("Right clicked on " + widget.getTagName());
+        			event.preventDefault();
+        			event.stopPropagation();
     				menu.setPopupPosition(event.getClientX(), event.getClientY());
     				menu.show();
     			}
     		}
     	}, MouseDownEvent.getType());
-    	*/
 		
 		menu = new PopupPanel(true);
 		createPopupMenu();
