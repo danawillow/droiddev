@@ -51,4 +51,19 @@ public class CodeMirrorTextArea extends TextArea {
 	private static native void setCMOption(JavaScriptObject cm, String name, String value) /*-{
 		cm.setOption(name, value);
 	}-*/;
+	
+	public void setLine(String id, String nodeName) {
+		setCMLine(cm, id, nodeName);
+	}
+	
+	private static native void setCMLine(JavaScriptObject cm, String id, String nodeName) /*-{
+		var cursor = cm.getCursor();
+		var lineContent = cm.getLine(cursor.line);
+		var nextLine = nodeName + " " + id + " = (" + nodeName + ")findViewById(R.id." + id + ");";
+		cm.setLine(cursor.line, lineContent + '\n' + nextLine);
+		cm.setSelection({line: cursor.line+1, ch: nodeName.length+1},
+                        {line: cursor.line+1, ch: (nodeName + " " + id).length});
+		cm.indentLine(cursor.line+1);
+		cm.focus();
+	}-*/;
 }
