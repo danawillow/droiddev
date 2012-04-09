@@ -34,10 +34,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.http.client.Request;
@@ -46,8 +42,11 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -133,10 +132,14 @@ public class DroidDev implements EntryPoint {
 							@Override
 							public void onSelection(
 									SelectionEvent<TreeItem> event) {
+								if (currFile == null) {
+									GWT.log("currFile is null");
+								}
 								if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
 									fileContents.put(currFile, code.getText());
 								
-								currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
+								//currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
+								currFile = fileNamesToPaths.get(((FileChoice) (event.getSelectedItem().getWidget())).getText());
 								if (currFile.endsWith(".xml")) {
 									code.setText(fileContents.get(currFile));
 									code.setOption("mode", "xml");
@@ -177,7 +180,22 @@ public class DroidDev implements EntryPoint {
     }-*/;
     
     public TreeItem dirInfoToTreeItem(DirInfo d, DirInfo parent) {
-    	TreeItem item = new TreeItem(d.getName());
+    	/*HorizontalPanel treeItemPanel = new HorizontalPanel();
+    	Label l = new Label(d.getName());
+    	treeItemPanel.add(l);
+    	Anchor a = new Anchor("[X]");
+    	a.addClickHandler(new ClickHandler() {
+    		@Override
+    		public void onClick(ClickEvent event) {
+    			Window.alert("clicked");
+    		}
+    	});
+    	treeItemPanel.add(a);
+    	//TreeItem item = new TreeItem(d.getName());*/
+    	FileChoice c = new FileChoice(d.getName());
+    	//TreeItem item = new TreeItem(treeItemPanel);
+    	TreeItem item = new TreeItem(c);
+		item.setState(true);
     	
     	JsArray<DirInfo> children = d.getChildren();
     	
@@ -192,6 +210,33 @@ public class DroidDev implements EntryPoint {
     	}
     	
     	return item;
+    }
+    
+
+    private static class FileChoice extends Composite {
+    	private HorizontalPanel panel = new HorizontalPanel();
+    	private Label fileName;
+    	private Anchor delete = new Anchor("[X]");
+    	
+    	public FileChoice(String name) {
+    		fileName = new Label(name);
+    		
+    		panel.add(fileName);
+    		panel.add(delete);
+    		
+    		delete.addClickHandler(new ClickHandler() {
+        		@Override
+        		public void onClick(ClickEvent event) {
+        			Window.alert("clicked");
+        		}
+        	});
+    		
+    		initWidget(panel);
+    	}
+    	
+    	public String getText() {
+    		return fileName.getText();
+    	}
     }
     
     public void importFile(final String name) {
@@ -737,4 +782,5 @@ public class DroidDev implements EntryPoint {
 		}
 		return xml;
 	}
+
 }
