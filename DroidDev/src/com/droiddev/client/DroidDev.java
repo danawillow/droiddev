@@ -197,25 +197,41 @@ public class DroidDev implements EntryPoint {
     		delete.addClickHandler(new ClickHandler() {
         		@Override
         		public void onClick(ClickEvent event) {
-        			//Window.alert("clicked");
-        			String toDelete = fileNamesToPaths.get(fileName.getText());
-        			if (toDelete == null) toDelete = fileName.getText();
-        			if (toDelete == null) {
-        				GWT.log("No entry for " + fileName.getText());
-        				return;
-        			}
-        			service.deleteFile(toDelete, new AsyncCallback<Void>() {
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-						}
-
-						@Override
-						public void onSuccess(Void result) {
-							fileTree.clear();
-							listFiles();
+        			final DialogBox dialog = new DialogBox();
+        			dialog.setText("Are you sure you wish to delete this file?");
+        			HorizontalPanel buttons = new HorizontalPanel();
+        			com.google.gwt.user.client.ui.Button closeButton = new com.google.gwt.user.client.ui.Button("Cancel", new ClickHandler() {
+						public void onClick(ClickEvent event) {
+							dialog.hide();
 						}
 					});
+        			com.google.gwt.user.client.ui.Button okButton = new com.google.gwt.user.client.ui.Button("OK", new ClickHandler() {
+						public void onClick(ClickEvent event) {
+		        			String toDelete = fileNamesToPaths.get(fileName.getText());
+		        			if (toDelete == null) toDelete = fileName.getText();
+		        			if (toDelete == null) {
+		        				GWT.log("No entry for " + fileName.getText());
+		        				return;
+		        			}
+		        			service.deleteFile(toDelete, new AsyncCallback<Void>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
+								}
+
+								@Override
+								public void onSuccess(Void result) {
+									fileTree.clear();
+									listFiles();
+								}
+							});
+							dialog.hide();
+						}
+					});
+					buttons.add(closeButton);
+					buttons.add(okButton);
+					dialog.setWidget(buttons);
+					dialog.center();
         		}
         	});
     		
