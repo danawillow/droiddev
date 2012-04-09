@@ -11,4 +11,6 @@ public interface DroidDevServiceAsync {
 
 	void build(AsyncCallback<String> callback);
 
+	void deleteFile(String fileName, AsyncCallback<Void> callback);
+
 }

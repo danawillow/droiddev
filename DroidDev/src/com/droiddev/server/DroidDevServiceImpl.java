@@ -56,4 +56,10 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 			return "Error";
 		}
 	}
+
+	@Override
+	public void deleteFile(String fileName) {
+		File f = new File(fileName);
+		f.delete();
+	}
 }

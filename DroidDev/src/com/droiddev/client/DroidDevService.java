@@ -11,4 +11,6 @@ public interface DroidDevService extends RemoteService {
 	public void saveFile(HashMap<String, String> fileContents);
 	
 	public String build();
+	
+	public void deleteFile(String fileName);
 }

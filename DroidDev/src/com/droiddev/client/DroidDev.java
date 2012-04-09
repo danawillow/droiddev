@@ -163,20 +163,7 @@ public class DroidDev implements EntryPoint {
     }-*/;
     
     public TreeItem dirInfoToTreeItem(DirInfo d, DirInfo parent) {
-    	/*HorizontalPanel treeItemPanel = new HorizontalPanel();
-    	Label l = new Label(d.getName());
-    	treeItemPanel.add(l);
-    	Anchor a = new Anchor("[X]");
-    	a.addClickHandler(new ClickHandler() {
-    		@Override
-    		public void onClick(ClickEvent event) {
-    			Window.alert("clicked");
-    		}
-    	});
-    	treeItemPanel.add(a);
-    	//TreeItem item = new TreeItem(d.getName());*/
     	FileChoice c = new FileChoice(d.getName());
-    	//TreeItem item = new TreeItem(treeItemPanel);
     	TreeItem item = new TreeItem(c);
 		item.setState(true);
     	
@@ -210,7 +197,25 @@ public class DroidDev implements EntryPoint {
     		delete.addClickHandler(new ClickHandler() {
         		@Override
         		public void onClick(ClickEvent event) {
-        			Window.alert("clicked");
+        			//Window.alert("clicked");
+        			String toDelete = fileNamesToPaths.get(fileName.getText());
+        			if (toDelete == null) toDelete = fileName.getText();
+        			if (toDelete == null) {
+        				GWT.log("No entry for " + fileName.getText());
+        				return;
+        			}
+        			service.deleteFile(toDelete, new AsyncCallback<Void>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+						}
+
+						@Override
+						public void onSuccess(Void result) {
+							fileTree.clear();
+							listFiles();
+						}
+					});
         		}
         	});
     		
@@ -238,10 +243,6 @@ public class DroidDev implements EntryPoint {
     		});
     		
     		initWidget(panel);
-    	}
-    	
-    	public String getText() {
-    		return fileName.getText();
     	}
     }
     
