@@ -132,24 +132,7 @@ public class DroidDev implements EntryPoint {
 							@Override
 							public void onSelection(
 									SelectionEvent<TreeItem> event) {
-								if (currFile == null) {
-									GWT.log("currFile is null");
-								}
-								if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
-									fileContents.put(currFile, code.getText());
 								
-								//currFile = fileNamesToPaths.get(event.getSelectedItem().getText());
-								currFile = fileNamesToPaths.get(((FileChoice) (event.getSelectedItem().getWidget())).getText());
-								if (currFile.endsWith(".xml")) {
-									code.setText(fileContents.get(currFile));
-									code.setOption("mode", "xml");
-								}
-								else if (currFile.endsWith(".java")) {
-									code.setText(fileContents.get(currFile));
-									code.setOption("mode", "text/x-java");
-								}
-								else
-									code.setText("");
 							}
 						});
 						
@@ -213,7 +196,7 @@ public class DroidDev implements EntryPoint {
     }
     
 
-    private static class FileChoice extends Composite {
+    private class FileChoice extends Composite {
     	private HorizontalPanel panel = new HorizontalPanel();
     	private Label fileName;
     	private Anchor delete = new Anchor("[X]");
@@ -230,6 +213,29 @@ public class DroidDev implements EntryPoint {
         			Window.alert("clicked");
         		}
         	});
+    		
+    		fileName.addClickHandler(new ClickHandler() {
+    			@Override
+    			public void onClick(ClickEvent event) {
+					if (currFile != null && (currFile.endsWith(".xml") || currFile.endsWith(".java")))
+						fileContents.put(currFile, code.getText());
+					
+					currFile = fileNamesToPaths.get(fileName.getText());
+					if (currFile == null) {
+						code.setText("");
+					}
+					else if (currFile.endsWith(".xml")) {
+						code.setText(fileContents.get(currFile));
+						code.setOption("mode", "xml");
+					}
+					else if (currFile.endsWith(".java")) {
+						code.setText(fileContents.get(currFile));
+						code.setOption("mode", "text/x-java");
+					}
+					else
+						code.setText("");
+    			}
+    		});
     		
     		initWidget(panel);
     	}
