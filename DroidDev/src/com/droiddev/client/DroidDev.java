@@ -42,17 +42,18 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -348,6 +349,8 @@ public class DroidDev implements EntryPoint {
     }
     
     public void addPreviewButtonAndPane() {
+    	TabPanel tabs = new TabPanel();
+    	
     	VerticalPanel buttonPanel = new VerticalPanel();
     	
     	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
@@ -376,11 +379,17 @@ public class DroidDev implements EntryPoint {
     		});
     	}
         widgetPanel.addStyleName("widgetPanel");
-        mainPanel.add(widgetPanel);
+        //mainPanel.add(widgetPanel);
+        HorizontalPanel widgetsAndPreview = new HorizontalPanel();
+        widgetsAndPreview.add(widgetPanel);
     	
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
-    	mainPanel.add(layoutPanel);
+    	//mainPanel.add(layoutPanel);
+        widgetsAndPreview.add(layoutPanel);
+        tabs.add(widgetsAndPreview, "Layout");
+        tabs.selectTab(0);
+        mainPanel.add(tabs);
     	AndroidEditor.instance().layoutPanel = layoutPanel;
     	
     	previewDragController = new PickupDragController(layoutPanel, false) {
@@ -453,6 +462,11 @@ public class DroidDev implements EntryPoint {
     			event.stopPropagation();
     		}
     	}, ContextMenuEvent.getType());
+    	
+    	Frame emulator = new Frame("http://localhost:6080/vnc_auto.html?host=dynamic-oit-vapornet-f-162.Princeton.EDU&port=6080");
+    	emulator.setWidth(widgetsAndPreview.getOffsetWidth() + "px");
+    	emulator.setHeight("720px");
+    	tabs.add(emulator, "Emulator");
     }
 
     public void addWidgetsToPanel() {
