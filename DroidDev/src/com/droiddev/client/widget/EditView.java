@@ -75,6 +75,7 @@ public class EditView extends TextView {
 
 		fontSz.setStringValue("18sp");
 		fontSize = 18;
+		getCanvas().getContext2d().setFont(font);
 		img_base = ImageResources.instance().get("textfield_default.9.png");
 		img = new NineWayImage(img_base, 11, 6);
 		pad_x = 20;
@@ -161,6 +162,8 @@ public class EditView extends TextView {
 		getCanvas().setCoordinateSpaceWidth(getWidth());
 		getCanvas().setCoordinateSpaceHeight(getHeight());
 		img.paint(getCanvas().getContext2d(), 0, 0, getWidth(), getHeight());
+		font = fontSize + "px Arial";
+		getCanvas().getContext2d().setFont(font);
 		String s;
 		if (password.getBooleanValue()) {
 			s = "";

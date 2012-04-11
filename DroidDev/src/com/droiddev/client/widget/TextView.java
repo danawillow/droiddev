@@ -7,6 +7,8 @@ import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
+import com.droiddev.client.util.DisplayMetrics;
+import com.google.gwt.core.client.GWT;
 
 public class TextView extends AbstractWidget {
 	public static final String TAG_NAME = "TextView";
@@ -14,7 +16,8 @@ public class TextView extends AbstractWidget {
 	public static final int CENTER = 1;
 	public static final int END = 2;
 
-	int fontSize = 9;
+	//int fontSize = 9;
+	int fontSize = 14;
 	String font = "14px Monaco"; // Yeah it's weird. fix later.
 
 	StringProperty text;
@@ -86,11 +89,14 @@ public class TextView extends AbstractWidget {
 	@Override
     public void apply() {
 		super.apply();
-		/*
+		
 		if (fontSz.getStringValue() != null && fontSz.getStringValue().length() > 0) {
 			fontSize = (DisplayMetrics.readSize(fontSz));
 		}
-		*/
+
+		font = fontSize + "px Arial";
+		getCanvas().getContext2d().setFont(font);
+		
 		//buildFont();
 		this.readWidthHeight();
 		this.baseline = fontSize+pad_y/2;
@@ -137,9 +143,7 @@ public class TextView extends AbstractWidget {
 	protected int stringLength(String str) {
 		if (str == null)
 			return 0;
-		//return bg.getGraphics().getFontMetrics(f).stringWidth(str);
-		return str.length()*(fontSize-1) + 2; // FIX THIS ANOTHER TIME: http://google-web-toolkit.googlecode.com/svn/javadoc/latest/com/google/gwt/getCanvas()/dom/client/Context2d.html#measureText(java.lang.String)
-		//return FontMetrics.stringWidth("14pt Arial", str);
+		return (int)(getCanvas().getContext2d().measureText(str).getWidth());
 	}
 
     public String getText() {
@@ -195,7 +199,6 @@ public class TextView extends AbstractWidget {
 			}
 			else if (align == CENTER) {
 				tx = getWidth()/2-l/2+dx;
-				//Window.alert("Width: " + getWidth() + ", l: " + l + ", dx: " + dx);
 			}
 			else {
 				tx = pad_x/2+dx;
@@ -241,7 +244,7 @@ public class TextView extends AbstractWidget {
 	public void paint() {
 		getCanvas().setCoordinateSpaceWidth(getWidth());
 		getCanvas().setCoordinateSpaceHeight(getHeight());
-		getCanvas().getContext2d().setFont("14pt Arial");
+		getCanvas().getContext2d().setFont(font);
 	    drawText(0, fontSize+pad_y/2);
 	}
 

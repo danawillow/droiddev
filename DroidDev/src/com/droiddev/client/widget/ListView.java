@@ -9,7 +9,7 @@ public class ListView extends AbstractWidget {
 	public static final String TAG_NAME = "ListView";
 	public static final String[] menuItems = {"void setAdapter(ListAdapter adapter)"};
 	public static final String[] menuFunctions = {"setAdapter(ListAdapter adapter)"};
-	String font = "14px Monaco";
+	String font = "14px Arial";
 
 	public ListView() {
 		super(TAG_NAME);

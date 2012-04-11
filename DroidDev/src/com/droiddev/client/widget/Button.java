@@ -103,6 +103,8 @@ public class Button extends TextView {
 		getCanvas().setCoordinateSpaceWidth(getWidth());
 		getCanvas().setCoordinateSpaceHeight(getHeight());
 		img.paint(getCanvas().getContext2d(), 0, 0, getWidth(), getHeight());
+		font = fontSize + "px Arial";
+		getCanvas().getContext2d().setFont(font);
 		drawText(0, getHeight()/2+fontSize/2-5, CENTER);
 	}
 }
