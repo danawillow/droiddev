@@ -463,10 +463,64 @@ public class DroidDev implements EntryPoint {
     		}
     	}, ContextMenuEvent.getType());
     	
-    	Frame emulator = new Frame("http://localhost:6080/vnc_auto.html?host=dynamic-oit-vapornet-f-162.Princeton.EDU&port=6080");
+    	HorizontalPanel emulatorPanel = new HorizontalPanel();
+    	VerticalPanel emulatorButtons = new VerticalPanel();
+    	com.google.gwt.user.client.ui.Button homeButton = new com.google.gwt.user.client.ui.Button("Home", new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		service.pressKey(DroidDevService.HOME_CODE, new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("failure");
+					}
+
+					@Override
+					public void onSuccess(Void v) {
+						GWT.log("pressed menu");
+					}
+				});
+			}
+        });
+    	com.google.gwt.user.client.ui.Button menuButton = new com.google.gwt.user.client.ui.Button("Menu", new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		service.pressKey(DroidDevService.MENU_CODE, new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("failure");
+					}
+
+					@Override
+					public void onSuccess(Void v) {
+						GWT.log("pressed menu");
+					}
+				});
+			}
+        });
+    	com.google.gwt.user.client.ui.Button backButton = new com.google.gwt.user.client.ui.Button("Back", new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		service.pressKey(DroidDevService.BACK_CODE, new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						GWT.log("failure");
+					}
+
+					@Override
+					public void onSuccess(Void v) {
+						GWT.log("pressed menu");
+					}
+				});
+			}
+        });
+    	emulatorButtons.add(homeButton);
+    	emulatorButtons.add(menuButton);
+    	emulatorButtons.add(backButton);
+    	emulatorPanel.add(emulatorButtons);
+    	
+    	Frame emulator = new Frame("http://localhost:6080/vnc_auto.html?host=localhost&port=6080");
     	emulator.setWidth(widgetsAndPreview.getOffsetWidth() + "px");
     	emulator.setHeight("720px");
-    	tabs.add(emulator, "Emulator");
+    	emulatorPanel.add(emulator);
+    	tabs.add(emulatorPanel, "Emulator");
+    	//tabs.add(emulator, "Emulator");
     }
 
     public void addWidgetsToPanel() {

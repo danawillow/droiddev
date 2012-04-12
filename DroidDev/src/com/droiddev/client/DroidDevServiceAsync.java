@@ -13,4 +13,6 @@ public interface DroidDevServiceAsync {
 
 	void deleteFile(String fileName, AsyncCallback<Void> callback);
 
+	void pressKey(String keyCode, AsyncCallback<Void> callback);
+
 }

@@ -62,4 +62,28 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 		File f = new File(fileName);
 		f.delete();
 	}
+
+	@Override
+	public void pressKey(String keyCode) {
+		Runtime r = Runtime.getRuntime();
+		try {
+			Process p = r.exec("/usr/bin/VBoxManage controlvm Android keyboardputscancode " + keyCode);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null)
+			
+            reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            while ((line = reader.readLine()) != null)
+                System.out.println(line);
+
+			reader.close();
+			p.waitFor();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
