@@ -378,10 +378,10 @@ public class RelativeLayout extends AbstractLayout {
 		Collections.sort(widgets, new Comparator<Widget>() {
 			public int compare(Widget w1, Widget w2) {
 				if (isRelatedTo(w1, w2)) {
-					return -1;
+					return 1;
 				}
 				else if (isRelatedTo(w2, w1)) {
-					return 1;
+					return -1;
 				}
 				else
 					return 0;
