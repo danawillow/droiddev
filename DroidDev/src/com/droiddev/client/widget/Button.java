@@ -15,7 +15,7 @@ public class Button extends TextView {
 	StringProperty onClick;
 
 	public Button(String txt) {
-		super(txt);
+		super(txt, TAG_NAME);
 		this.setTagName(TAG_NAME);
 		this.setMenuItems(menuItems);
 		this.setMenuFunctions(menuFunctions);

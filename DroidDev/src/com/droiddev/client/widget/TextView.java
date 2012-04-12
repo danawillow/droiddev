@@ -8,7 +8,6 @@ import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.util.DisplayMetrics;
-import com.google.gwt.core.client.GWT;
 
 public class TextView extends AbstractWidget {
 	public static final String TAG_NAME = "TextView";
@@ -41,9 +40,15 @@ public class TextView extends AbstractWidget {
 
 	public static final String[] propertyNames =
 		new String[] {"android:hint", "android:textSize", "android:textStyle", "android:typeface", "android:textColor"};
+	
 
-	public TextView(String str) {
-		super(TAG_NAME);
+	public static final String[] menuItems = {"String getText()"};
+	public static final String[] menuFunctions = {"getText()"};
+
+	public TextView(String str, String tagName) {
+		super(tagName);
+		this.setMenuItems(menuItems);
+		this.setMenuFunctions(menuFunctions);
 
 		text = new StringProperty("Text", "android:text", "");
 		if (str != null) {
@@ -69,6 +74,10 @@ public class TextView extends AbstractWidget {
 
 		bg = new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);*/
 		apply();
+	}
+	
+	public TextView(String str) {
+		this(str, TAG_NAME);
 	}
 
 /*

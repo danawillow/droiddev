@@ -32,7 +32,7 @@ public class EditView extends TextView {
 			new String[] {"android:password", "android:capitalize", "android:numeric", "android:phoneNumber","android:autoText","android:digits"};
 
 	public EditView(String txt) {
-		super(txt);
+		super(txt, TAG_NAME);
 		this.setTagName(TAG_NAME);
 		this.setMenuItems(menuItems);
 		this.setMenuFunctions(menuFunctions);
