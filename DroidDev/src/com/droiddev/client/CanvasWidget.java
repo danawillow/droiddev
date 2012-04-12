@@ -1,17 +1,21 @@
 package com.droiddev.client;
 
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class CanvasWidget extends Composite{
 	public Canvas canvas;
@@ -61,6 +65,38 @@ public class CanvasWidget extends Composite{
 			public void execute() {
 				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
 				menu.hide();
+			}
+		});
+		
+		popupMenuBar.addItem("Edit Properties", new Command() {
+			public void execute() {
+				menu.hide();
+				final DialogBox dialog = new DialogBox();
+				dialog.setHTML("Edit Properties");
+				//dialog.setWidth("500px");
+				//dialog.setHeight("500px");
+				
+				VerticalPanel propertyPanel = new VerticalPanel();
+				
+				/*propertyPanel.add(new HTML("Text"));
+				propertyPanel.add(new TextBox());*/
+				
+				Grid grid = new Grid(1, 2);
+				grid.setText(0, 0, "Text");
+				grid.setWidget(0, 1, new TextBox());
+				propertyPanel.add(grid);
+				
+				Button closeButton = new Button("Close", new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						dialog.hide();
+					}
+				});
+				propertyPanel.add(closeButton);
+				propertyPanel.setWidth("500px");
+				propertyPanel.setHeight("500px");
+				dialog.setWidget(propertyPanel);
+				dialog.center();
+				dialog.show();
 			}
 		});
 		
