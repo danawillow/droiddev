@@ -80,17 +80,30 @@ public class CanvasWidget extends Composite{
 				
 				/*propertyPanel.add(new HTML("Text"));
 				propertyPanel.add(new TextBox());*/
+				propertyPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 				
 				Grid grid = new Grid(1, 2);
 				grid.setText(0, 0, "Text");
-				grid.setWidget(0, 1, new TextBox());
+				final TextBox text = new TextBox();
+				grid.setWidget(0, 1, text);
 				propertyPanel.add(grid);
 				
-				Button closeButton = new Button("Close", new ClickHandler() {
+				Button okButton = new Button("OK", new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						if (text.getText() != "") {
+							widget.setPropertyByAttName("android:text", text.getText());
+							AndroidEditor.instance().getLayout().paint();
+						}
+						dialog.hide();
+					}
+				});
+				
+				Button closeButton = new Button("Cancel", new ClickHandler() {
 					public void onClick(ClickEvent event) {
 						dialog.hide();
 					}
 				});
+				propertyPanel.add(okButton);
 				propertyPanel.add(closeButton);
 				propertyPanel.setWidth("500px");
 				propertyPanel.setHeight("500px");
