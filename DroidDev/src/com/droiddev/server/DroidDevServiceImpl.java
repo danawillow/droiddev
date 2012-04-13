@@ -40,18 +40,28 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 			}
 			reader.close();
 			
-			if (p.exitValue() != 0)
+			if (p.waitFor() != 0)
 				return s;
 			
-			p = r.exec("/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb -r install HelloAndroid/HelloAndroid-debug.apk");
+			p = r.exec("/Users/Dana/Documents/android-sdk-mac_x86/platform-tools/adb install -r HelloAndroid/bin/HelloAndroid-debug.apk");
 			reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			while ((line = reader.readLine()) != null) {
 				s += line + "<br>";
 			}
+
+			reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            while ((line = reader.readLine()) != null)
+                s += line + "<br>";
+            
 			reader.close();
 			
+			p.waitFor();
 			return s;
 		} catch (IOException e) {
+			e.printStackTrace();
+			return "Error";
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "Error";
 		}
@@ -71,8 +81,9 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null)
+				System.out.println(line);
 			
-            reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             while ((line = reader.readLine()) != null)
                 System.out.println(line);
 
