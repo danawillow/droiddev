@@ -1,5 +1,9 @@
 package com.droiddev.client;
 
+import java.util.HashMap;
+import java.util.Vector;
+
+import com.droiddev.client.property.Property;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,6 +18,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -71,45 +76,7 @@ public class CanvasWidget extends Composite{
 		popupMenuBar.addItem("Edit Properties", new Command() {
 			public void execute() {
 				menu.hide();
-				final DialogBox dialog = new DialogBox();
-				dialog.setHTML("Edit Properties");
-				//dialog.setWidth("500px");
-				//dialog.setHeight("500px");
-				
-				VerticalPanel propertyPanel = new VerticalPanel();
-				
-				/*propertyPanel.add(new HTML("Text"));
-				propertyPanel.add(new TextBox());*/
-				propertyPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-				
-				Grid grid = new Grid(1, 2);
-				grid.setText(0, 0, "Text");
-				final TextBox text = new TextBox();
-				grid.setWidget(0, 1, text);
-				propertyPanel.add(grid);
-				
-				Button okButton = new Button("OK", new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						if (text.getText() != "") {
-							widget.setPropertyByAttName("android:text", text.getText());
-							AndroidEditor.instance().getLayout().paint();
-						}
-						dialog.hide();
-					}
-				});
-				
-				Button closeButton = new Button("Cancel", new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						dialog.hide();
-					}
-				});
-				propertyPanel.add(okButton);
-				propertyPanel.add(closeButton);
-				propertyPanel.setWidth("500px");
-				propertyPanel.setHeight("500px");
-				dialog.setWidget(propertyPanel);
-				dialog.center();
-				dialog.show();
+				launchPropertiesPanel();
 			}
 		});
 		
@@ -145,5 +112,60 @@ public class CanvasWidget extends Composite{
 
 		popupMenuBar.setVisible(true);
 		menu.add(popupMenuBar);
+	}
+	
+	public void launchPropertiesPanel() {
+		final DialogBox dialog = new DialogBox();
+		dialog.setHTML("Edit Properties");
+		
+		VerticalPanel propertyPanel = new VerticalPanel();
+		propertyPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+		
+		final HashMap<Property, TextBox> propVals = new HashMap<Property, TextBox>();
+		Vector<Property> properties = widget.getProperties();
+		Grid grid = new Grid(properties.size() + 1, 2);
+		int i = 0;
+		for (Property prop: properties) {
+			grid.setText(i, 0, prop.getEnglishName());
+			if (prop.getEditable()) {
+				TextBox t = new TextBox();
+				if (prop.getValue() != null)
+					t.setText(prop.getValue().toString());
+				grid.setWidget(i, 1, t);
+				propVals.put(prop, t);
+			}
+			else {
+				grid.setText(i, 1, prop.getValue().toString());
+			}
+			i++;
+		}
+		
+		propertyPanel.add(grid);
+		
+		Button okButton = new Button("Apply", new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				for (Property prop: propVals.keySet()) {
+					String val = propVals.get(prop).getText();
+					widget.setPropertyByAttName(prop.getAttributeName(), val);
+				}
+				widget.apply();
+				AndroidEditor.instance().getLayout().paint();
+				dialog.hide();
+			}
+		});
+		
+		Button closeButton = new Button("Cancel", new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dialog.hide();
+			}
+		});
+		propertyPanel.add(okButton);
+		propertyPanel.add(closeButton);
+		ScrollPanel sp = new ScrollPanel(propertyPanel);
+		sp.setHeight("500px");
+		sp.setWidth("500px");
+		dialog.setWidget(sp);
+		dialog.center();
+		dialog.show();
 	}
 }
