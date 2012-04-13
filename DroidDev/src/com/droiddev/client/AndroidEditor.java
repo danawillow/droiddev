@@ -18,6 +18,10 @@ public class AndroidEditor {
     CodeMirrorTextArea code;
     CanvasWidget selected;
     Layout layout;
+    String currFile;
+    String lastXMLFile;
+    String lastJavaFile;
+    HashMap<String, String> fileContents = new HashMap<String, String>();
 
     public String getScreenUnit() {
         return "dp";
@@ -53,6 +57,28 @@ public class AndroidEditor {
     
     public Layout getLayout() {
     	return layout;
+    }
+    
+    public void switchToFile(String fileName) {
+		if (currFile != null && (currFile.endsWith(".xml") || currFile.endsWith(".java")))
+			fileContents.put(currFile, code.getText());
+		
+		currFile = fileName;
+		if (currFile == null) {
+			code.setText("");
+		}
+		else if (currFile.endsWith(".xml")) {
+			code.setText(fileContents.get(currFile));
+			code.setOption("mode", "xml");
+			lastXMLFile = currFile;
+		}
+		else if (currFile.endsWith(".java")) {
+			code.setText(fileContents.get(currFile));
+			code.setOption("mode", "text/x-java");
+			lastJavaFile = currFile;
+		}
+		else
+			code.setText("");
     }
     
     public static AndroidEditor instance() {

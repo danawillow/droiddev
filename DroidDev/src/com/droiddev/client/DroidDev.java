@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -87,8 +88,7 @@ public class DroidDev implements EntryPoint {
 
 	private Tree fileTree = new Tree();
     private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
-    private HashMap<String, String> fileContents = new HashMap<String, String>();
-    private String currFile;
+    //private String currFile;
     
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
@@ -239,23 +239,7 @@ public class DroidDev implements EntryPoint {
     		fileName.addClickHandler(new ClickHandler() {
     			@Override
     			public void onClick(ClickEvent event) {
-					if (currFile != null && (currFile.endsWith(".xml") || currFile.endsWith(".java")))
-						fileContents.put(currFile, code.getText());
-					
-					currFile = fileNamesToPaths.get(fileName.getText());
-					if (currFile == null) {
-						code.setText("");
-					}
-					else if (currFile.endsWith(".xml")) {
-						code.setText(fileContents.get(currFile));
-						code.setOption("mode", "xml");
-					}
-					else if (currFile.endsWith(".java")) {
-						code.setText(fileContents.get(currFile));
-						code.setOption("mode", "text/x-java");
-					}
-					else
-						code.setText("");
+    				AndroidEditor.instance().switchToFile(fileNamesToPaths.get(fileName.getText()));
     			}
     		});
     		
@@ -272,11 +256,15 @@ public class DroidDev implements EntryPoint {
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                	fileContents.put(name, response.getText());
+                	AndroidEditor.instance().fileContents.put(name, response.getText());
                 	if (name.endsWith("/main.xml")) {
-                		currFile = name;
+                		AndroidEditor.instance().currFile = name;
+                		AndroidEditor.instance().lastXMLFile = name;
                     	code.setText(response.getText());
                         generatePreview(response.getText());
+                	}
+                	else if (name.endsWith(".java")) {
+                		AndroidEditor.instance().lastJavaFile = name;
                 	}
                 }
             });
@@ -297,10 +285,12 @@ public class DroidDev implements EntryPoint {
     	
     	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save and Build", new ClickHandler() {
     		public void onClick(ClickEvent event) {
+    			generateXML();
+    			String currFile = AndroidEditor.instance().currFile;
     			if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
-    				fileContents.put(currFile, code.getText());
+    				AndroidEditor.instance().fileContents.put(currFile, code.getText());
     			
-    			service.saveFile(fileContents, new AsyncCallback<Void>() {
+    			service.saveFile(AndroidEditor.instance().fileContents, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
 					}
@@ -309,16 +299,18 @@ public class DroidDev implements EntryPoint {
 					public void onSuccess(Void result) {
 						final DialogBox dialog = new DialogBox();
 						dialog.setHTML("Build results");
-						dialog.setWidth("500px");
-						dialog.setHeight("500px");
+						/*dialog.setWidth("500px");
+						dialog.setHeight("500px");*/
 						
 						final VerticalPanel dialogPanel = new VerticalPanel();
 						final HTML contents = new HTML();
 						contents.setHTML("Building...");
-						contents.setHeight("470px");
-						contents.getElement().getStyle().setProperty("overflow", "auto");
+						//contents.setHeight("470px");
+						//contents.getElement().getStyle().setProperty("overflow", "auto");
 						dialogPanel.add(contents);
-						dialog.setWidget(dialogPanel);
+						ScrollPanel sp = new ScrollPanel(dialogPanel);
+						sp.setSize("500px", "500px");
+						dialog.setWidget(sp);
 						
 						dialog.center();
 						dialog.show();
@@ -326,6 +318,7 @@ public class DroidDev implements EntryPoint {
 							@Override
 							public void onFailure(Throwable caught) {
 								GWT.log("failure");
+								dialog.hide();
 							}
 
 							@Override
@@ -835,7 +828,11 @@ public class DroidDev implements EntryPoint {
     	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
     	xml += generateWidget(root);
     	
-    	code.setText(xml);
+    	//code.setText(xml);
+    	AndroidEditor.instance().fileContents.put(fileNamesToPaths.get("main.xml"), xml);
+    	if (AndroidEditor.instance().currFile.equals(fileNamesToPaths.get("main.xml"))) {
+    		code.setText(xml);
+    	}
     }
     
     @SuppressWarnings("unchecked")
@@ -848,7 +845,7 @@ public class DroidDev implements EntryPoint {
 		for (Property prop : props) {
 			if (prop.getValue() != null && prop.getValue().toString().length() > 0 && !prop.isDefault()) {
 				// Work around an android bug... *sigh*
-				if (w instanceof CheckBox && prop.getAtttributeName().equals("android:padding"))
+				if (w instanceof CheckBox && prop.getAttributeName().equals("android:padding"))
 					continue;
 				String value;
 				if (prop instanceof StringProperty) {
@@ -859,7 +856,7 @@ public class DroidDev implements EntryPoint {
 					value = prop.getValue().toString();
 				}
 				xml += "\n";
-				xml += "\t" + prop.getAtttributeName()+"=\""+ value +"\"";
+				xml += "\t" + prop.getAttributeName()+"=\""+ value +"\"";
 			}
 		}
 		if (w instanceof Layout) {
