@@ -9,3 +9,5 @@
 .selectedWidget {
 	border: 1px solid #FFFF00;
 }
+
+BODY, HTML { height: 100%; }
