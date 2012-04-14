@@ -8,9 +8,12 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -115,14 +118,33 @@ public class CanvasWidget extends Composite{
 	}
 	
 	public void launchPropertiesPanel() {
-		final DialogBox dialog = new DialogBox();
+		final HashMap<Property, TextBox> propVals = new HashMap<Property, TextBox>();
+		Vector<Property> properties = widget.getProperties();
+		
+		final DialogBox dialog = new DialogBox(true) {
+			@Override
+		    protected void onPreviewNativeEvent(NativePreviewEvent event) {
+		        super.onPreviewNativeEvent(event);
+		        switch (event.getTypeInt()) {
+		            case Event.ONKEYDOWN:
+		                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+		                	// TODO: put this in its own method, it's the same as pressing apply
+		                	for (Property prop: propVals.keySet()) {
+		    					String val = propVals.get(prop).getText();
+		    					widget.setPropertyByAttName(prop.getAttributeName(), val);
+		    				}
+		    				widget.apply();
+		    				AndroidEditor.instance().getLayout().paint();
+		                    hide();
+		                }
+		                break;
+		        }
+		    }
+		};
 		dialog.setHTML("Edit Properties");
 		
 		VerticalPanel propertyPanel = new VerticalPanel();
 		propertyPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-		
-		final HashMap<Property, TextBox> propVals = new HashMap<Property, TextBox>();
-		Vector<Property> properties = widget.getProperties();
 		Grid grid = new Grid(properties.size() + 1, 2);
 		int i = 0;
 		for (Property prop: properties) {
