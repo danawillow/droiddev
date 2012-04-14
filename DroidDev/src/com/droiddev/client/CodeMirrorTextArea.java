@@ -11,18 +11,22 @@ public class CodeMirrorTextArea extends TextArea {
 		super();
 		getElement().setId(id);
 	}
-	
+
 	public void onAttach() {
 		super.onAttach();
 		cm = addCodeMirrorJS(getElement());
 		if (cmText != null)
 			setCodeMirrorText(cm, cmText);
 	}
-	
+
 	private static native JavaScriptObject addCodeMirrorJS(Object e) /*-{
-		return $wnd.CodeMirror.fromTextArea(e, {lineNumbers: true});
+		return $wnd.CodeMirror.fromTextArea(e, {
+			lineNumbers: true,
+			matchBrackets: true,
+			extraKeys: { "Ctrl-I": function(cm) { cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false)); } }
+			});
 	}-*/;
-	
+
 	@Override
 	public void setText(String s) {
 		if (cm == null)
@@ -30,32 +34,32 @@ public class CodeMirrorTextArea extends TextArea {
 		else
 			setCodeMirrorText(cm, s);
 	}
-	
+
 	private static native void setCodeMirrorText(JavaScriptObject cm, String s) /*-{
 		cm.setValue(s);
 	}-*/;
-	
+
 	@Override
 	public String getText() {
 		return getCodeMirrorText(cm);
 	}
-	
+
 	private static native String getCodeMirrorText(JavaScriptObject cm) /*-{
 		return cm.getValue();
 	}-*/;
-	
+
 	public void setOption(String name, String value) {
 		setCMOption(cm, name, value);
 	}
-	
+
 	private static native void setCMOption(JavaScriptObject cm, String name, String value) /*-{
 		cm.setOption(name, value);
 	}-*/;
-	
+
 	public void setFindViewLine(String id, String nodeName) {
 		setCMFindViewLine(cm, id, nodeName);
 	}
-	
+
 	private static native void setCMFindViewLine(JavaScriptObject cm, String id, String nodeName) /*-{
 		var cursor = cm.getCursor();
 		var lineContent = cm.getLine(cursor.line);
@@ -66,17 +70,17 @@ public class CodeMirrorTextArea extends TextArea {
 		cm.indentLine(cursor.line+1);
 		cm.focus();
 	}-*/;
-	
+
 	public void setMethodLine(String id, String method) {
 		setCMMethodLine(cm, id, method);
 	}
-	
+
 	private static native void setCMMethodLine(JavaScriptObject cm, String id, String method) /*-{
 		var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
     	var m = re.exec(cm.getValue());
     	if (m == null) return;
     	var varName = m[0];
-    	
+
     	if (varName != 1) {
     		// TODO: Highlight the parameters
     		var cursor = cm.getCursor();
