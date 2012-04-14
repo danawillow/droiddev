@@ -109,7 +109,7 @@ public class DroidDev implements EntryPoint {
     	dragController.setBehaviorDragProxy(true);
     	//mainPanel.add(fileTree);
     	splitPanel.addWest(fileTree, 300);
-    	splitPanel.add(mainPanel);
+    	splitPanel.addEast(mainPanel, 600);
 
         initProps();
 
@@ -282,10 +282,10 @@ public class DroidDev implements EntryPoint {
     }
     
     public void addCodePanelAndBuildButton() {
-    	VerticalPanel vp = new VerticalPanel();
+    	//VerticalPanel vp = new VerticalPanel();
     	code.setCharacterWidth(50);
         code.setVisibleLines(25);
-    	vp.add(code);
+    	//vp.add(code);
     	
     	AndroidEditor.instance().code = code;
     	
@@ -343,8 +343,10 @@ public class DroidDev implements EntryPoint {
     			});
     		}
     	});
-    	vp.add(saveButton);
-    	mainPanel.add(vp);
+    	//vp.add(saveButton);
+    	//mainPanel.add(vp);
+    	splitPanel.addSouth(saveButton, 40);
+    	splitPanel.add(code);
     }
     
     public void addPreviewButtonAndPane() {
