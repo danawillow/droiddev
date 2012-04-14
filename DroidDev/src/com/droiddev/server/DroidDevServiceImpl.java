@@ -35,8 +35,15 @@ public class DroidDevServiceImpl extends RemoteServiceServlet implements DroidDe
 			String s = "";
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
+			boolean printing = false;
 			while ((line = reader.readLine()) != null) {
-				s += line + "<br>";
+				if (line.equals("-compile:") || line.equals("BUILD SUCCESSFUL"))
+					printing = true;
+				else if (line.equals("-post-compile:"))
+					printing = false;
+				
+				if (printing)
+					s += line + "<br>";
 			}
 			reader.close();
 			
