@@ -17,6 +17,8 @@ public class EditView extends TextView {
 		{"CharSequence getText()", "int length()", "void setInputType(int type)", "final void setText(CharSequence text)"};
 	public static final String[] menuFunctions =
 		{"getText()", "length()", "setInputType(int type)", "setText(CharSequence text)"};
+	public static final String[] menuImports =
+		{null, null, null, null};
 
 	BooleanProperty password;
 	SelectProperty numeric;
@@ -36,6 +38,7 @@ public class EditView extends TextView {
 		this.setTagName(TAG_NAME);
 		this.setMenuItems(menuItems);
 		this.setMenuFunctions(menuFunctions);
+		this.setMenuImports(menuImports);
 
 		password = new BooleanProperty("Password", "android:password", false);
 		capitalize = new SelectProperty("Capitalize", "android:capitalize", new String[] {"sentences", "words"}, 0);

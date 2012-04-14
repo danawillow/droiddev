@@ -71,6 +71,10 @@ public class CanvasWidget extends Composite{
 		
 		popupMenuBar.addItem("Add to code", new Command() {
 			public void execute() {
+				if (!AndroidEditor.instance().imports.contains("android.widget." + widget.getTagName())) {
+					AndroidEditor.instance().imports.add("android.widget." + widget.getTagName());
+					AndroidEditor.instance().code.addImport("android.widget." + widget.getTagName());
+				}
 				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
 				menu.hide();
 			}
@@ -87,10 +91,16 @@ public class CanvasWidget extends Composite{
 			popupMenuBar.addSeparator();
 			String[] menuItems = widget.getMenuItems();
 			String[] menuFunctions = widget.getMenuFunctions();
+			String[] menuImports = widget.getMenuImports();
 			for (int i = 0; i < menuItems.length; i++) {
 				final String fn = menuFunctions[i];
+				final String menuImport = menuImports[i];
 				MenuItem item = new MenuItem(menuItems[i], true, new Command() {
 					public void execute() {
+						if (menuImport != null && !AndroidEditor.instance().imports.contains(menuImport)) {
+							AndroidEditor.instance().imports.add(menuImport);
+							AndroidEditor.instance().code.addImport(menuImport);
+						}
 						AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
 						menu.hide();
 					}

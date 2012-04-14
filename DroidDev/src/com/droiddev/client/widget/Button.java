@@ -10,6 +10,7 @@ public class Button extends TextView {
 	public static final String TAG_NAME = "Button";
 	public static final String[] menuItems = {"void setOnClickListener(View.OnClickListener l)"};
 	public static final String[] menuFunctions = {"setOnClickListener(View.OnClickListener l)"};
+	public static final String[] menuImports = {"android.view.View"};
 	NineWayImage img;
 	Image img_base;
 	StringProperty onClick;
@@ -19,6 +20,7 @@ public class Button extends TextView {
 		this.setTagName(TAG_NAME);
 		this.setMenuItems(menuItems);
 		this.setMenuFunctions(menuFunctions);
+		this.setMenuImports(menuImports);
 
 		pad_x = 10;
 		pad_y = 0;

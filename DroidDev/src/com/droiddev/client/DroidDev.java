@@ -109,7 +109,7 @@ public class DroidDev implements EntryPoint {
     	dragController.setBehaviorDragProxy(true);
     	//mainPanel.add(fileTree);
     	splitPanel.addWest(fileTree, 300);
-    	splitPanel.addEast(mainPanel, 600);
+    	splitPanel.addEast(mainPanel, 650);
 
         initProps();
 
@@ -357,7 +357,7 @@ public class DroidDev implements EntryPoint {
     	
     	VerticalPanel buttonPanel = new VerticalPanel();
     	
-    	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview -->", new ClickHandler() {
+    	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview Layout -->", new ClickHandler() {
         	public void onClick(ClickEvent event) {
         		generatePreview(code.getText());
         	}
@@ -391,7 +391,7 @@ public class DroidDev implements EntryPoint {
         layoutPanel.addStyleName("previewPane");
     	//mainPanel.add(layoutPanel);
         widgetsAndPreview.add(layoutPanel);
-        tabs.add(widgetsAndPreview, "Layout");
+        tabs.add(widgetsAndPreview, "Layout Preview");
         tabs.selectTab(0);
         mainPanel.add(tabs);
     	AndroidEditor.instance().layoutPanel = layoutPanel;

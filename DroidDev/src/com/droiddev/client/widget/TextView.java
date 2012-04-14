@@ -44,11 +44,13 @@ public class TextView extends AbstractWidget {
 
 	public static final String[] menuItems = {"String getText()"};
 	public static final String[] menuFunctions = {"getText()"};
+	public static final String[] menuImports = {null};
 
 	public TextView(String str, String tagName) {
 		super(tagName);
 		this.setMenuItems(menuItems);
 		this.setMenuFunctions(menuFunctions);
+		this.setMenuImports(menuImports);
 
 		text = new StringProperty("Text", "android:text", "");
 		if (str != null) {

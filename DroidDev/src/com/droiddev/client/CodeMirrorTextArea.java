@@ -91,4 +91,14 @@ public class CodeMirrorTextArea extends TextArea {
             cm.focus();
     	}
 	}-*/;
+	
+	public void addImport(String imp) {
+		addCMImport(cm, imp);
+	}
+	
+	private static native void addCMImport(JavaScriptObject cm, String imp) /*-{
+		var lineOne = cm.getLine(1);
+		var nextLine = "import " + imp + ";";
+		cm.setLine(1, lineOne + "\n" + nextLine);
+	}-*/;
 }

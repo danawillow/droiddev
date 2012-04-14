@@ -44,6 +44,7 @@ public interface Widget extends Cloneable {
     public boolean isVisible();
     public String[] getMenuItems();
     public String[] getMenuFunctions();
+    public String[] getMenuImports();
     
     public Canvas getCanvas();
     public CanvasWidget getCanvasWidget();

@@ -46,6 +46,7 @@ public abstract class AbstractWidget implements Widget {
     
     private String[] menuItems;
     private String[] menuFunctions;
+    private String[] menuImports;
 
     public AbstractWidget(String tagName) {
         this.setTagName(tagName);
@@ -154,7 +155,7 @@ public abstract class AbstractWidget implements Widget {
 
     public Property getPropertyByAttName(String attName) {
         for (Property prop : props) {
-            if (prop.getAtttributeName().equals(attName)) {
+            if (prop.getAttributeName().equals(attName)) {
                 return prop;
             }
         }
@@ -163,7 +164,7 @@ public abstract class AbstractWidget implements Widget {
 
     public boolean propertyHasValueByAttName(String attName, Object value) {
         for (Property prop : props) {
-            if (prop.getAtttributeName().equals(attName) && prop.getValue().equals(value)) {
+            if (prop.getAttributeName().equals(attName) && prop.getValue().equals(value)) {
                 return true;
             }
         }
@@ -276,6 +277,10 @@ public abstract class AbstractWidget implements Widget {
     
     public String[] getMenuFunctions() {
     	return menuFunctions;
+    }
+    
+    public String[] getMenuImports() {
+    	return menuImports;
     }
 
     protected void readWidthHeight() {
@@ -430,6 +435,10 @@ public abstract class AbstractWidget implements Widget {
     
     public void setMenuFunctions(String[] menuFunctions) {
     	this.menuFunctions = menuFunctions;
+    }
+    
+    public void setMenuImports(String[] menuImports) {
+    	this.menuImports = menuImports;
     }
 
     public Widget copy() {
