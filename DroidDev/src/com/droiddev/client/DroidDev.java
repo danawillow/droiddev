@@ -297,7 +297,7 @@ public class DroidDev implements EntryPoint {
 
 					@Override
 					public void onSuccess(Void result) {
-						final DialogBox dialog = new DialogBox();
+						final DialogBox dialog = new DialogBox(true);
 						dialog.setHTML("Build results");
 						/*dialog.setWidth("500px");
 						dialog.setHeight("500px");*/
