@@ -117,10 +117,10 @@ public class DroidDev implements EntryPoint {
         
         addPreviewButtonAndPane();
 
-    	listFiles();
+    	listFiles(true);
     }
     
-    public void listFiles() {
+    public void listFiles(final boolean andImport) {
     	RequestBuilder listFilesRB = new RequestBuilder(RequestBuilder.GET, URL.encode(GWT.getModuleBaseURL() + "listFiles"));
     	try {
     		listFilesRB.sendRequest(null, new RequestCallback() {
@@ -143,8 +143,10 @@ public class DroidDev implements EntryPoint {
 							}
 						});
 						
-						for (String name: fileNamesToPaths.values()) {
-							importFile(name);
+						if (andImport) {
+							for (String name: fileNamesToPaths.values()) {
+								importFile(name);
+							}
 						}
 					}
 					else {
@@ -229,7 +231,7 @@ public class DroidDev implements EntryPoint {
 								@Override
 								public void onSuccess(Void result) {
 									fileTree.clear();
-									listFiles();
+									listFiles(false);
 								}
 							});
 							dialog.hide();
@@ -354,12 +356,12 @@ public class DroidDev implements EntryPoint {
     	
     	VerticalPanel buttonPanel = new VerticalPanel();
     	
-    	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview", new ClickHandler() {
+    	com.google.gwt.user.client.ui.Button previewButton = new com.google.gwt.user.client.ui.Button("Preview -->", new ClickHandler() {
         	public void onClick(ClickEvent event) {
         		generatePreview(code.getText());
         	}
         });
-    	com.google.gwt.user.client.ui.Button xmlButton = new com.google.gwt.user.client.ui.Button("Generate XML", new ClickHandler() {
+    	com.google.gwt.user.client.ui.Button xmlButton = new com.google.gwt.user.client.ui.Button("<-- Generate XML", new ClickHandler() {
         	public void onClick(ClickEvent event) {
         		generateXML();
         	}
