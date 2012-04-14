@@ -52,8 +52,10 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -71,6 +73,7 @@ public class DroidDev implements EntryPoint {
     private FlowPanel widgetPanel = new FlowPanel();
     private Label text = new Label();
     private HorizontalPanel mainPanel = new HorizontalPanel();
+    private SplitLayoutPanel splitPanel = new SplitLayoutPanel();
     //private TextArea code = new TextArea();
     private CodeMirrorTextArea code = new CodeMirrorTextArea("code");
     private ImageResources imageResources = ImageResources.instance();
@@ -92,7 +95,8 @@ public class DroidDev implements EntryPoint {
     
     public void onModuleLoad() {
         //RootPanel.get("preview").add(layoutPanel);
-    	RootPanel.get().add(mainPanel);
+    	//RootPanel.get().add(mainPanel);
+    	RootLayoutPanel.get().add(splitPanel);
     	dragController = new PickupDragController(RootPanel.get(), false) {
     		@Override
     		protected com.google.gwt.user.client.ui.Widget newDragProxy(DragContext context) {
@@ -103,14 +107,16 @@ public class DroidDev implements EntryPoint {
     		}
     	};
     	dragController.setBehaviorDragProxy(true);
-    	mainPanel.add(fileTree);
+    	//mainPanel.add(fileTree);
+    	splitPanel.addWest(fileTree, 300);
+    	splitPanel.add(mainPanel);
 
         initProps();
 
     	addCodePanelAndBuildButton();
         
         addPreviewButtonAndPane();
-        
+
     	listFiles();
     }
     
