@@ -1,7 +1,10 @@
 package com.droiddev.client;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.TreeSet;
 
+import com.droiddev.client.file.File;
 import com.droiddev.client.widget.Layout;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -22,6 +25,8 @@ public class AndroidEditor {
     String lastXMLFile;
     String lastJavaFile;
     HashMap<String, String> fileContents = new HashMap<String, String>();
+    TreeSet<String> imports = new TreeSet<String>();
+	HashSet<File> files = new HashSet<File>();
 
     public String getScreenUnit() {
         return "dp";

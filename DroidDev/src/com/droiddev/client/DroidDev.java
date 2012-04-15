@@ -96,7 +96,6 @@ public class DroidDev implements EntryPoint {
     
 
 	private Tree fileTree = new Tree();
-	private HashSet<File> files = new HashSet<File>();
     //private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
     //private String currFile;
     
@@ -156,7 +155,7 @@ public class DroidDev implements EntryPoint {
 								importFile(name);
 							}
 							*/
-							for (File file: files) {
+							for (File file: AndroidEditor.instance().files) {
 								if (file.getType() == File.JAVA || file.getType() == File.XML)
 									importFile(file);
 							}
@@ -198,7 +197,7 @@ public class DroidDev implements EntryPoint {
     	else
     		file = new OtherFile(name, path);
     	
-    	files.add(file);
+    	AndroidEditor.instance().files.add(file);
 
     	FileChoice c = new FileChoice(file);
     	TreeItem item = new TreeItem(c);
@@ -291,7 +290,6 @@ public class DroidDev implements EntryPoint {
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                	System.out.println("received response");
                 	AndroidEditor.instance().fileContents.put(file.getPath(), response.getText());
                 	
                 	if (file.getType() == File.JAVA)
