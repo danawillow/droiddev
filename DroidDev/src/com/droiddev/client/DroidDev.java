@@ -1,11 +1,17 @@
 package com.droiddev.client;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Vector;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.drop.SimpleDropController;
+import com.droiddev.client.file.File;
+import com.droiddev.client.file.Folder;
+import com.droiddev.client.file.JavaFile;
+import com.droiddev.client.file.OtherFile;
+import com.droiddev.client.file.XMLFile;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.util.DisplayMetrics;
@@ -90,7 +96,8 @@ public class DroidDev implements EntryPoint {
     
 
 	private Tree fileTree = new Tree();
-    private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
+	private HashSet<File> files = new HashSet<File>();
+    //private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
     //private String currFile;
     
     public void onModuleLoad() {
@@ -144,8 +151,14 @@ public class DroidDev implements EntryPoint {
 						});
 						
 						if (andImport) {
+							/*
 							for (String name: fileNamesToPaths.values()) {
 								importFile(name);
+							}
+							*/
+							for (File file: files) {
+								if (file.getType() == File.JAVA || file.getType() == File.XML)
+									importFile(file);
 							}
 						}
 					}
@@ -172,16 +185,26 @@ public class DroidDev implements EntryPoint {
     }-*/;
     
     public TreeItem dirInfoToTreeItem(DirInfo d, DirInfo parent) {
-    	FileChoice c = new FileChoice(d.getName());
+		File file;
+		String name = d.getName();
+		String path = parent.getName() + "/" + d.getName();
+		
+    	if (d.getName().contains("/"))
+    		file = new Folder(name, path);
+    	else if (d.getName().endsWith("xml"))
+    		file = new XMLFile(name, path);
+    	else if (d.getName().endsWith("java"))
+    		file = new JavaFile(name, path);
+    	else
+    		file = new OtherFile(name, path);
+    	
+    	files.add(file);
+
+    	FileChoice c = new FileChoice(file);
     	TreeItem item = new TreeItem(c);
 		item.setState(true);
     	
     	JsArray<DirInfo> children = d.getChildren();
-    	
-    	//if (children.length() == 0) { // doesn't work, folders can have 0 children
-    	if (!d.getName().contains("/")) {
-    		fileNamesToPaths.put(d.getName(), parent.getName() + "/" + d.getName());
-    	}
     	
     	for (int i = 0; i < children.length(); i++) {
     		TreeItem child = dirInfoToTreeItem(children.get(i), d);
@@ -197,9 +220,11 @@ public class DroidDev implements EntryPoint {
     	private HorizontalPanel panel = new HorizontalPanel();
     	private Label fileName;
     	private Anchor delete = new Anchor("[X]");
+    	private File file;
     	
-    	public FileChoice(String name) {
-    		fileName = new Label(name);
+    	public FileChoice(File file) {
+    		this.file = file;
+    		fileName = new Label(file.getFileName());
     		
     		panel.add(fileName);
     		panel.add(delete);
@@ -217,7 +242,7 @@ public class DroidDev implements EntryPoint {
 					});
         			com.google.gwt.user.client.ui.Button okButton = new com.google.gwt.user.client.ui.Button("OK", new ClickHandler() {
 						public void onClick(ClickEvent event) {
-		        			String toDelete = fileNamesToPaths.get(fileName.getText());
+		        			String toDelete = FileChoice.this.file.getPath();
 		        			if (toDelete == null) toDelete = fileName.getText();
 		        			if (toDelete == null) {
 		        				GWT.log("No entry for " + fileName.getText());
@@ -248,7 +273,7 @@ public class DroidDev implements EntryPoint {
     		fileName.addClickHandler(new ClickHandler() {
     			@Override
     			public void onClick(ClickEvent event) {
-    				AndroidEditor.instance().switchToFile(fileNamesToPaths.get(fileName.getText()));
+    				AndroidEditor.instance().switchToFile(FileChoice.this.file.getPath());
     			}
     		});
     		
@@ -256,24 +281,32 @@ public class DroidDev implements EntryPoint {
     	}
     }
     
-    public void importFile(final String name) {
-    	RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, name);
+    public void importFile(final File file) {
+    	RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, file.getPath());
         try {
             builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
                     text.setText("Error!");
+                    System.out.println(exception.getMessage());
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                	AndroidEditor.instance().fileContents.put(name, response.getText());
-                	if (name.endsWith("/main.xml")) {
-                		AndroidEditor.instance().currFile = name;
-                		AndroidEditor.instance().lastXMLFile = name;
+                	System.out.println("received response");
+                	AndroidEditor.instance().fileContents.put(file.getPath(), response.getText());
+                	
+                	if (file.getType() == File.JAVA)
+                		((JavaFile)file).setContent(response.getText());
+                	else if (file.getType() == File.XML)
+                		((XMLFile)file).setContent(response.getText());
+                	
+                	if (file.getFileName().equals("main.xml")) {
+                		AndroidEditor.instance().currFile = file.getPath();
+                		AndroidEditor.instance().lastXMLFile = file.getPath();
                     	code.setText(response.getText());
                         generatePreview(response.getText());
                 	}
-                	else if (name.endsWith(".java")) {
-                		AndroidEditor.instance().lastJavaFile = name;
+                	else if (file.getType() == File.JAVA) {
+                		AndroidEditor.instance().lastJavaFile = file.getPath();
                 	}
                 }
             });
@@ -841,10 +874,13 @@ public class DroidDev implements EntryPoint {
     	xml += generateWidget(root);
     	
     	//code.setText(xml);
+    	
+    	/*
     	AndroidEditor.instance().fileContents.put(fileNamesToPaths.get("main.xml"), xml);
     	if (AndroidEditor.instance().currFile.equals(fileNamesToPaths.get("main.xml"))) {
     		code.setText(xml);
     	}
+    	*/
     }
     
     @SuppressWarnings("unchecked")
