@@ -178,7 +178,8 @@ public class DroidDev implements EntryPoint {
     	
     	JsArray<DirInfo> children = d.getChildren();
     	
-    	if (children.length() == 0) {
+    	//if (children.length() == 0) { // doesn't work, folders can have 0 children
+    	if (!d.getName().contains("/")) {
     		fileNamesToPaths.put(d.getName(), parent.getName() + "/" + d.getName());
     	}
     	
