@@ -3,6 +3,8 @@ package com.droiddev.client;
 import java.util.HashMap;
 import java.util.Vector;
 
+import com.droiddev.client.file.File;
+import com.droiddev.client.file.JavaFile;
 import com.droiddev.client.property.Property;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
@@ -73,7 +75,10 @@ public class CanvasWidget extends Composite{
 			public void execute() {
 				if (!AndroidEditor.instance().imports.contains("android.widget." + widget.getTagName())) {
 					AndroidEditor.instance().imports.add("android.widget." + widget.getTagName());
-					AndroidEditor.instance().code.addImport("android.widget." + widget.getTagName());
+					for (File f: AndroidEditor.instance().files)
+						if (f.getType() == File.JAVA)
+							((JavaFile)f).addImport("android.widget." + widget.getTagName());
+					//AndroidEditor.instance().code.addImport("android.widget." + widget.getTagName());
 				}
 				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
 				menu.hide();
@@ -99,7 +104,7 @@ public class CanvasWidget extends Composite{
 					public void execute() {
 						if (menuImport != null && !AndroidEditor.instance().imports.contains(menuImport)) {
 							AndroidEditor.instance().imports.add(menuImport);
-							AndroidEditor.instance().code.addImport(menuImport);
+							//AndroidEditor.instance().code.addImport(menuImport);
 						}
 						AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
 						menu.hide();

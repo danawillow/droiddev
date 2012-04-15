@@ -26,6 +26,10 @@ public class CodeMirrorTextArea extends TextArea {
 			extraKeys: { "Ctrl-I": function(cm) { cm.autoFormatRange(cm.getCursor(true), cm.getCursor(false)); } }
 			});
 	}-*/;
+	
+	public JavaScriptObject getCM() {
+		return cm;
+	}
 
 	@Override
 	public void setText(String s) {
@@ -90,15 +94,5 @@ public class CodeMirrorTextArea extends TextArea {
             cm.indentLine(cursor.line+1);
             cm.focus();
     	}
-	}-*/;
-	
-	public void addImport(String imp) {
-		addCMImport(cm, imp);
-	}
-	
-	private static native void addCMImport(JavaScriptObject cm, String imp) /*-{
-		var lineOne = cm.getLine(1);
-		var nextLine = "import " + imp + ";";
-		cm.setLine(1, lineOne + "\n" + nextLine);
 	}-*/;
 }
