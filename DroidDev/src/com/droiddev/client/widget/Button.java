@@ -25,22 +25,6 @@ public class Button extends TextView {
 		pad_x = 10;
 		pad_y = 0;
 
-		/*
-		img_base = null;
-		String theme = AndroidEditor.instance().getTheme();
-		if (theme == null || theme.equals("default")) {
-			img_base = ImageResources.instance().getImage("def/btn_default_normal.9");
-			if (img_base != null) {
-				this.img = new NineWayImage(img_base, 10, 10);
-			}
-		}
-		else if (theme.equals("light")) {
-			img_base = ImageResources.instance().getImage("light/button_background_normal.9");
-			if (img_base != null) {
-				this.img = new NineWayImage(img_base, 10, 10);
-			}
-		}
-		 */
 		img_base = ImageResources.instance().get("btn_default_normal.9.png");
 		img = new NineWayImage(img_base, 10, 10);
 
@@ -53,7 +37,6 @@ public class Button extends TextView {
 	public void apply() {
 		super.apply();
 		this.baseline = fontSize+2;
-		//this.addStyleDependentName("button");
 	}
 
 
@@ -75,30 +58,6 @@ public class Button extends TextView {
 		}
 		return w;
 	}
-
-
-	/*
-	@Override
-	public void paint(Graphics g) {
-		if (img == null) {
-			g.setColor(Color.white);
-			g.fillRoundRect(getX(), getY(), getWidth(), getHeight(), 8, 8);
-
-			g.setColor(Color.black);
-			g.drawRoundRect(getX(), getY(), getWidth(), getHeight(), 8, 8);
-		}
-		else {
-			img.paint(g, getX(), getY(), getWidth(), getHeight());
-			g.setColor(Color.black);
-		}
-		g.setFont(f);
-		//int w = g.getFontMetrics(f).stringWidth(text.getStringValue());
-		g.setColor(textColor.getColorValue());
-
-		drawText(g, 0, getHeight()/2+fontSize/2-5, CENTER);
-		//g.drawString(text.getStringValue(), getX()+getWidth()/2-w/2, getY()+fontSize+2);
-	}
-	 */
 
 	@Override
 	public void paint() {

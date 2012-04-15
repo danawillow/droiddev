@@ -54,28 +54,6 @@ public class EditView extends TextView {
 		props.add(capitalize);
 		props.add(digits);
 
-		/*
-		String theme = AndroidEditor.instance().getTheme();
-		if (theme == null || theme.equals("default")) {
-			fontSz.setStringValue("18sp");
-			fontSize = 18;
-			img_base = ImageResources.instance().getImage("mdpi/textfield_default.9");
-			if (img_base != null) {
-				this.img = new NineWayImage(img_base, 11, 6);
-			}
-			pad_x = 20;
-			pad_y = 0;
-		}
-		else if (theme.equals("light")) {
-			img_base = ImageResources.instance().getImage("light/editbox_background_normal.9");
-			if (img_base != null) {
-				this.img = new NineWayImage(img_base, 10, 10);
-			}
-			pad_x = 18;
-			pad_y = 0;
-		}
-		 */
-
 		fontSz.setStringValue("18sp");
 		fontSize = 18;
 		getCanvas().getContext2d().setFont(font);
@@ -110,55 +88,11 @@ public class EditView extends TextView {
 
 	@Override
 	public int getContentHeight() {
-		//int sup = super.getContentWidth();
-		//if (sup > fontSize) {
-		//	return sup;
-		//}
-		//else {
 		if (img_base != null) {
-			/*
-			String theme = AndroidEditor.instance().getTheme();
-			if (theme == null || theme.equals("default"))
-				return img_base.getHeight(null)-5;
-			else if (theme.equals("light"))
-				return img_base.getHeight(null)-5;
-			 */
 			return img_base.getHeight()-5;
 		}
 		return fontSize;
-		//}
 	}
-
-	/*
-	@Override
-	public void paint(Graphics g) {
-		if (img == null) {
-			g.setColor(Color.white);
-			g.fillRoundRect(getX(), getY(), getWidth(), getHeight(), 8, 8);
-			g.setColor(Color.darkGray);
-			g.drawRoundRect(getX(), getY(), getWidth(), getHeight(), 8, 8);
-		}
-		else {
-			img.paint(g, getX(), getY(),getWidth(), getHeight());
-			g.setColor(Color.darkGray);
-		}
-		g.setFont(f);
-		String s;
-		if (password.getBooleanValue()) {
-			s = "";
-			for (int i=0;i<text.getStringValue().length();i++)
-				s = s+'\245';
-		}
-		else {
-			s = text.getStringValue();
-		}
-		g.setColor(textColor.getColorValue());
-		//g.drawString(s, getX()+pad_x/2, getY()+fontSize+pad_y/2-1);
-		this.drawText(g, 0, (fontSize+getHeight())/2-1);
-		g.setColor(Color.black);
-		g.fillRect(getX()+pad_x/2-4, getY()+(getHeight()-fontSize)/2-3, 1, fontSize+5);
-	}
-	 */
 
 	@Override
 	public void paint() {

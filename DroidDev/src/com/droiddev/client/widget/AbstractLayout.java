@@ -2,8 +2,6 @@ package com.droiddev.client.widget;
 
 import java.util.Vector;
 
-//import com.droiddev.client.AndroidEditor;
-
 public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	protected Vector<Widget> widgets;
 	
@@ -127,9 +125,6 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	
 	public void setPosition(int x, int y) {
 		super.setPosition(x, y);
-		//apply();
-		
-		// make sure children's canvases are positioned correctly in relation to this
 		for (Widget w: widgets) {
 			w.setPosition(w.getX(), w.getY());
 		}
@@ -138,24 +133,6 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 	
 	public abstract void positionWidget(Widget w);
 	public abstract void repositionAllWidgets();
-	
-	public int getScreenX() {
-		if (parent != null && parent != this) {
-			return (parent).getScreenX()+getX();
-		}
-		else {
-			return getX();
-		}
-	}
-	
-	public int getScreenY() {
-		if (parent != null && parent != this) {
-			return parent.getScreenY()+getY();
-		}
-		else {
-			return getY();
-		}
-	}
 	
 	public void resizeForRendering() {
 		for (Widget w : widgets) {
@@ -186,10 +163,5 @@ public abstract class AbstractLayout extends AbstractWidget implements Layout {
 			}
 		}
 		return false;
-	}
-	
-	public Widget copy() {
-		//AndroidEditor.instance().error("Cloning layouts is not supported (yet)");
-		return null;
 	}
 }

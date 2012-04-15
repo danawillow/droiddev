@@ -3,7 +3,6 @@ package com.droiddev.client.widget;
 import java.util.Vector;
 
 import com.droiddev.client.property.StringProperty;
-import com.google.gwt.user.client.Window;
 
 public class TableLayout extends LinearLayout {
 	public static final String TAG_NAME = "TableLayout";

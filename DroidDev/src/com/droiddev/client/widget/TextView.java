@@ -15,9 +15,8 @@ public class TextView extends AbstractWidget {
 	public static final int CENTER = 1;
 	public static final int END = 2;
 
-	//int fontSize = 9;
 	int fontSize = 14;
-	String font = "14px Monaco"; // Yeah it's weird. fix later.
+	String font = "14px Arial";
 
 	StringProperty text;
 	StringProperty hint;
@@ -29,14 +28,6 @@ public class TextView extends AbstractWidget {
 
 	int pad_x = 6;
 	int pad_y = 4;
-
-    /*
-	PropertiesPanel p;
-	Font f;
-	BufferedImage bg;
-
-	boolean osx;
-	*/
 
 	public static final String[] propertyNames =
 		new String[] {"android:hint", "android:textSize", "android:textStyle", "android:typeface", "android:textColor"};
@@ -70,32 +61,12 @@ public class TextView extends AbstractWidget {
 		props.add(textColor);
 		props.add(align);
 
-/*
-		osx = (System.getProperty("os.name").toLowerCase().contains("mac os x"));
-		buildFont();
-
-		bg = new BufferedImage(1,1,BufferedImage.TYPE_BYTE_GRAY);*/
 		apply();
 	}
 	
 	public TextView(String str) {
 		this(str, TAG_NAME);
 	}
-
-/*
-	protected void buildFont() {
-		if (osx)
-			f = new Font("Arial", Font.PLAIN, fontSize);
-		else
-			f = new Font(face.getStringValue(),Font.PLAIN,fontSize);
-		if (style.getStringValue() != null && style.getStringValue().contains("bold")) {
-			f = f.deriveFont(f.getStyle() | Font.BOLD);
-		}
-		if (style.getStringValue() != null && style.getStringValue().contains("italic")) {
-			f = f.deriveFont(f.getStyle() | Font.ITALIC);
-		}
-	}
-	*/
 
 	@Override
     public void apply() {
@@ -108,7 +79,6 @@ public class TextView extends AbstractWidget {
 		font = fontSize + "px Arial";
 		getCanvas().getContext2d().setFont(font);
 		
-		//buildFont();
 		this.readWidthHeight();
 		this.baseline = fontSize+pad_y/2;
 	}
@@ -123,7 +93,7 @@ public class TextView extends AbstractWidget {
 		do {
 			ix = str.indexOf('\n');
 			String txt = str;
-			if (ix != -1) { // && (ix1 == -1 || ix1 > ix2)) {
+			if (ix != -1) {
 				txt = str.substring(0, ix);
 				str = str.substring(ix+1);
 			}
@@ -214,7 +184,6 @@ public class TextView extends AbstractWidget {
 			else {
 				tx = pad_x/2+dx;
 			}
-			//g.drawString(s, tx, getY()+h);
 			getCanvas().getContext2d().setFont(font);
 			getCanvas().getContext2d().fillText(getText(), tx, h);
 			h += fontSize+1;
@@ -222,35 +191,6 @@ public class TextView extends AbstractWidget {
 				break;
 		}
 	}
-
-	/*
-	protected void setTextColor(Graphics g) {
-		Color c = textColor.getColorValue();
-		String theme = AndroidEditor.instance().getTheme();
-		Color def = null;
-		if (theme == null || theme.equals("default")) {
-			def = Color.white;
-		}
-		else if (theme.equals("light")) {
-			def = Color.black;
-		}
-		if (c == null)
-			c = def;
-		g.setColor(c);
-	}
-
-	public void paint(Graphics g) {
-		drawBackground(g);
-
-		if (getText() != null) {
-			setTextColor(g);
-			g.setFont(f);
-
-			int h = fontSize+pad_y/2;
-			drawText(g, 0, h);
-		}
-	}
-	*/
 	
 	public void paint() {
 		getCanvas().setCoordinateSpaceWidth(getWidth());

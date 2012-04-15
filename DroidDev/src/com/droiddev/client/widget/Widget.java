@@ -12,7 +12,6 @@ public interface Widget extends Cloneable {
     public static final int BOTTOM = 2;
     public static final int RIGHT = 3;
 
-    public boolean clickedOn(int x, int y);
     public int getX();
     public int getY();
     public int getWidth();
@@ -31,7 +30,6 @@ public interface Widget extends Cloneable {
     public boolean propertyHasValueByAttName(String attName, Object value);
     public void addProperty(Property p);
     public void removeProperty(Property p);
-    /*public void setPropertyChangeListener(PropertyChangeListener l);*/
 
     public String getTagName();
     public String getId();
@@ -50,6 +48,4 @@ public interface Widget extends Cloneable {
     public CanvasWidget getCanvasWidget();
 
     public int getMargin(int which);
-
-    public Widget copy();
 }

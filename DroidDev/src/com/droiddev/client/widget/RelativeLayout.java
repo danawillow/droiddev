@@ -240,11 +240,6 @@ public class RelativeLayout extends AbstractLayout {
 		if (positioned)
 			return;
 
-		/*if (widgets.size() == 1) {
-			w.setPosition(0,0);
-			return;
-		}*/
-
 		Widget closestTop = null;
 		Widget closestLeft = null;
 		int closeVert = Integer.MAX_VALUE;
@@ -414,8 +409,7 @@ public class RelativeLayout extends AbstractLayout {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	// Synchronized keyword not actually necessary for me since javascript is single threaded.
-	public synchronized void repositionAllWidgets() {
+	public void repositionAllWidgets() {
 		if (!repositioning) {
 			repositioning = true;
 			Vector<Widget> ws = (Vector<Widget>)widgets.clone();

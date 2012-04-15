@@ -32,14 +32,6 @@ public class ListView extends AbstractWidget {
 	protected int getContentWidth() {
 		return 55;
 	}
-
-	/*
-	public void paint(Graphics g) {
-		g.setColor(Color.darkGray);
-		g.drawString("ListView", getX()+2, getY()+14);
-		g.drawRect(getX(), getY(), getWidth(), getHeight());
-	}
-	*/
 	
 	public void paint() {
 		getCanvas().setCoordinateSpaceWidth(getWidth());

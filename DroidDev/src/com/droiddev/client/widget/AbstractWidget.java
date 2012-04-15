@@ -3,15 +3,12 @@ import java.util.Vector;
 
 import com.droiddev.client.AndroidEditor;
 import com.droiddev.client.CanvasWidget;
-import com.droiddev.client.property.ColorProperty;
 import com.droiddev.client.property.Property;
 import com.droiddev.client.property.SelectProperty;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.property.WidthProperty;
 import com.droiddev.client.util.DisplayMetrics;
 import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context;
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 
 
@@ -23,7 +20,6 @@ public abstract class AbstractWidget implements Widget {
     int width, height;
     private String tagName;
     Vector<Property> props;
-    //PropertyChangeListener listener;
 
     protected StringProperty id;
     protected static int widget_num = 0;
@@ -38,10 +34,7 @@ public abstract class AbstractWidget implements Widget {
     StringProperty marginTop;
     StringProperty marginLeft;
     StringProperty marginRight;
-
-    ColorProperty background;
     
-    //Canvas canvas;
     CanvasWidget canvas;
     
     private String[] menuItems;
@@ -52,13 +45,11 @@ public abstract class AbstractWidget implements Widget {
         this.setTagName(tagName);
         this.props = new Vector<Property>();
         this.id = new StringProperty("Id", "android:id", "");
-        //this.id.setStringValue("@+id/widget"+(widget_num++));
         this.id.setStringValue("@+id/" + tagName + (widget_num++));
         this.widthProp = new WidthProperty("Width", "android:layout_width", "");
         this.widthProp.setStringValue("wrap_content");
         this.heightProp = new WidthProperty("Height", "android:layout_height", "");
         this.heightProp.setStringValue("wrap_content");
-        this.background = new ColorProperty("Background Color", "android:background", null);
         this.pad = new StringProperty("Padding", "android:padding", "0dp");
         this.visibility = new SelectProperty("Visible", "android:visibility", new String[] {"visible", "invisible", "gone"}, 0);
 
@@ -73,7 +64,6 @@ public abstract class AbstractWidget implements Widget {
         this.props.add(id);
         this.props.add(widthProp);
         this.props.add(heightProp);
-        this.props.add(background);
         this.props.add(pad);
         this.props.add(visibility);
 
@@ -88,11 +78,6 @@ public abstract class AbstractWidget implements Widget {
         
         this.canvas = new CanvasWidget(Canvas.createIfSupported(), this);
     }
-
-/*
-    public void setPropertyChangeListener(PropertyChangeListener l) {
-        this.listener = l;
-    }*/
     
     public CanvasWidget getCanvasWidget() {
     	return canvas;
@@ -118,7 +103,6 @@ public abstract class AbstractWidget implements Widget {
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            //System.exit(0);
         }
         if (getParentLayout() != null) {
             ((AbstractWidget)getParentLayout()).parentTest(w);
@@ -141,16 +125,10 @@ public abstract class AbstractWidget implements Widget {
         if (!props.contains(p)) {
             props.add(p);
         }
-        /*
-        if (listener != null)
-            listener.propertyChange(new PropertyChangeEvent(this, "properties", null, props));*/
     }
 
     public void removeProperty(Property p) {
         props.remove(p);
-        /*
-        if (listener != null)
-            listener.propertyChange(new PropertyChangeEvent(this, "properties", null, props));*/
     }
 
     public Property getPropertyByAttName(String attName) {
@@ -252,17 +230,6 @@ public abstract class AbstractWidget implements Widget {
         return height;
     }
 
-    public boolean clickedOn(int x, int y) {
-        int off_x = 0;
-        int off_y = 0;
-        if (parent != null) {
-            off_x = parent.getScreenX();
-            off_y = parent.getScreenY();
-        }
-        return (x > this.getX()+off_x && x < this.getX()+off_x+getWidth()
-            && y > this.getY()+off_y && y < this.getY()+getHeight()+off_y);
-    }
-
     public void move(int dx, int dy) {
         setPosition(this.x + dx, this.y + dy);
     }
@@ -332,13 +299,6 @@ public abstract class AbstractWidget implements Widget {
             }
             h = h-getY()-padding[BOTTOM];
         }
-        /*
-        width = w;
-        height = h;
-
-    	super.setWidth(width + "px");
-    	super.setHeight(height + "px");
-    	*/
         setSizeInternal(w, h);
     }
 
@@ -355,9 +315,6 @@ public abstract class AbstractWidget implements Widget {
         {
             y = padding[TOP];
         }
-        //if (getParentLayout() != null) {
-            //      getParentLayout().repositionAllWidgets();
-            //}
     }
 
     public void setSizeInternal(int w, int h) {
@@ -369,20 +326,6 @@ public abstract class AbstractWidget implements Widget {
 
     public int getBaseline() {
         return baseline;
-    }
-
-    public void drawBackground(Context cg) {
-        /*
-        if (background.getColorValue() != null) {
-            g.setColor(background.getColorValue());
-            g.fillRect(getX()-getPadding(LEFT), getY()-getPadding(TOP), getWidth()+getPadding(LEFT)+getPadding(RIGHT), getHeight()+getPadding(TOP)+getPadding(BOTTOM));
-        }
-        */
-        Context2d g = (Context2d)cg;
-        if (background.getColorValue() != null) {
-            g.setFillStyle(background.getColorValue());
-            g.fillRect(getX()-getPadding(LEFT), getY()-getPadding(TOP), getWidth()+getPadding(LEFT)+getPadding(RIGHT), getHeight()+getPadding(TOP)+getPadding(BOTTOM));
-        }
     }
 
     public void setPadding(int pad) {
@@ -439,24 +382,5 @@ public abstract class AbstractWidget implements Widget {
     
     public void setMenuImports(String[] menuImports) {
     	this.menuImports = menuImports;
-    }
-
-    public Widget copy() {
-        /*
-        try {
-            //StringWriter sw = new StringWriter();
-            //PrintWriter pw = new PrintWriter(sw);
-            //pw.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            //AndroidEditor.instance().generateWidget(this, pw);
-            //AndroidEditor.instance().
-            AbstractWidget w = (AbstractWidget)this.clone();
-            w.setId("@+id/widget"+(widget_num++));
-            return w;
-        } catch (CloneNotSupportedException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        */
-        return null;
     }
 }
