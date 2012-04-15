@@ -230,10 +230,6 @@ public abstract class AbstractWidget implements Widget {
         return height;
     }
 
-    public void move(int dx, int dy) {
-        setPosition(this.x + dx, this.y + dy);
-    }
-
     public String getTagName() {
         return tagName;
     }

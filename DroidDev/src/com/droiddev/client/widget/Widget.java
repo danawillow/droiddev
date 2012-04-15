@@ -21,7 +21,6 @@ public interface Widget extends Cloneable {
     public void setWidth(int width);
     public void setHeight(int height);
     public void setSizeInternal(int w, int h);
-    public void move(int dx, int dy);
     public void paint();
     public void apply();
     public Vector<Property> getProperties();
