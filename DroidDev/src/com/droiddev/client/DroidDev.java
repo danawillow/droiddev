@@ -1,7 +1,6 @@
 package com.droiddev.client;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Vector;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
@@ -272,7 +271,7 @@ public class DroidDev implements EntryPoint {
     		fileName.addClickHandler(new ClickHandler() {
     			@Override
     			public void onClick(ClickEvent event) {
-    				AndroidEditor.instance().switchToFile(FileChoice.this.file.getPath());
+    				AndroidEditor.instance().switchToFile(FileChoice.this.file);
     			}
     		});
     		
@@ -290,7 +289,7 @@ public class DroidDev implements EntryPoint {
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                	AndroidEditor.instance().fileContents.put(file.getPath(), response.getText());
+                	//AndroidEditor.instance().fileContents.put(file.getPath(), response.getText());
                 	
                 	if (file.getType() == File.JAVA)
                 		((JavaFile)file).setContent(response.getText());
@@ -298,7 +297,7 @@ public class DroidDev implements EntryPoint {
                 		((XMLFile)file).setContent(response.getText());
                 	
                 	if (file.getFileName().equals("main.xml")) {
-                		AndroidEditor.instance().currFile = file.getPath();
+                		AndroidEditor.instance().currFile = file;
                 		AndroidEditor.instance().lastXMLFile = file.getPath();
                     	code.setText(response.getText());
                         generatePreview(response.getText());
@@ -326,11 +325,26 @@ public class DroidDev implements EntryPoint {
     	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save and Build", new ClickHandler() {
     		public void onClick(ClickEvent event) {
     			generateXML();
+    			/*
     			String currFile = AndroidEditor.instance().currFile;
     			if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
     				AndroidEditor.instance().fileContents.put(currFile, code.getText());
+    				*/
+    			File currFile = AndroidEditor.instance().currFile;
+    			if (currFile.getType() == File.JAVA)
+    				((JavaFile)currFile).setContent(code.getText());
+    			else if (currFile.getType() == File.XML)
+    				((XMLFile)currFile).setContent(code.getText());
     			
-    			service.saveFile(AndroidEditor.instance().fileContents, new AsyncCallback<Void>() {
+    			HashMap<String, String> fileContents = new HashMap<String, String>();
+    			for (File f: AndroidEditor.instance().files) {
+        			if (f.getType() == File.JAVA)
+        				fileContents.put(f.getPath(), ((JavaFile)f).getContent());
+        			else if (f.getType() == File.XML)
+        				fileContents.put(f.getPath(), ((XMLFile)f).getContent());
+    			}
+    			
+    			service.saveFile(fileContents, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
 					}
