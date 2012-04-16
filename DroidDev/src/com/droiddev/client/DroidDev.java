@@ -73,16 +73,17 @@ import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
 
 public class DroidDev implements EntryPoint {
-    private Layout root;
-    private AbsolutePanel layoutPanel = new AbsolutePanel();
-    private FlowPanel widgetPanel = new FlowPanel();
-    private Label text = new Label();
-    private HorizontalPanel mainPanel = new HorizontalPanel();
     private SplitLayoutPanel splitPanel = new SplitLayoutPanel();
-    //private TextArea code = new TextArea();
+    private HorizontalPanel mainPanel = new HorizontalPanel();
+    private FlowPanel widgetPanel = new FlowPanel();
+    private AbsolutePanel layoutPanel = new AbsolutePanel();
+    
     private CodeMirrorTextArea code = new CodeMirrorTextArea("code");
+	private Tree fileTree = new Tree();
+    
     private ImageResources imageResources = ImageResources.instance();
     private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
+    private Layout root;
     
     private PickupDragController dragController;
     private PickupDragController previewDragController;
@@ -92,15 +93,12 @@ public class DroidDev implements EntryPoint {
     
     private HashMap<Element, Layout> elToLayout = new HashMap<Element, Layout>();
     private HashMap<Element, Vector<String>> elToProps = new HashMap<Element, Vector<String>>();
+   
     
-
-	private Tree fileTree = new Tree();
-    //private HashMap<String, String> fileNamesToPaths = new HashMap<String, String>();
-    //private String currFile;
-    
+    /**
+     * Initialize everything
+     */
     public void onModuleLoad() {
-        //RootPanel.get("preview").add(layoutPanel);
-    	//RootPanel.get().add(mainPanel);
     	RootLayoutPanel.get().add(splitPanel);
     	dragController = new PickupDragController(RootPanel.get(), false) {
     		@Override
@@ -112,7 +110,7 @@ public class DroidDev implements EntryPoint {
     		}
     	};
     	dragController.setBehaviorDragProxy(true);
-    	//mainPanel.add(fileTree);
+
     	splitPanel.addWest(fileTree, 300);
     	splitPanel.addEast(mainPanel, 650);
 
@@ -149,11 +147,6 @@ public class DroidDev implements EntryPoint {
 						});
 						
 						if (andImport) {
-							/*
-							for (String name: fileNamesToPaths.values()) {
-								importFile(name);
-							}
-							*/
 							for (File file: AndroidEditor.instance().files) {
 								if (file.getType() == File.JAVA || file.getType() == File.XML)
 									importFile(file);
@@ -187,6 +180,7 @@ public class DroidDev implements EntryPoint {
 		String name = d.getName();
 		String path = parent.getName() + "/" + d.getName();
 		
+		/* Create appropriate file type */
     	if (d.getName().contains("/"))
     		file = new Folder(name, path);
     	else if (d.getName().endsWith("xml"))
@@ -198,6 +192,7 @@ public class DroidDev implements EntryPoint {
     	
     	AndroidEditor.instance().files.add(file);
 
+    	/* Create tree item based on file */
     	FileChoice c = new FileChoice(file);
     	TreeItem item = new TreeItem(c);
 		item.setState(true);
@@ -213,7 +208,6 @@ public class DroidDev implements EntryPoint {
     	return item;
     }
     
-
     private class FileChoice extends Composite {
     	private HorizontalPanel panel = new HorizontalPanel();
     	private Label fileName;
@@ -284,18 +278,17 @@ public class DroidDev implements EntryPoint {
         try {
             builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
-                    text.setText("Error!");
                     System.out.println(exception.getMessage());
                 }
                 
                 public void onResponseReceived(Request request, Response response) {
-                	//AndroidEditor.instance().fileContents.put(file.getPath(), response.getText());
-                	
+                	/* If a code file, put its content in the file object */
                 	if (file.getType() == File.JAVA)
                 		((JavaFile)file).setContent(response.getText());
                 	else if (file.getType() == File.XML)
                 		((XMLFile)file).setContent(response.getText());
                 	
+                	/* main.xml should be the first thing seen */
                 	if (file.getFileName().equals("main.xml")) {
                 		AndroidEditor.instance().currFile = file;
                 		AndroidEditor.instance().lastXMLFile = file.getPath();
@@ -310,32 +303,29 @@ public class DroidDev implements EntryPoint {
             
         }
         catch (RequestException e) {
-            text.setText("Request exception: " + e.getMessage());
+            System.out.println("Request exception: " + e.getMessage());
         }
     }
     
     public void addCodePanelAndBuildButton() {
-    	//VerticalPanel vp = new VerticalPanel();
     	code.setCharacterWidth(50);
         code.setVisibleLines(25);
-    	//vp.add(code);
     	
     	AndroidEditor.instance().code = code;
     	
     	com.google.gwt.user.client.ui.Button saveButton = new com.google.gwt.user.client.ui.Button("Save and Build", new ClickHandler() {
     		public void onClick(ClickEvent event) {
-    			generateXML();
-    			/*
-    			String currFile = AndroidEditor.instance().currFile;
-    			if (currFile.endsWith(".xml") || currFile.endsWith(".java"))
-    				AndroidEditor.instance().fileContents.put(currFile, code.getText());
-    				*/
+    			//generateXML();
+    			// TODO figure out generating XML on save without overwriting user changes
+    			
+    			/* save the state of the current editor's contents */
     			File currFile = AndroidEditor.instance().currFile;
     			if (currFile.getType() == File.JAVA)
     				((JavaFile)currFile).setContent(code.getText());
     			else if (currFile.getType() == File.XML)
     				((XMLFile)currFile).setContent(code.getText());
     			
+    			/* create map of names to content */
     			HashMap<String, String> fileContents = new HashMap<String, String>();
     			for (File f: AndroidEditor.instance().files) {
         			if (f.getType() == File.JAVA)
@@ -353,14 +343,10 @@ public class DroidDev implements EntryPoint {
 					public void onSuccess(Void result) {
 						final DialogBox dialog = new DialogBox(true);
 						dialog.setHTML("Build results");
-						/*dialog.setWidth("500px");
-						dialog.setHeight("500px");*/
 						
 						final VerticalPanel dialogPanel = new VerticalPanel();
 						final HTML contents = new HTML();
 						contents.setHTML("Building...");
-						//contents.setHeight("470px");
-						//contents.getElement().getStyle().setProperty("overflow", "auto");
 						dialogPanel.add(contents);
 						ScrollPanel sp = new ScrollPanel(dialogPanel);
 						sp.setSize("500px", "500px");
@@ -391,8 +377,6 @@ public class DroidDev implements EntryPoint {
     			});
     		}
     	});
-    	//vp.add(saveButton);
-    	//mainPanel.add(vp);
     	saveButton.setWidth("100%");
     	splitPanel.addSouth(saveButton, 40);
     	splitPanel.add(code);
@@ -429,19 +413,18 @@ public class DroidDev implements EntryPoint {
     		});
     	}
         widgetPanel.addStyleName("widgetPanel");
-        //mainPanel.add(widgetPanel);
         HorizontalPanel widgetsAndPreview = new HorizontalPanel();
         widgetsAndPreview.add(widgetPanel);
     	
         layoutPanel.setSize("320px", "480px");
         layoutPanel.addStyleName("previewPane");
-    	//mainPanel.add(layoutPanel);
         widgetsAndPreview.add(layoutPanel);
         tabs.add(widgetsAndPreview, "Layout Preview");
         tabs.selectTab(0);
         mainPanel.add(tabs);
     	AndroidEditor.instance().layoutPanel = layoutPanel;
     	
+    	/* Set up dragging within preview panel */
     	previewDragController = new PickupDragController(layoutPanel, false) {
     		@Override
     		public void dragStart() {
@@ -457,8 +440,6 @@ public class DroidDev implements EntryPoint {
     			Widget w = ((CanvasWidget)(context.draggable)).widget;
     			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
     			root.positionWidget(w);
-    			//root.removeWidget(w);
-				//root.addWidget(w);
 	    		root.paint();
     		}
 
@@ -471,6 +452,7 @@ public class DroidDev implements EntryPoint {
     		}
     	};
     	
+    	/* set up dropping from widget picker onto preview pane */
     	SimpleDropController dropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
     			Widget w = createWidget(((CanvasWidget)(context.draggable)).widget.getTagName());
@@ -487,24 +469,21 @@ public class DroidDev implements EntryPoint {
     	};
     	dragController.registerDropController(dropController);
     	
+    	/* set up dropping from preview pane onto preview pane */
     	SimpleDropController previewDropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
     			final Widget w = ((CanvasWidget)(context.draggable)).widget;
     			
-    			
     			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
     			root.positionWidget(w);
-    			//root.removeWidget(w);
-				//root.addWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();
-	    		
-	    		//previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
     		}
     	};
     	previewDragController.registerDropController(previewDropController);
     	previewDragController.setBehaviorDragStartSensitivity(1);
     	
+    	/* Disable regular right click on layout panel */
     	layoutPanel.addDomHandler(new ContextMenuHandler() {
     		@Override
     		public void onContextMenu(ContextMenuEvent event) {
@@ -513,6 +492,7 @@ public class DroidDev implements EntryPoint {
     		}
     	}, ContextMenuEvent.getType());
     	
+    	/* set up emulator panel */
     	HorizontalPanel emulatorPanel = new HorizontalPanel();
     	VerticalPanel emulatorButtons = new VerticalPanel();
     	com.google.gwt.user.client.ui.Button homeButton = new com.google.gwt.user.client.ui.Button("Home", new ClickHandler() {
@@ -520,12 +500,10 @@ public class DroidDev implements EntryPoint {
         		service.pressKey(DroidDevService.HOME_CODE, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						GWT.log("failure");
 					}
 
 					@Override
 					public void onSuccess(Void v) {
-						GWT.log("pressed menu");
 					}
 				});
 			}
@@ -535,12 +513,10 @@ public class DroidDev implements EntryPoint {
         		service.pressKey(DroidDevService.MENU_CODE, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						GWT.log("failure");
 					}
 
 					@Override
 					public void onSuccess(Void v) {
-						GWT.log("pressed menu");
 					}
 				});
 			}
@@ -550,12 +526,10 @@ public class DroidDev implements EntryPoint {
         		service.pressKey(DroidDevService.BACK_CODE, new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
-						GWT.log("failure");
 					}
 
 					@Override
 					public void onSuccess(Void v) {
-						GWT.log("pressed menu");
 					}
 				});
 			}
@@ -570,7 +544,6 @@ public class DroidDev implements EntryPoint {
     	emulator.setHeight("720px");
     	emulatorPanel.add(emulator);
     	tabs.add(emulatorPanel, "Emulator");
-    	//tabs.add(emulator, "Emulator");
     }
 
     public void addWidgetsToPanel() {
@@ -605,7 +578,6 @@ public class DroidDev implements EntryPoint {
     	else {
     		ImagesReadyEvent.register(AndroidEditor.EVENT_BUS, new ImagesReadyEvent.Handler() {
     			public void onImagesReady(ImagesReadyEvent event) {
-    				//Window.alert("Images ready, beginning to parse");
     				doGeneratePreview(text);
     			}
     		});
@@ -619,6 +591,7 @@ public class DroidDev implements EntryPoint {
     		layoutPanel.clear();
     		root = null;
     		parseLayoutElement(messageDom.getDocumentElement());
+    		
     		if (root.getPropertyByAttName("xmlns:android") == null) {
     			root.addProperty(new StringProperty("xmlns", "xmlns:android", "http://schemas.android.com/apk/res/android", false));
     		}
@@ -702,9 +675,7 @@ public class DroidDev implements EntryPoint {
             }
             elToLayout.put(el, l);
             elToProps.put(el, l_props);
-            //layout_props = l_props;
             
-            //((AbstractLayout)l).setHTML(qName + " " + l.getWidth() + " " + l.getHeight());
             layoutPanel.add(l.getCanvasWidget(), l.getX(), l.getY());
         }
         else {
@@ -773,17 +744,8 @@ public class DroidDev implements EntryPoint {
                 w.setPropertyByAttName( prop, el.getAttribute(prop));
             }
         }
-        /*
-        if (layout_props.size() == 0 || layoutStack.size() == 0) {
-            return;
-        }
-        for ( String prop : layout_props.peek() ) {
-            if ( getValue(atts,  prop ) != null ) {
-                w.setPropertyByAttName( prop, getValue(atts,  prop ) );
-            }
-        }
-        Layout layout = layoutStack.peek();
-        */
+        
+        // TODO come back here in the droiddraw code and take a look at layout_props
         
         for (String prop: elToProps.get(el.getParentNode())) {
         	if (el.hasAttribute(prop)) {
@@ -791,7 +753,6 @@ public class DroidDev implements EntryPoint {
         	}
         }
         
-        //Layout layout = root;
         Layout layout = elToLayout.get(el.getParentNode());
         w.apply();
         if ( layout instanceof LinearLayout ) {
@@ -885,14 +846,7 @@ public class DroidDev implements EntryPoint {
     	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
     	xml += generateWidget(root);
     	
-    	//code.setText(xml);
-    	
-    	/*
-    	AndroidEditor.instance().fileContents.put(fileNamesToPaths.get("main.xml"), xml);
-    	if (AndroidEditor.instance().currFile.equals(fileNamesToPaths.get("main.xml"))) {
-    		code.setText(xml);
-    	}
-    	*/
+    	((XMLFile)AndroidEditor.instance().getFileByName("main.xml")).setContent(xml);
     }
     
     @SuppressWarnings("unchecked")
