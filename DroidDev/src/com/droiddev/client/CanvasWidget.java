@@ -112,9 +112,12 @@ public class CanvasWidget extends Composite{
 	}
 	
 	private void addToCode() {
+		/*
 		for (File f: AndroidEditor.instance().files)
 			if (f.getType() == File.JAVA)
-				((JavaFile)f).addWidgetToCode(widget.getTagName(), widget.getId().split("/")[1]);
+			*/
+		if (AndroidEditor.instance().currFile.getType() == File.JAVA)
+			((JavaFile)(AndroidEditor.instance().currFile)).addWidgetToCode(widget.getTagName(), widget.getId().split("/")[1]);
 	}
 	
 	private void createPopupMenu() {
