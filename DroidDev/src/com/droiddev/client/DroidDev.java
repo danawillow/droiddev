@@ -898,8 +898,10 @@ public class DroidDev implements EntryPoint {
     public void generateXML() {
     	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
     	xml += generateWidget(root);
-    	
-    	((XMLFile)AndroidEditor.instance().getFileByName("main.xml")).setContent(xml);
+    	if (AndroidEditor.instance().currFile.getType() == File.XML) {
+    		((XMLFile)(AndroidEditor.instance().currFile)).setContent(xml);
+    		AndroidEditor.instance().code.setText(xml);
+    	}
     }
     
     @SuppressWarnings("unchecked")
