@@ -47,6 +47,8 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Anchor;
@@ -93,12 +95,39 @@ public class DroidDev implements EntryPoint {
     
     private HashMap<Element, Layout> elToLayout = new HashMap<Element, Layout>();
     private HashMap<Element, Vector<String>> elToProps = new HashMap<Element, Vector<String>>();
+    
+    Frame emulator;
    
     
     /**
      * Initialize everything
      */
     public void onModuleLoad() {
+    	service.startVMAndADB(new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GWT.log("failure!");
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				emulator.setUrl("http://localhost:6080/vnc_auto.html?host=localhost&port=6080");
+			}
+    	});
+    	
+    	Window.addWindowClosingHandler(new Window.ClosingHandler() {
+			@Override
+			public void onWindowClosing(ClosingEvent event) {
+				service.closeVMAndADB(new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) { }
+
+					@Override
+					public void onSuccess(Void result) { }
+				});
+			}
+		});
+    	
     	RootLayoutPanel.get().add(splitPanel);
     	dragController = new PickupDragController(RootPanel.get(), false) {
     		@Override
@@ -297,6 +326,15 @@ public class DroidDev implements EntryPoint {
                 	}
                 	else if (file.getType() == File.JAVA) {
                 		AndroidEditor.instance().lastJavaFile = file.getPath();
+                		/*
+                		service.getJavaFields(response.getText(), new AsyncCallback<Void>() {
+							@Override
+							public void onFailure(Throwable caught) { }
+
+							@Override
+							public void onSuccess(Void result) { }
+                		});
+                		*/
                 	}
                 }
             });
@@ -539,7 +577,8 @@ public class DroidDev implements EntryPoint {
     	emulatorButtons.add(backButton);
     	emulatorPanel.add(emulatorButtons);
     	
-    	Frame emulator = new Frame("http://localhost:6080/vnc_auto.html?host=localhost&port=6080");
+    	//Frame emulator = new Frame("http://localhost:6080/vnc_auto.html?host=localhost&port=6080");
+    	emulator = new Frame("about:blank");
     	emulator.setWidth(widgetsAndPreview.getOffsetWidth() + "px");
     	emulator.setHeight("720px");
     	emulatorPanel.add(emulator);

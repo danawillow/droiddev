@@ -73,6 +73,7 @@ public class CanvasWidget extends Composite{
 		
 		popupMenuBar.addItem("Add to code", new Command() {
 			public void execute() {
+				/*
 				if (!AndroidEditor.instance().imports.contains("android.widget." + widget.getTagName())) {
 					AndroidEditor.instance().imports.add("android.widget." + widget.getTagName());
 					for (File f: AndroidEditor.instance().files)
@@ -81,6 +82,10 @@ public class CanvasWidget extends Composite{
 					//AndroidEditor.instance().code.addImport("android.widget." + widget.getTagName());
 				}
 				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
+				*/
+				for (File f: AndroidEditor.instance().files)
+					if (f.getType() == File.JAVA)
+						((JavaFile)f).addWidgetToCode(widget.getTagName(), widget.getId().split("/")[1]);
 				menu.hide();
 			}
 		});
