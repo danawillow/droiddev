@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -182,8 +183,12 @@ public class CanvasWidget extends Composite{
 			i++;
 		}
 		
-		propertyPanel.add(grid);
+		ScrollPanel sp = new ScrollPanel(grid);
+		propertyPanel.add(sp);
+		sp.setHeight("500px");
+		sp.setWidth("500px");
 		
+		HorizontalPanel buttons = new HorizontalPanel();
 		Button okButton = new Button("Apply", new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				for (Property prop: propVals.keySet()) {
@@ -201,12 +206,10 @@ public class CanvasWidget extends Composite{
 				dialog.hide();
 			}
 		});
-		propertyPanel.add(okButton);
-		propertyPanel.add(closeButton);
-		ScrollPanel sp = new ScrollPanel(propertyPanel);
-		sp.setHeight("500px");
-		sp.setWidth("500px");
-		dialog.setWidget(sp);
+		buttons.add(okButton);
+		buttons.add(closeButton);
+		propertyPanel.add(buttons);
+		dialog.setWidget(propertyPanel);
 		dialog.center();
 		dialog.show();
 	}
