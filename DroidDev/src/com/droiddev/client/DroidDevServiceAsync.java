@@ -15,4 +15,8 @@ public interface DroidDevServiceAsync {
 
 	void pressKey(String keyCode, AsyncCallback<Void> callback);
 
+	void startVMAndADB(AsyncCallback<Void> callback);
+
+	void closeVMAndADB(AsyncCallback<Void> callback);
+
 }

@@ -19,4 +19,8 @@ public interface DroidDevService extends RemoteService {
 	public void deleteFile(String fileName);
 	
 	public void pressKey(String keyCode);
+	
+	public void startVMAndADB();
+
+	void closeVMAndADB();
 }
