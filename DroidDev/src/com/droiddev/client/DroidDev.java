@@ -416,6 +416,7 @@ public class DroidDev implements EntryPoint {
     		}
     	});
     	saveButton.setWidth("100%");
+    	saveButton.setStylePrimaryName("buildButton");
     	splitPanel.addSouth(saveButton, 40);
     	splitPanel.add(code);
     }
