@@ -471,14 +471,25 @@ public class DroidDev implements EntryPoint {
     				w.addStyleName("selectedWidget");
     			}
     		}
-    		
+
     		@Override
     		public void dragMove() {
-    			super.dragMove();
-    			Widget w = ((CanvasWidget)(context.draggable)).widget;
-    			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
-    			root.positionWidget(w);
-	    		root.paint();
+    			CanvasWidget cw = (CanvasWidget)(context.draggable);
+				Widget w = cw.widget;
+    			if (cw.mode == CanvasWidget.NORMAL) {
+    				super.dragMove();
+    				w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
+    			}
+    			else {
+    				if (cw.mode == CanvasWidget.S || cw.mode == CanvasWidget.SE)
+        				w.setHeight(context.mouseY - cw.getAbsoluteTop());
+    				if (cw.mode == CanvasWidget.E || cw.mode == CanvasWidget.SE)
+        				w.setWidth(context.mouseX - cw.getAbsoluteLeft());
+    			}
+
+				root.positionWidget(w);
+				root.apply();
+    			root.paint();
     		}
 
     		@Override
@@ -510,9 +521,11 @@ public class DroidDev implements EntryPoint {
     	/* set up dropping from preview pane onto preview pane */
     	SimpleDropController previewDropController = new SimpleDropController(layoutPanel) {
     		public void onDrop(DragContext context) {
-    			final Widget w = ((CanvasWidget)(context.draggable)).widget;
+    			CanvasWidget cw = (CanvasWidget)(context.draggable);
+    			Widget w = cw.widget;
     			
-    			w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
+    			if (cw.mode == CanvasWidget.NORMAL)
+    				w.setPosition(context.mouseX - layoutPanel.getAbsoluteLeft(), context.mouseY - layoutPanel.getAbsoluteTop());
     			root.positionWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();

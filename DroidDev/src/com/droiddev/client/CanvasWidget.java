@@ -15,7 +15,10 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -35,6 +38,14 @@ public class CanvasWidget extends Composite{
 	public com.droiddev.client.widget.Widget widget;
 	
 	private PopupPanel menu;
+	
+
+	public int mode;
+
+	public static final int NORMAL = 0;
+	public static final int E = 1;
+	public static final int SE = 2;
+	public static final int S = 3;
 	
 	public CanvasWidget(Canvas canvas, com.droiddev.client.widget.Widget widget) {
 		this.canvas = canvas;
@@ -67,6 +78,37 @@ public class CanvasWidget extends Composite{
 				addToCode();
 			}
 		}, DoubleClickEvent.getType());
+		
+		canvas.addDomHandler(new MouseMoveHandler() {
+			@Override
+			public void onMouseMove(MouseMoveEvent event) {
+				int ex = event.getRelativeX(canvas.getElement());
+				int ey = event.getRelativeY(canvas.getElement());
+				
+				int distance_x = canvas.getOffsetWidth()-ex;
+				int distance_y = canvas.getOffsetHeight()-ey;
+				
+				boolean close_r = distance_x < 8 && distance_x >= 1;
+				boolean close_b = distance_y < 8 && distance_y >= 1;
+				
+				if (close_r && close_b) {
+					DOM.setStyleAttribute(getElement(), "cursor", "se-resize");
+					mode = SE;
+				}
+				else if (close_r) {
+					DOM.setStyleAttribute(getElement(), "cursor", "e-resize");
+					mode = E;
+				}
+				else if (close_b) {
+					DOM.setStyleAttribute(getElement(), "cursor", "s-resize");
+					mode = S;
+				}
+				else {
+					DOM.setStyleAttribute(getElement(), "cursor", "move");
+					mode = NORMAL;
+				}
+			}
+		}, MouseMoveEvent.getType());
 	}
 	
 	private void addToCode() {
