@@ -502,7 +502,7 @@ public class DroidDev implements EntryPoint {
 	    		root.paint();
 	    		
 	    		previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
-	    		w.getCanvasWidget().addRightClickHandler();
+	    		w.getCanvasWidget().addClickHandlers();
     		}
     	};
     	dragController.registerDropController(dropController);
@@ -808,7 +808,7 @@ public class DroidDev implements EntryPoint {
         }
         
         previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
-        w.getCanvasWidget().addRightClickHandler();
+        w.getCanvasWidget().addClickHandlers();
     }
 
     public Widget createWidget(String str) {

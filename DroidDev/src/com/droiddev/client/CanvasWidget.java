@@ -10,6 +10,8 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -40,16 +42,7 @@ public class CanvasWidget extends Composite{
 		initWidget(this.canvas);
 	}
 	
-	public void addRightClickHandler() {
-		/*
-		canvas.addDomHandler(new ContextMenuHandler() {
-    		@Override
-    		public void onContextMenu(ContextMenuEvent event) {
-    			event.preventDefault();
-    			event.stopPropagation();
-    		}
-    	}, ContextMenuEvent.getType());*/
-		
+	public void addClickHandlers() {
 		canvas.addDomHandler(new MouseDownHandler() {
     		@Override
     		public void onMouseDown(MouseDownEvent event) {
@@ -67,6 +60,19 @@ public class CanvasWidget extends Composite{
 		
 		menu = new PopupPanel(true);
 		createPopupMenu();
+		
+		canvas.addDomHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event) {
+				addToCode();
+			}
+		}, DoubleClickEvent.getType());
+	}
+	
+	private void addToCode() {
+		for (File f: AndroidEditor.instance().files)
+			if (f.getType() == File.JAVA)
+				((JavaFile)f).addWidgetToCode(widget.getTagName(), widget.getId().split("/")[1]);
 	}
 	
 	private void createPopupMenu() {
@@ -74,19 +80,7 @@ public class CanvasWidget extends Composite{
 		
 		popupMenuBar.addItem("Add to code", new Command() {
 			public void execute() {
-				/*
-				if (!AndroidEditor.instance().imports.contains("android.widget." + widget.getTagName())) {
-					AndroidEditor.instance().imports.add("android.widget." + widget.getTagName());
-					for (File f: AndroidEditor.instance().files)
-						if (f.getType() == File.JAVA)
-							((JavaFile)f).addImport("android.widget." + widget.getTagName());
-					//AndroidEditor.instance().code.addImport("android.widget." + widget.getTagName());
-				}
-				AndroidEditor.instance().code.setFindViewLine(widget.getId().split("/")[1], widget.getTagName());
-				*/
-				for (File f: AndroidEditor.instance().files)
-					if (f.getType() == File.JAVA)
-						((JavaFile)f).addWidgetToCode(widget.getTagName(), widget.getId().split("/")[1]);
+				addToCode();
 				menu.hide();
 			}
 		});
