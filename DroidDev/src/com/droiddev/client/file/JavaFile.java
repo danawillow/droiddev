@@ -37,12 +37,14 @@ public class JavaFile extends File {
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 		
 		if (addMethod(id, fn)) {
-			addImport(importType);
+			if (importType != null)
+				addImport(importType);
 		}
 		else {
 			addWidgetToCode(widgetType, id);
 			if (addMethod(id, fn)) {
-				addImport(importType);
+				if (importType != null)
+					addImport(importType);
 			}
 		}
 	}
