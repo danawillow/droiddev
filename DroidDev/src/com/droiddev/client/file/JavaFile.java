@@ -62,19 +62,21 @@ public class JavaFile extends File {
 		String[] lines = content.split("\n");
 		
 		boolean firstBracketFound = false;
-		int lastLineContainingSemicolon = -1;
+		int placeToAdd = -1;
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			if (firstBracketFound && line.contains("{"))
 				break;
-			if (line.contains("{"))
+			if (line.contains("{")) {
 				firstBracketFound = true;
-			if (line.contains(";")) // TODO also check that not comment
-				lastLineContainingSemicolon = i;
+				placeToAdd = i;
+			}
+			if (firstBracketFound && line.contains(";")) // TODO also check that not comment
+				placeToAdd = i;
 		}
 		
-		if (lastLineContainingSemicolon >= 0)
-			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "private " + type + " m" + name + ";", lastLineContainingSemicolon);
+		if (placeToAdd >= 0)
+			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "private " + type + " m" + name + ";", placeToAdd);
 		
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 	}
