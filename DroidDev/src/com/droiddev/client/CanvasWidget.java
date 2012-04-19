@@ -39,7 +39,6 @@ public class CanvasWidget extends Composite{
 	
 	private PopupPanel menu;
 	
-
 	public int mode;
 
 	public static final int NORMAL = 0;
@@ -188,13 +187,7 @@ public class CanvasWidget extends Composite{
 		        switch (event.getTypeInt()) {
 		            case Event.ONKEYDOWN:
 		                if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
-		                	// TODO: put this in its own method, it's the same as pressing apply
-		                	for (Property prop: propVals.keySet()) {
-		    					String val = propVals.get(prop).getText();
-		    					widget.setPropertyByAttName(prop.getAttributeName(), val);
-		    				}
-		    				widget.apply();
-		    				AndroidEditor.instance().getLayout().paint();
+		                	applyProperties(propVals);
 		                    hide();
 		                }
 		                break;
@@ -230,12 +223,7 @@ public class CanvasWidget extends Composite{
 		HorizontalPanel buttons = new HorizontalPanel();
 		Button okButton = new Button("Apply", new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				for (Property prop: propVals.keySet()) {
-					String val = propVals.get(prop).getText();
-					widget.setPropertyByAttName(prop.getAttributeName(), val);
-				}
-				widget.apply();
-				AndroidEditor.instance().getLayout().paint();
+				applyProperties(propVals);
 				dialog.hide();
 			}
 		});
@@ -251,5 +239,16 @@ public class CanvasWidget extends Composite{
 		dialog.setWidget(propertyPanel);
 		dialog.center();
 		dialog.show();
+	}
+	
+	private void applyProperties(HashMap<Property, TextBox> propVals) {
+		for (Property prop: propVals.keySet()) {
+			String val = propVals.get(prop).getText();
+			widget.setPropertyByAttName(prop.getAttributeName(), val);
+		}
+		widget.apply();
+		AndroidEditor.instance().getLayout().paint();
+		
+		AndroidEditor.instance().generateXML();
 	}
 }

@@ -3,13 +3,21 @@ package com.droiddev.client;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import com.droiddev.client.file.File;
 import com.droiddev.client.file.JavaFile;
 import com.droiddev.client.file.XMLFile;
+import com.droiddev.client.property.Property;
+import com.droiddev.client.property.StringProperty;
+import com.droiddev.client.widget.CheckBox;
 import com.droiddev.client.widget.Layout;
+import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Text;
+import com.google.gwt.xml.client.XMLParser;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -23,13 +31,12 @@ public class AndroidEditor {
     CodeMirrorTextArea code;
     CanvasWidget selected;
     Layout layout;
-    //String currFile;
     File currFile;
-    String lastXMLFile;
-    String lastJavaFile;
-    //HashMap<String, String> fileContents = new HashMap<String, String>();
+    XMLFile lastXMLFile;
+    JavaFile lastJavaFile;
     TreeSet<String> imports = new TreeSet<String>();
 	HashSet<File> files = new HashSet<File>();
+	private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
 
     public String getScreenUnit() {
         return "dp";
@@ -67,30 +74,6 @@ public class AndroidEditor {
     	return layout;
     }
     
-    /*
-    public void switchToFile(String fileName) {
-		if (currFile != null && (currFile.endsWith(".xml") || currFile.endsWith(".java")))
-			fileContents.put(currFile, code.getText());
-		
-		currFile = fileName;
-		if (currFile == null) {
-			code.setText("");
-		}
-		else if (currFile.endsWith(".xml")) {
-			code.setText(fileContents.get(currFile));
-			code.setOption("mode", "xml");
-			lastXMLFile = currFile;
-		}
-		else if (currFile.endsWith(".java")) {
-			code.setText(fileContents.get(currFile));
-			code.setOption("mode", "text/x-java");
-			lastJavaFile = currFile;
-		}
-		else
-			code.setText("");
-    }
-    */
-    
     public void switchToFile(File file) {
     	if (currFile != null) {
     		if (currFile.getType() == File.JAVA)
@@ -106,15 +89,27 @@ public class AndroidEditor {
     	else if (currFile.getType() == File.XML) {
     		code.setText(((XMLFile)currFile).getContent());
     		code.setOption("mode", "xml");
-    		lastXMLFile = currFile.getPath();
+    		lastXMLFile = (XMLFile)currFile;
     	}
     	else if (currFile.getType() == File.JAVA) {
     		code.setText(((JavaFile)currFile).getContent());
     		code.setOption("mode", "text/x-java");
-    		lastJavaFile = currFile.getPath();
+    		lastJavaFile = (JavaFile)currFile;
     	}
     	else
     		code.setText("");
+    }
+    
+    public File getFileByName(String name) {
+    	for (File f: files) {
+    		if (f.getFileName().equals(name))
+    			return f;
+    	}
+    	return null;
+    }
+    
+    public DroidDevServiceAsync getService() {
+    	return service;
     }
     
     public static AndroidEditor instance() {
@@ -124,4 +119,50 @@ public class AndroidEditor {
         
         return inst;
     }
+    
+
+    public void generateXML() {
+    	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+    	xml += generateWidget(layout);
+		lastXMLFile.setContent(xml);
+    	if (currFile.getType() == File.XML) {
+    		code.setText(xml);
+    	}
+    }
+    
+    @SuppressWarnings("unchecked")
+	private String generateWidget(Widget w) {
+    	String xml = "";
+		xml += "<"+w.getTagName();
+		Vector<Property> props = (Vector<Property>)w.getProperties().clone();
+		if (w != layout)
+			w.getParentLayout().addOutputProperties(w, props);
+		for (Property prop : props) {
+			if (prop.getValue() != null && prop.getValue().toString().length() > 0 && !prop.isDefault()) {
+				// Work around an android bug... *sigh*
+				if (w instanceof CheckBox && prop.getAttributeName().equals("android:padding"))
+					continue;
+				String value;
+				if (prop instanceof StringProperty) {
+					Document d = XMLParser.createDocument();
+					Text textNode= d.createTextNode(((StringProperty)prop).getRawStringValue());
+					value = textNode.toString();
+				} else {
+					value = prop.getValue().toString();
+				}
+				xml += "\n";
+				xml += "\t" + prop.getAttributeName()+"=\""+ value +"\"";
+			}
+		}
+		if (w instanceof Layout) {
+			xml += ">\n";
+			for (Widget wt : ((Layout)w).getWidgets()) {
+				xml += generateWidget(wt);
+			}
+			xml += "</"+w.getTagName()+">\n";
+		} else {
+			xml += " />\n";
+		}
+		return xml;
+	}
 }

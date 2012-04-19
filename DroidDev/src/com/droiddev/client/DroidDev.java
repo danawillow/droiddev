@@ -11,7 +11,6 @@ import com.droiddev.client.file.Folder;
 import com.droiddev.client.file.JavaFile;
 import com.droiddev.client.file.OtherFile;
 import com.droiddev.client.file.XMLFile;
-import com.droiddev.client.property.Property;
 import com.droiddev.client.property.StringProperty;
 import com.droiddev.client.util.DisplayMetrics;
 import com.droiddev.client.util.ImageResources;
@@ -71,7 +70,6 @@ import com.google.gwt.xml.client.DOMException;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
-import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
 
 public class DroidDev implements EntryPoint {
@@ -320,12 +318,12 @@ public class DroidDev implements EntryPoint {
                 	/* main.xml should be the first thing seen */
                 	if (file.getFileName().equals("main.xml")) {
                 		AndroidEditor.instance().currFile = file;
-                		AndroidEditor.instance().lastXMLFile = file.getPath();
+                		AndroidEditor.instance().lastXMLFile = (XMLFile)file;
                     	code.setText(response.getText());
                         generatePreview(response.getText());
                 	}
                 	else if (file.getType() == File.JAVA) {
-                		AndroidEditor.instance().lastJavaFile = file.getPath();
+                		AndroidEditor.instance().lastJavaFile = (JavaFile)file;
                 		/*
                 		service.getJavaFields(response.getText(), new AsyncCallback<Void>() {
 							@Override
@@ -431,14 +429,8 @@ public class DroidDev implements EntryPoint {
         		generatePreview(code.getText());
         	}
         });
-    	com.google.gwt.user.client.ui.Button xmlButton = new com.google.gwt.user.client.ui.Button("<-- Generate XML", new ClickHandler() {
-        	public void onClick(ClickEvent event) {
-        		generateXML();
-        	}
-        });
         
     	buttonPanel.add(previewButton);
-    	buttonPanel.add(xmlButton);
     	mainPanel.add(buttonPanel);
         
         widgetPanel.setSize("200px", "480px");
@@ -515,6 +507,7 @@ public class DroidDev implements EntryPoint {
 	    		
 	    		previewDragController.makeDraggable(w.getCanvasWidget(), w.getCanvas());
 	    		w.getCanvasWidget().addClickHandlers();
+	    		AndroidEditor.instance().generateXML();
     		}
     	};
     	dragController.registerDropController(dropController);
@@ -530,6 +523,7 @@ public class DroidDev implements EntryPoint {
     			root.positionWidget(w);
             	layoutPanel.add(w.getCanvasWidget(), w.getX(), w.getY());
 	    		root.paint();
+	    		AndroidEditor.instance().generateXML();
     		}
     	};
     	previewDragController.registerDropController(previewDropController);
@@ -893,51 +887,6 @@ public class DroidDev implements EntryPoint {
 		}*/
 		else
 			return null;
-	}
-
-    public void generateXML() {
-    	String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-    	xml += generateWidget(root);
-    	if (AndroidEditor.instance().currFile.getType() == File.XML) {
-    		((XMLFile)(AndroidEditor.instance().currFile)).setContent(xml);
-    		AndroidEditor.instance().code.setText(xml);
-    	}
-    }
-    
-    @SuppressWarnings("unchecked")
-	public String generateWidget(Widget w) {
-    	String xml = "";
-		xml += "<"+w.getTagName();
-		Vector<Property> props = (Vector<Property>)w.getProperties().clone();
-		if (w != root)
-			w.getParentLayout().addOutputProperties(w, props);
-		for (Property prop : props) {
-			if (prop.getValue() != null && prop.getValue().toString().length() > 0 && !prop.isDefault()) {
-				// Work around an android bug... *sigh*
-				if (w instanceof CheckBox && prop.getAttributeName().equals("android:padding"))
-					continue;
-				String value;
-				if (prop instanceof StringProperty) {
-					Document d = XMLParser.createDocument();
-					Text textNode= d.createTextNode(((StringProperty)prop).getRawStringValue());
-					value = textNode.toString();
-				} else {
-					value = prop.getValue().toString();
-				}
-				xml += "\n";
-				xml += "\t" + prop.getAttributeName()+"=\""+ value +"\"";
-			}
-		}
-		if (w instanceof Layout) {
-			xml += ">\n";
-			for (Widget wt : ((Layout)w).getWidgets()) {
-				xml += generateWidget(wt);
-			}
-			xml += "</"+w.getTagName()+">\n";
-		} else {
-			xml += " />\n";
-		}
-		return xml;
 	}
 
 }
