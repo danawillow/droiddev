@@ -75,25 +75,12 @@ public class CodeMirrorTextArea extends TextArea {
 		cm.indentLine(cursor.line+1);
 		cm.focus();
 	}-*/;
-
-	public void setMethodLine(String id, String method) {
-		setCMMethodLine(cm, id, method);
+	
+	public int getCursorLine() {
+		return getCMCursorLine(cm);
 	}
-
-	private static native void setCMMethodLine(JavaScriptObject cm, String id, String method) /*-{
-		var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
-    	var m = re.exec(cm.getValue());
-    	if (m == null) return;
-    	var varName = m[0];
-
-    	if (varName != 1) {
-    		// TODO: Highlight the parameters
-    		var cursor = cm.getCursor();
-            var lineContent = cm.getLine(cursor.line);
-            var nextLine = varName + "." + method + ";";
-            cm.setLine(cursor.line, lineContent + '\n' + nextLine);
-            cm.indentLine(cursor.line+1);
-            cm.focus();
-    	}
+	
+	private static native int getCMCursorLine(JavaScriptObject cm) /*-{
+		return cm.getCursor().line;
 	}-*/;
 }

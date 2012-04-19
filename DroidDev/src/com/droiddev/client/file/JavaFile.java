@@ -33,6 +33,14 @@ public class JavaFile extends File {
 		addDefinition(type, id);
 	}
 	
+	public void addMethodToCode(String type, String id, String fn) {
+		setContent(AndroidEditor.instance().getCodeMirror().getText());
+		
+		if (addMethod(id, fn)) {
+			addImport("android.widget." + type);
+		}
+	}
+	
 	public void addImport(String toImport) {
 		// TODO fix so this only updates codemirror if this is active
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
@@ -105,9 +113,65 @@ public class JavaFile extends File {
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 	}
 	
+	public boolean addMethod(String id, String fn) {
+		setContent(AndroidEditor.instance().getCodeMirror().getText());
+		
+		int lineNum = AndroidEditor.instance().getCodeMirror().getCursorLine();
+		
+		String varName = getCMVarName(AndroidEditor.instance().getCodeMirror().getCM(), id);
+		
+		if (varName == null) return false;
+		
+		String[] lines = content.split("\n");
+		
+		boolean onCreateFound = false;
+		int openBrackets = 0, closeBrackets = 0;
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.contains("onCreate")) {
+				onCreateFound = true;
+			}
+			
+			if (onCreateFound && line.contains("{"))
+				openBrackets++;
+			if (onCreateFound && line.contains("}")) {
+				closeBrackets++;
+				
+				if (openBrackets == closeBrackets) {
+					lineNum = i-1;
+				}
+			}
+		}
+		
+		addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), varName + "." + fn + ";", lineNum);
+		return true;
+	}
+	
 	private static native void addCMLine(JavaScriptObject cm, String line, int lineNum) /*-{
 		var lineContent = cm.getLine(lineNum);
 		cm.setLine(lineNum, lineContent + "\n" + line);
 		cm.indentLine(lineNum+1);
+	}-*/;
+
+	private static native String getCMVarName(JavaScriptObject cm, String id) /*-{
+		var re = new RegExp("\\b\\w+(?=\\s*=.*R.id." + id + ")");
+    	var m = re.exec(cm.getValue());
+    	if (m == null) return null;
+    	var varName = m[0];
+    	if (varName == -1) return null;
+    	else return varName;
+
+		
+    	//if (varName != 1) {
+    		// TODO: Highlight the parameters
+    		//var cursor = cm.getCursor();
+//            var lineContent = cm.getLine(cursor.line);
+//            var nextLine = varName + "." + method + ";";
+//            cm.setLine(cursor.line, lineContent + '\n' + nextLine);
+//            cm.indentLine(cursor.line+1);
+//            cm.focus();
+//    	}
+    	
+    	//return (varName != -1);
 	}-*/;
 }

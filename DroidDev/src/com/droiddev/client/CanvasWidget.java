@@ -146,11 +146,16 @@ public class CanvasWidget extends Composite{
 				final String menuImport = menuImports[i];
 				MenuItem item = new MenuItem(menuItems[i], true, new Command() {
 					public void execute() {
+						if (AndroidEditor.instance().currFile.getType() == File.JAVA)
+							((JavaFile)(AndroidEditor.instance().currFile)).addMethodToCode(menuImport, widget.getId().split("/")[1], fn);
+						/*
 						if (menuImport != null && !AndroidEditor.instance().imports.contains(menuImport)) {
 							AndroidEditor.instance().imports.add(menuImport);
 							//AndroidEditor.instance().code.addImport(menuImport);
 						}
 						AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
+						*/
+						
 						menu.hide();
 					}
 				});
