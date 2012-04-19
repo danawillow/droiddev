@@ -15,6 +15,7 @@ import com.droiddev.client.widget.Layout;
 import com.droiddev.client.widget.Widget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Text;
 import com.google.gwt.xml.client.XMLParser;
@@ -38,6 +39,7 @@ public class AndroidEditor {
 	HashSet<File> files = new HashSet<File>();
 	private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
 	LayoutPreviewer layoutPreviewer;
+	Button previewButton;
 
     public String getScreenUnit() {
         return "dp";
@@ -99,6 +101,8 @@ public class AndroidEditor {
     	}
     	else
     		code.setText("");
+    	
+    	previewButton.setEnabled(currFile != null && currFile.getType() == File.XML);
     }
     
     public File getFileByName(String name) {
