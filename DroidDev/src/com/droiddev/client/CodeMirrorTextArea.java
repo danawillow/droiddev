@@ -19,7 +19,8 @@ public class CodeMirrorTextArea extends TextArea {
 			setCodeMirrorText(cm, cmText);
 	}
 
-	private static native JavaScriptObject addCodeMirrorJS(Object e) /*-{
+	private native JavaScriptObject addCodeMirrorJS(Object e) /*-{
+		var that = this;
 		return $wnd.CodeMirror.fromTextArea(e, {
 			lineNumbers: true,
 			matchBrackets: true,

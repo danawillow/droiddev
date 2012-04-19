@@ -37,6 +37,7 @@ public class AndroidEditor {
     TreeSet<String> imports = new TreeSet<String>();
 	HashSet<File> files = new HashSet<File>();
 	private DroidDevServiceAsync service = GWT.create(DroidDevService.class);
+	LayoutPreviewer layoutPreviewer;
 
     public String getScreenUnit() {
         return "dp";
