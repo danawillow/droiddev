@@ -94,7 +94,7 @@ public class DroidDev implements EntryPoint {
     	RootLayoutPanel.get().add(splitPanel);
 
     	splitPanel.addWest(fileTree, 300);
-    	splitPanel.addEast(mainPanel, 650);
+    	splitPanel.addEast(mainPanel, 595);
 
     	AndroidEditor.instance().layoutPreviewer = new LayoutPreviewer(layoutPanel);
 
