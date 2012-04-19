@@ -170,6 +170,8 @@ public class CanvasWidget extends Composite{
 				}
 				AndroidEditor.instance().getLayoutPanel().remove(CanvasWidget.this);
 				AndroidEditor.instance().getLayout().paint();
+				AndroidEditor.instance().generateXML();
+				
 				menu.hide();
 			}
 		});
@@ -250,7 +252,7 @@ public class CanvasWidget extends Composite{
 		}
 		widget.apply();
 		AndroidEditor.instance().getLayout().paint();
-		
+
 		AndroidEditor.instance().generateXML();
 	}
 }
