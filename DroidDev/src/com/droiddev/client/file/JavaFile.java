@@ -33,11 +33,17 @@ public class JavaFile extends File {
 		addDefinition(type, id);
 	}
 	
-	public void addMethodToCode(String type, String id, String fn) {
+	public void addMethodToCode(String widgetType, String importType, String id, String fn) {
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 		
 		if (addMethod(id, fn)) {
-			addImport("android.widget." + type);
+			addImport(importType);
+		}
+		else {
+			addWidgetToCode(widgetType, id);
+			if (addMethod(id, fn)) {
+				addImport(importType);
+			}
 		}
 	}
 	
