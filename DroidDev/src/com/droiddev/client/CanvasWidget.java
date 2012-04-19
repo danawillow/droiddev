@@ -59,6 +59,8 @@ public class CanvasWidget extends Composite{
     			if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
         			event.preventDefault();
         			event.stopPropagation();
+        			menu = new PopupPanel(true);
+        			createPopupMenu();
         			menu.setPopupPosition(event.getClientX(), event.getClientY());
         			menu.show();
     			}
@@ -68,8 +70,6 @@ public class CanvasWidget extends Composite{
     		}
     	}, MouseDownEvent.getType());
 		
-		menu = new PopupPanel(true);
-		createPopupMenu();
 		
 		canvas.addDomHandler(new DoubleClickHandler() {
 			@Override
@@ -122,12 +122,15 @@ public class CanvasWidget extends Composite{
 	private void createPopupMenu() {
 		MenuBar popupMenuBar = new MenuBar(true);
 		
-		popupMenuBar.addItem("Add to code", new Command() {
+		MenuItem addToCode = new MenuItem("Add to code", new Command() {
 			public void execute() {
 				addToCode();
 				menu.hide();
 			}
 		});
+		addToCode.setEnabled(AndroidEditor.instance().currFile.getType() == File.JAVA);
+		System.out.println(AndroidEditor.instance().currFile.getType() == File.JAVA);
+		popupMenuBar.addItem(addToCode);
 		
 		popupMenuBar.addItem("Edit Properties", new Command() {
 			public void execute() {
@@ -146,19 +149,13 @@ public class CanvasWidget extends Composite{
 				final String menuImport = menuImports[i];
 				MenuItem item = new MenuItem(menuItems[i], true, new Command() {
 					public void execute() {
-						if (AndroidEditor.instance().currFile.getType() == File.JAVA)
-							((JavaFile)(AndroidEditor.instance().currFile)).addMethodToCode(menuImport, widget.getId().split("/")[1], fn);
-						/*
-						if (menuImport != null && !AndroidEditor.instance().imports.contains(menuImport)) {
-							AndroidEditor.instance().imports.add(menuImport);
-							//AndroidEditor.instance().code.addImport(menuImport);
-						}
-						AndroidEditor.instance().code.setMethodLine(widget.getId().split("/")[1], fn);
-						*/
-						
+						((JavaFile)(AndroidEditor.instance().currFile)).addMethodToCode(
+								widget.getTagName(), menuImport, widget.getId().split("/")[1], fn);
 						menu.hide();
 					}
 				});
+				
+				item.setEnabled(AndroidEditor.instance().currFile.getType() == File.JAVA);
 
 				popupMenuBar.addItem(item);
 			}
