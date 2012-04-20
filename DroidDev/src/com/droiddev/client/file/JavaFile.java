@@ -67,7 +67,7 @@ public class JavaFile extends File {
 		}
 		
 		if (!imports.contains("import " + toImport + ";"))
-			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "import " + toImport + ";", lastImport);
+			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "import " + toImport + ";", lastImport, 1);
 		
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 	}
@@ -92,7 +92,7 @@ public class JavaFile extends File {
 		}
 		
 		if (placeToAdd >= 0)
-			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "private " + type + " m" + name + ";", placeToAdd);
+			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), "private " + type + " m" + name + ";", placeToAdd, 1);
 		
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
 	}
@@ -115,7 +115,7 @@ public class JavaFile extends File {
 				setContentViewLine++;
 			
 			addCMLine(AndroidEditor.instance().getCodeMirror().getCM(),
-					"m" + id + " = (" + type + ")findViewById(R.id." + id + ");", setContentViewLine);
+					"m" + id + " = (" + type + ")findViewById(R.id." + id + ");", setContentViewLine, 1);
 		}
 
 		setContent(AndroidEditor.instance().getCodeMirror().getText());
@@ -151,14 +151,21 @@ public class JavaFile extends File {
 			}
 		}
 		
-		addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), varName + "." + fn + ";", lineNum);
+		int numLines = 1;
+		for (int i = 0; i < fn.length(); i++) {
+			if (fn.charAt(i) == '\n')
+				numLines++;
+		}
+		
+		addCMLine(AndroidEditor.instance().getCodeMirror().getCM(), varName + "." + fn + ";", lineNum, numLines);
 		return true;
 	}
 	
-	private static native void addCMLine(JavaScriptObject cm, String line, int lineNum) /*-{
+	private static native void addCMLine(JavaScriptObject cm, String line, int lineNum, int numLines) /*-{
 		var lineContent = cm.getLine(lineNum);
 		cm.setLine(lineNum, lineContent + "\n" + line);
-		cm.indentLine(lineNum+1);
+		for (var i = 1; i <= numLines; i++)
+			cm.indentLine(lineNum+i);
 	}-*/;
 
 	private static native String getCMVarName(JavaScriptObject cm, String id) /*-{

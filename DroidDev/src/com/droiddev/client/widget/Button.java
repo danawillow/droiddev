@@ -9,7 +9,9 @@ public class Button extends TextView {
 
 	public static final String TAG_NAME = "Button";
 	public static final String[] menuItems = {"void setOnClickListener(View.OnClickListener l)"};
-	public static final String[] menuFunctions = {"setOnClickListener(View.OnClickListener l)"};
+	public static final String[] menuFunctions = {"setOnClickListener(new View.OnClickListener() {"
+			+ "\npublic void onClick(View v) {"
+			+ "\n/* write onClick code here */\n}\n})"};
 	public static final String[] menuImports = {"android.view.View"};
 	NineWayImage img;
 	Image img_base;

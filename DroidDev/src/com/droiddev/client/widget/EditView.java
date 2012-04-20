@@ -14,11 +14,11 @@ public class EditView extends TextView {
 
 	public static final String TAG_NAME = "EditText";
 	public static final String[] menuItems =
-		{"CharSequence getText()", "int length()", "void setInputType(int type)", "final void setText(CharSequence text)"};
+		{"Editable getText()", "int length()", "void setInputType(int type)", "void setText(String text)"};
 	public static final String[] menuFunctions =
-		{"getText()", "length()", "setInputType(int type)", "setText(CharSequence text)"};
+		{"getText()", "length()", "setInputType(int type)", "setText(String text)"};
 	public static final String[] menuImports =
-		{null, null, null, null};
+		{null, null, "android.text.InputType", null};
 
 	BooleanProperty password;
 	SelectProperty numeric;

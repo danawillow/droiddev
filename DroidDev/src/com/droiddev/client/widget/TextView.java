@@ -33,9 +33,9 @@ public class TextView extends AbstractWidget {
 		new String[] {"android:hint", "android:textSize", "android:textStyle", "android:typeface", "android:textColor"};
 	
 
-	public static final String[] menuItems = {"String getText()"};
-	public static final String[] menuFunctions = {"getText()"};
-	public static final String[] menuImports = {null};
+	public static final String[] menuItems = {"void append(String text)", "String getText()", "void setText(String text)"};
+	public static final String[] menuFunctions = {"append(String text)", "getText()", "setText(String text)"};
+	public static final String[] menuImports = {null, null, null};
 
 	public TextView(String str, String tagName) {
 		super(tagName);
